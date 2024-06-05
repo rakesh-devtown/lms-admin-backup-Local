@@ -61,7 +61,7 @@ export const authSlice = createSlice({
     sendOTPAuth: async(state, action) => {
         try {
             const email = action.payload.email;         
-            const res = await servicePost("auth/auth/v1/admin-otp-login", {
+            const res = await servicePost("auth/auth/v1/login-otp", {
                 email,
             },);
             const {
@@ -89,7 +89,7 @@ export const authSlice = createSlice({
         try {
             const otp = action.payload.otp;
             const email = action.payload.email; 
-            const res = await servicePost("auth/auth/v1/admin-otp-verify", {
+            const res = await servicePost("auth/auth/v1/verify-otp", {
                 email,
                 otp,
             },);
