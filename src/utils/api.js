@@ -2,7 +2,7 @@ import { notification } from "antd";
 import axios from "axios";
 
 const SERVICE_URL = "https://5f1iot5725.execute-api.ap-south-1.amazonaws.com";
-const TEST_MODE = import.meta.env.VITE_APP_TEST_MODE === "true" ? true : false;
+const TEST_MODE = false;
 if (TEST_MODE) {
   notification.info({
     message: "Test mode Active !!",

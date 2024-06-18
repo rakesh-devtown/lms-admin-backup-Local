@@ -1,10 +1,36 @@
 import { useState, useEffect } from 'react';
-import { ConfigProvider, Tabs } from 'antd';
+import { ConfigProvider, Tabs, notification } from 'antd';
 import { CircleHelp, Settings, Copy } from 'lucide-react';
 import CoursesModal from '../../components/CoursesModal';
+import { useDispatch, useSelector } from 'react-redux';
+import { getCourses } from '../../store/slice/courseReducer';
+import Spinner from '../../components/Loader/Spinner';
 const Courses = () => {
     const [activeTab, setActiveTab] = useState("1")
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const dispatch = useDispatch();
+    const [page, setPage] = useState(1);
+    const {loading, courses} = useSelector(state => state.course);
+
+    const [isCopied, setIsCopied] = useState(false);
+
+    // This is the function we wrote earlier
+    async function copyTextToClipboard(text) {
+      if ('clipboard' in navigator) {
+        return await navigator.clipboard.writeText(text);
+      } 
+    }
+  
+    // onClick handler function for the copy button
+    const handleCopyClick = (text) => {
+      copyTextToClipboard(text)
+        .then(() => {
+          notification.success({ message: 'Copied to clipboard' });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
 
     const handleClick = () => {
         setIsModalVisible(true);
@@ -21,34 +47,17 @@ const Courses = () => {
             "numberOfStudents": "55",
             "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxe6IR3EKgALq0lEUvpW3GmPH8rpAv1cK0_w&s"
         }
-        ,
-        {
-            "title": "Full Stack Web Development",
-            "code": "CCJ202403",
-            "numberOfStudents": "55",
-            "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxe6IR3EKgALq0lEUvpW3GmPH8rpAv1cK0_w&s"
-        }
-        ,
-        {
-            "title": "Full Stack Web Development",
-            "code": "CCJ202403",
-            "numberOfStudents": "55",
-            "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxe6IR3EKgALq0lEUvpW3GmPH8rpAv1cK0_w&s"
-        }
-        ,
-        {
-            "title": "Full Stack Web Development",
-            "code": "CCJ202403",
-            "numberOfStudents": "55",
-            "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxe6IR3EKgALq0lEUvpW3GmPH8rpAv1cK0_w&s"
-        }
-        ,
-
     ]
+
+    useEffect(() => {
+        dispatch(getCourses(1,20));
+    }, [])
+
     return (
-        <div className="flex">
-            <div className="flex-grow">
-                <div className="flex-row ml-4">
+        <div className="flex h-full overflow-hidden relative">
+            {loading && <Spinner />}
+            <div className="flex-grow h-full">
+                <div className="flex-row ml-4 h-full">
                     <div className=" bg-white mb-3">
                         <ConfigProvider
                             theme={{
@@ -76,7 +85,7 @@ const Courses = () => {
                                     <div className="flex items-center">
                                         <p className="">Video Courses</p>
                                         <div className='bg-[#E6F7FF] ml-2 rounded-full'>
-                                            <p className='px-1.5'>0</p>
+                                            <p className='px-1.5'>{courses?.length}</p>
                                         </div>
                                     </div>
                                 } key="1">
@@ -99,17 +108,17 @@ const Courses = () => {
                             <button className='bg-white text-black px-4 py-1.5 rounded-sm font-poppins text-sm border-2'>Clear</button>
                         </div>
                     </div>
-                    <div className='flex flex-wrap w-full'>
-                        {data.map((item, index) => {
+                    <div className='flex flex-wrap w-full h-[60vh] overflow-auto gap-2'>
+                        {courses && courses.map((item, index) => {
                             return (
-                                <div key={index} className='w-[51vh] mt-4 h-[25vh] mr-6 relative bg-white rounded-md mb-1 '>
+                                <div key={index} className='w-[30%] mt-4 h-[25vh] mr-6 relative bg-white rounded-md mb-1 '>
                                     <div className='flex p-5 pb-3 border-b-2 border-[#59963626]'>
-                                        <img src={item.image} className='w-[7vh] h-[7vh] object-cover mt-3' />
+                                        <img src={item.bannerImg} className='w-[7vh] h-[7vh] object-cover mt-3' />
                                         <div className='flex-row justify-between items-center mx-2'>
-                                            <p className='font-poppins text-xl font-semibold px-2'>{item.title}</p>
+                                            <p className='font-poppins text-xl font-semibold px-2'>{item.name}</p>
                                             <div className='flex items-center'>
-                                                <p className='font-poppins text-xs mx-2 mt-1 text-[#599636]'>{item.code}</p>
-                                                <Copy className='text-[#599636] cursor-pointer mt-1' size={12} />
+                                                <p className='font-poppins text-xs mx-2 mt-1 text-[#599636]'>{item?.batches?.length>0 ? item?.batches[0]?.id : ''}</p>
+                                                <Copy onClick={handleCopyClick.bind(this,item?.batches?.length>0 ? item?.batches[0]?.id : '')} className='text-[#599636] cursor-pointer mt-1' size={12} />
                                             </div>
                                         </div>
                                     </div>

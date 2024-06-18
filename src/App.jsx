@@ -7,7 +7,17 @@ import Certificate from './pages/home/Certificate';
 import Feedback from './pages/home/Feedback';
 import MentorProfile from './pages/home/MentorProfile';
 import Mentor from './pages/home/Mentor';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { verifyToken } from './store/slice/authReducer';
+import Spinner from './components/Loader/Spinner';
 function App() {
+  const dispatch = useDispatch();
+  const {loading} = useSelector(state => state.auth);
+  useEffect(()=>{
+    dispatch(verifyToken());
+  },[])
+
   return (
     <Routes>
       <Route path="/admin">

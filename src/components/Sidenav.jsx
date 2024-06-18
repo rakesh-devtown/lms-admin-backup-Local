@@ -27,7 +27,7 @@ const Sidenav = () => {
     return (
         <div
             className={`flex-1 text-sm bg-white-800 text-white h-screen relative overflow-hidden ${isShrunk ? "w-16" : "sm:w-60"} pt-14 transition-width duration-300 shadow-md border-r-2`}>
-            <div className="space-y-1">
+            <div className="space-y-1 h-[75%]">
                 <Link
                     to="/admin/home"
                     className={`flex items-center p-3.5 ${location.pathname === "/admin/home" ? "#1890FF bg-[#E6F7FF] text-[#1890FF]" : "text-black"
@@ -76,7 +76,7 @@ const Sidenav = () => {
                     {!isShrunk && <span className="font-poppins font-medium">Mentor</span>}
                 </Link>
             </div>
-            <div className="mt-60 border-b-2">
+            <div className="border-b-2">
                 <Link
                     to="/admin/home/mentor"
                     className={`flex items-center p-3.5   ${location.pathname === "/admin/home/mentor" ? "bg-[#E6F7FF] text-[#1890FF]" : "text-black"}`}
