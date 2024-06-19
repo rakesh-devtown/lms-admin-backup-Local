@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import { ConfigProvider, Tabs, notification } from 'antd';
 import { CircleHelp, Settings, Copy } from 'lucide-react';
-import CoursesModal from '../../components/CoursesModal';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCourses } from '../../store/slice/courseReducer';
-import Spinner from '../../components/Loader/Spinner';
 import CoursesModal from '../../../components/CoursesModal';
 import SettingsModal from '../../../components/SettingsModal';
 import { useNavigate } from 'react-router-dom';
+import { getCourses, getCurriculumOfCourse } from '../../../store/slice/courseReducer';
+import Spinner from '../../../components/Loader/Spinner';
 
 const Courses = () => {
     const navigate = useNavigate();
@@ -17,6 +16,11 @@ const Courses = () => {
     const [page, setPage] = useState(0);
     const {loading, courses} = useSelector(state => state.course);
     const [search, setSearch] = useState('');
+
+    const [isSettingsModalVisible, setIsSettingsModalVisible] = useState({
+        isVisible: false,
+        data:{}
+    });
 
     const [isCopied, setIsCopied] = useState(false);
 
@@ -37,7 +41,7 @@ const Courses = () => {
           console.log(err);
         });
     }
-    const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
+    
 
     const handleClick = () => {
         setIsModalVisible(true);
@@ -47,12 +51,18 @@ const Courses = () => {
         setIsModalVisible(false);
     }
 
-    const handleSettingsClick = () => {
-        setIsSettingsModalVisible(true);
+    const handleSettingsClick = (data) => {
+        setIsSettingsModalVisible({
+            isVisible: true,
+            data
+        });
     }
 
     const handleCloseSettingsModal = () => {
-        setIsSettingsModalVisible(false);
+        setIsSettingsModalVisible({
+            isVisible: false,
+            data:{}
+        });
     }
 
     const handleClear = () => {
@@ -63,6 +73,11 @@ const Courses = () => {
     const handleSearchSubmit = (e) => {
         e.preventDefault();
         dispatch(getCourses(page,20,search));
+    }
+
+    const viewCourse = (courseId) => {
+       // dispatch(getCurriculumOfCourse(courseId));
+        navigate(`/admin/home/courses/view/${courseId}`)
     }
 
     useEffect(() => {
@@ -146,15 +161,13 @@ const Courses = () => {
                                         </div>
                                     </div>
                                     <div className='bg-[#599636] pb-3  pt-3 flex rounded-b-md divide-x-2 items-center text-center'>
-                                        <Settings className='text-white w-1/2 cursor-pointer' size={20} onClick={handleSettingsClick} />
-                                        <p className='text-white w-1/2 font-poppins text-sm cursor-pointer' onClick={() => {
-                                            navigate(`/admin/home/courses/view`)
-                                        }}>View</p>
+                                        <Settings className='text-white w-1/2 cursor-pointer' size={20} onClick={handleSettingsClick.bind(this,item)} />
+                                        <p className='text-white w-1/2 font-poppins text-sm cursor-pointer' onClick={viewCourse.bind(this,item?.id)}>View</p>
                                     </div>
                                 </div>
                             )
                         }) :
-                            <div className='flex justify-center items-center w-full h-full mt-48'>
+                            <div className='flex justify-center items-center w-full h-full mt-18'>
                                 <p className='font-poppins text-md font-md text-gray-400'>No Course</p>
                             </div>
                         }
@@ -162,7 +175,7 @@ const Courses = () => {
                 </div>
             </div>
             <CoursesModal isVisible={isModalVisible} onClose={handleCloseModal} />
-            <SettingsModal isVisible={isSettingsModalVisible} onClose={handleCloseSettingsModal} />
+            { isSettingsModalVisible.isVisible && <SettingsModal data={isSettingsModalVisible.data} isVisible={isSettingsModalVisible.isVisible} onClose={handleCloseSettingsModal} />}
         </div >
     )
 }

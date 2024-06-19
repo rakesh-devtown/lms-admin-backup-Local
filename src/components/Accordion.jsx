@@ -3,10 +3,11 @@ import { Transition } from '@headlessui/react';
 import { ArrowRightLeft, ArrowRight, ArrowDown, EllipsisVertical, Plus, ChevronDown, ChevronRight } from 'lucide-react';
 import videologo from '../assets/videologo.png';
 import Dropdown from './Dropdown';
+import { useSelector } from 'react-redux';
 const Accordion = () => {
     const [openIndex, setOpenIndex] = useState(null);
     const [changeCurriculum, setChangeCurriculum] = useState(false);
-
+    const {currentCourse} = useSelector(state => state.course);
     const handleToggle = (index) => {
         setOpenIndex(openIndex === index ? null : index);
     };
@@ -25,12 +26,11 @@ const Accordion = () => {
             days: ['Day 1: Untitled', 'Day 2: Untitled', 'Day 3: Untitled', 'Day 4: Untitled', 'Day 5: Untitled'],
         },
 
-
     ];
 
     return (
         <div className="p-3 mb-2 bg-white rounded-lg">
-            {accordionData.map((module, index) => (
+            {currentCourse?.sections && currentCourse?.sections?.map((module, index) => (
                 <div key={index} className={`${index != accordionData.length - 1 ? 'border-b' : ''}`}>
                     <div className='flex justify-between mx- items-center p-2'>
                         <div className='w-full flex pb-2 mt-1'>
@@ -40,7 +40,7 @@ const Accordion = () => {
                                 :
                                 <ChevronRight size={20} className='text-slate-400 cursor-pointer' onClick={() => handleToggle(index)} />}
                             <span className='font-poppins text-sm font-semibold mx-3'>
-                                {module.title}
+                                Module {module?.orderNumber + ': ' + module?.name}
                             </span>
                         </div>
                         <div>
@@ -57,11 +57,11 @@ const Accordion = () => {
                         leaveTo="opacity-0"
                     >
                         <div className="pb-3 pl-1 pr-2 border-t pt-2">
-                            {module.days.map((day, i) => (
+                            {module?.sectionItems?.map((item, i) => (
                                 <div key={i} className="flex justify-between py-2 px- items-center">
                                     <div className='flex items-center mb-1'>
                                         <img src={videologo} alt="video" className='w-5 h-5 mr-2 rounded-md' />
-                                        <span className='font-poppins text-sm'>{day}</span>
+                                        <span className='font-poppins text-sm'>{`Day ${item?.orderNumber}: ${item?.title}`}</span>
                                     </div>
                                     <div className='group flex'>
                                         <div className=' flex items-center invisible group-hover:visible cursor-pointer'>
@@ -85,3 +85,5 @@ const Accordion = () => {
 };
 
 export default Accordion;
+
+

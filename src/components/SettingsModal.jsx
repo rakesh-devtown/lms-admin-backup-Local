@@ -1,21 +1,69 @@
-import { useState, useRef } from 'react';
-import { X, Trash } from 'lucide-react';
-import { Tabs, ConfigProvider } from 'antd';
+import { useState, useRef, useEffect } from 'react';
+import { X, Trash, Edit } from 'lucide-react';
+import { Tabs, ConfigProvider, notification } from 'antd';
 import bg from '../assets/bg.png';
-const SettingsModal = ({ isVisible, onClose }) => {
+import { useDispatch } from 'react-redux';
+import { uploadFile } from '../store/slice/uploadReducer';
+import { updateCourse } from '../store/slice/courseReducer';
+const SettingsModal = ({ isVisible, onClose,data }) => {
     const [activeTab, setActiveTab] = useState("1")
     const fileInputRef = useRef(null);
     const [selectedFile, setSelectedFile] = useState(null);
+
+    const dispatch = useDispatch();
+
+    const [formData,setFormData] = useState(data);
 
     const handleButtonClick = () => {
         fileInputRef.current.click();
     };
 
-    const handleFileChange = (event) => {
-        setSelectedFile(event.target.files[0]);
+    const handleFileChange = async(event) => {
+        try{
+            const file = event.target.files[0];
+            if(file.type !== 'image/png' && file.type !== 'image/jpeg' && file.type !== 'image/svg+xml'){
+                return notification.error({message:'Error',description:'Invalid file format. Please upload a valid image file'});
+            }
+            const url = await dispatch(uploadFile(file,'image','/course/thumbnail'));
+            if(url)
+            {
+                setSelectedFile(file);
+                setFormData({...formData, bannerImg:url});
+            }
+        }catch(err){
+            console.log(err);
+        }
+    }
+
+    const handleSubmit=async()=>{
+        try{
+            setFormData({
+                ...formData,
+                name:formData.name.trim(),
+                description:formData.description.trim(),
+            })
+            if(!formData?.id)
+            {
+                return;
+            }
+            if(!formData.name || !formData.description || !formData.bannerImg){
+                return notification.error({message:'Error',description:'All fields are required'});
+            }
+            const res = await dispatch(updateCourse(formData,formData.id));
+            if(res){
+                setSelectedFile(null);
+                onClose();
+            }
+        }catch(error){
+            console.log(error);
+        }
     }
 
     if (!isVisible) return null;
+
+    useEffect(()=>{
+        setFormData(data);
+    },[data])
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
@@ -46,18 +94,20 @@ const SettingsModal = ({ isVisible, onClose }) => {
                                 tabBarStyle={{ fontFamily: "Poppins", marginRight: 1, marginBottom: 0 }}>
                                 <Tabs.TabPane tab={
                                     <div className="flex items-center mx-1">
-                                        <p className="text-md">Full Stack Web Development</p>
+                                        <p className="text-md">{formData?.name}</p>
                                     </div>
                                 } key="1">
                                 </Tabs.TabPane>
                             </Tabs>
                         </ConfigProvider>
                     </div>
-                    <div className="flex flex-col space-y-1 border-b-2 pb-24">
+                    <div className="flex flex-col space-y-1 border-b-2 pb-10">
                         <span className="text-sm text-gray-700 font-poppins mt-4 mx-4">
-                            Course Name <span className="text-blue-500">(Optional)</span>
+                            Course Name <span className="text-blue-500">*</span>
                         </span>
                         <input
+                            value={formData?.name}
+                            onChange={(e)=>setFormData({...formData,name:e.target.value})}
                             type="text"
                             placeholder="Full Stack Web Development"
                             className="border-2 rounded-md p-2 m-3 text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:font-poppins text-sm"
@@ -66,20 +116,34 @@ const SettingsModal = ({ isVisible, onClose }) => {
                             Description <span className="text-blue-500">*</span>
                         </span>
                         <textarea
+                            value={formData?.description}
+                            onChange={(e)=>setFormData({...formData,description:e.target.value})}
                             type="text"
                             placeholder="Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged."
                             rows={4}
-                            className="border-2 rounded-md p-2 m-3 text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 placeholder:font-poppins text-sm"
+                            className="border-2 resize-none rounded-md p-2 m-3 text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 placeholder:font-poppins text-sm"
                         />
                         <span className="text-sm text-gray-700 font-poppins pt-4 mx-4">
                             Upload Thumbnail <span className='text-blue-500'>*</span>
                         </span>
                         <div className="mx-4 h-28 flex justify-between items-center bg-gray-50 border border-dashed border-blue-500 rounded-lg">
                             <div className='flex items-center'>
-                                <img src={bg} className='w-[10vh] h-[10vh] mx-5 object-cover rounded-md' />
-                                <span className='font-poppins text-sm text-[#0859DE]'>9876756.png</span>
+                                <img src={formData?.bannerImg} className='w-[10vh] h-[10vh] mx-5 object-cover rounded-md' />
+                                <span className='font-poppins text-sm text-[#0859DE]'>{String(formData?.bannerImg)?.substring(String(formData?.bannerImg).length - 36)}</span>
                             </div>
-                            <Trash className='text-slate-400 cursor-pointer mx-5' size={18} />
+                            <button
+                                    className="font-poppins text-blue-500 rounded-md transition border-0 px-5"
+                                    onClick={handleButtonClick}
+                                    >
+                                        <Edit size={20} />
+                                </button>
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    className="hidden"
+                                    onChange={handleFileChange}
+                                />
+
                             {/* {selectedFile ? <span className='font-poppins text-sm text-gray-700'>{selectedFile?.name}</span> :
                                     <>
                                         <p className="text-sm text-gray-500 font-poppins">Drag Your File(s) Here</p>
@@ -102,7 +166,7 @@ const SettingsModal = ({ isVisible, onClose }) => {
 
                     </div>
                     <div className='flex justify-end mt-1.5 mx-3'>
-                        <button className="bg-[#0859DE] text-white font-poppins text-sm rounded-md p-2 px-4 m-2 hover:bg-blue-600 transition">
+                        <button onClick={handleSubmit} className="bg-[#0859DE] text-white font-poppins text-sm rounded-md p-2 px-4 m-2 hover:bg-blue-600 transition">
                             Update Course
                         </button>
                     </div>

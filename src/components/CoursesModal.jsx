@@ -108,7 +108,7 @@ const CoursesModal = ({ isVisible, onClose }) => {
                             </Tabs>
                         </ConfigProvider>
                     </div>
-                    <div className="flex flex-col space-y-1 border-b-2 pb-24">
+                    <div className="flex flex-col space-y-1 border-b-2 pb-8">
                         <span className="text-sm text-gray-700 font-poppins mt-4 mx-4">
                             Course Name <span className="text-blue-500">*</span>
                         </span>
@@ -126,7 +126,7 @@ const CoursesModal = ({ isVisible, onClose }) => {
                             type="text"
                             placeholder="Add Course Description"
                             rows={4}
-                            className="border-2 rounded-md p-2 m-3 text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:font-poppins text-sm"
+                            className="border-2 resize-none rounded-md p-2 m-3 text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:font-poppins text-sm"
                         />
                         <span className="text-sm text-gray-700 font-poppins pt-4 mx-4">
                             Upload Thumbnail <span className='text-blue-500'>*</span>

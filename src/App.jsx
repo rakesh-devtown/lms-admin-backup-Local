@@ -27,7 +27,7 @@ function App() {
         <Route path="home" element={<PrivateRoute />}>
           <Route path="courses" >
             <Route path="" element={<Courses />} />
-            <Route path="view" element={<View />} />
+            <Route path="view/:uuid" element={<View />} />
           </Route>
           <Route path="" element={<Dashboard />} />
           <Route path="students" element={<Students />} />

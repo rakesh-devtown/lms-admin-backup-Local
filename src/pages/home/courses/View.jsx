@@ -1,11 +1,19 @@
 import { useState, useEffect } from 'react';
 import { CircleHelp, Settings, Copy, ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Accordion from '../../../components/Accordion';
 import ModuleModal from '../../../components/ModuleModal';
+import { useDispatch, useSelector } from 'react-redux';
+import Spinner from '../../../components/Loader/Spinner';
+import { getCurriculumOfCourse } from '../../../store/slice/courseReducer';
 const View = () => {
     const navigate = useNavigate();
     const [isModalVisible, setIsModalVisible] = useState(false);
+
+    const {loading, currentCourse} = useSelector(state => state.course);
+    const dispatch = useDispatch();
+    const params = useParams();
+    const {uuid} = params;
 
     const handleClick = () => {
         setIsModalVisible(true);
@@ -15,21 +23,11 @@ const View = () => {
         setIsModalVisible(false);
     }
 
+    useEffect(()=>{
+        dispatch(getCurriculumOfCourse(uuid));
+    },[uuid])
+
     const data = [
-        {
-            "title": "Full Stack Web Development",
-            "code": "CCJ202403",
-            "numberOfStudents": "55",
-            "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxe6IR3EKgALq0lEUvpW3GmPH8rpAv1cK0_w&s"
-        }
-        ,
-        {
-            "title": "Full Stack Web Development",
-            "code": "CCJ202403",
-            "numberOfStudents": "55",
-            "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxe6IR3EKgALq0lEUvpW3GmPH8rpAv1cK0_w&s"
-        }
-        ,
         {
             "title": "Full Stack Web Development",
             "code": "CCJ202403",
@@ -47,14 +45,15 @@ const View = () => {
 
     ]
     return (
-        <div className="flex">
-            <div className="flex-grow">
-                <div className="flex-row ml-4">
+        <div className="flex h-full">
+            {loading && <Spinner/>}
+            <div className="flex-grow h-full">
+                <div className="flex-row ml-4 h-full">
                     <div className=" bg-white mb-3">
                         <div className='flex p-5 justify-between'>
                             <div className='flex items-center'>
-                                <ArrowLeft size={20} className='mr-4' />
-                                <p className='font-poppins text-lg font-semibold'>Full Stack Web Development - FS2024031</p>
+                                <button onClick={()=>{navigate(-1)}} ><ArrowLeft size={20} className='mr-4' /></button>
+                                <p className='font-poppins text-lg font-semibold'>{currentCourse?.name}</p>
                             </div>
                             <div className=''>
                                 <button className='bg-white text-black px-4 py-1 rounded-sm border-2 mr-2 font-poppins text-sm' onClick={handleClick} >Certificate</button>
@@ -79,9 +78,9 @@ const View = () => {
                         </div>
                     </div>
 
-                    <div className='bg-white mt-3 pt-0.5'>
+                    <div className='bg-white mt-3 pt-0.5 overflow-auto h-[65vh]'>
                         <div className='mx-4 my-2 bg-blue-200 justify-between flex p-5'>
-                            <span className='font-poppins mx-4 text-xs font-semibold'>Description</span>
+                            <span className='font-poppins mx-4 text-xs font-semibold'>{currentCourse?.description}</span>
                             <span className='font-poppins text-xs font-semibold'>Action</span>
                         </div>
                         <div className='mx-4 border-2 rounded-lg mb-2'>
