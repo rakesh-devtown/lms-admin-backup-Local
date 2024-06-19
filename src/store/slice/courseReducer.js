@@ -1,6 +1,6 @@
 import { createSlice, current } from "@reduxjs/toolkit";
 import { notification } from "antd";
-import { serviceGet, servicePost } from "../../utils/api";
+import { serviceDelete, serviceGet, servicePost } from "../../utils/api";
 
 const courseSlice = createSlice({
     initialState:{
@@ -118,6 +118,46 @@ export const updateCourse = (course,courseId) => async (dispatch) => {
     } catch (error) {
         notification.error({ message: 'Course Update Failed', description: error.message });
         //dispatch(setLoading(false));
+    }finally{
+        dispatch(setLoading(false));
+    }
+}
+
+export const createNewModuleOfCourse= (module) => async (dispatch) => {
+    try {
+        dispatch(setLoading(true));
+        if(!module?.courseId) return false;
+        const res = await servicePost(`admin/admin/v1/curriculum/section`, module);
+        const { message, success,data } = res;
+        if (success) {
+            notification.success({ message: 'Module Created', description: message });
+            await dispatch(getCurriculumOfCourse(module.courseId));
+            return true;
+        } else {
+            notification.error({ message: 'Module Creation Failed', description: message });
+        }
+    }catch (error) {
+        notification.error({ message: 'Module Creation Failed', description: error.message });
+    }finally{
+        dispatch(setLoading(false));
+    }
+}
+
+export const deleteSection = (sectionId,courseId) => async (dispatch) => {
+    try {
+        dispatch(setLoading(true));
+        if(!sectionId) return false;
+        const res = await serviceDelete(`admin/admin/v1/curriculum/section?id=${sectionId}`);
+        const { message, success } = res;
+        if (success) {
+            notification.success({ message: 'Section Deleted', description: message });
+            await dispatch(getCurriculumOfCourse(courseId));
+            return true;
+        } else {
+            notification.error({ message: 'Section Deletion Failed', description: message });
+        }
+    }catch (error) {
+        notification.error({ message: 'Section Deletion Failed', description: error.message });
     }finally{
         dispatch(setLoading(false));
     }

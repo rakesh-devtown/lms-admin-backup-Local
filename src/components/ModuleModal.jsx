@@ -1,12 +1,35 @@
 import { useState, useRef } from 'react';
 import { X, Trash2 } from 'lucide-react';
 import { Tabs, ConfigProvider } from 'antd';
+import { useParams } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { createNewModuleOfCourse } from '../store/slice/courseReducer';
 const ModuleModal = ({ isVisible, onClose }) => {
     const [activeTab, setActiveTab] = useState("1")
     const fileInputRef = useRef(null);
     const [selectedFile, setSelectedFile] = useState(null);
     const [moduleDescription, setModuleDescription] = useState("");
     const [numberOfLectures, setNumberOfLectures] = useState(1);
+    const dispatch = useDispatch();
+    const params = useParams();
+    const { uuid } = params;
+
+    const [formData,setFormData] = useState({
+        courseId: uuid,
+        description:"",
+        name:"",
+        subSection:false,
+        subSectionName:'',
+        numberOfSectionItems:0
+    })
+
+    const handleTextOFSubSectionName = (e) => {
+        if(e.target.value.length === 0){
+            setFormData({...formData,subSection:false,subSectionName:e.target.value})
+        }else{
+            setFormData({...formData,subSection:true,subSectionName:e.target.value})
+        }
+    }
 
     const handleButtonClick = () => {
         fileInputRef.current.click();
@@ -23,6 +46,24 @@ const ModuleModal = ({ isVisible, onClose }) => {
         }
     };
 
+    const handleSubmit = async() => {
+        try{
+            const res= await dispatch(createNewModuleOfCourse(formData))
+            if(res){
+                setFormData({
+                    ...formData,
+                    name:'',
+                    subSectionName:'',
+                    numberOfSectionItems:1,
+                    subSection:false
+                })
+                onClose();
+            }
+        }catch{
+            console.log("error")
+        }
+    }
+
     if (!isVisible) return null;
 
     return (
@@ -38,23 +79,18 @@ const ModuleModal = ({ isVisible, onClose }) => {
                     <div className='border-b-2 p-4 pb-3 text-slate-700 font-poppins'>
                         <span>Add Course Name</span>
                     </div>
-                    <div className="flex flex-col space-y-2 border-b-2 pb-20">
+                    <div className="flex flex-col space-y-2 border-b-2 pb-8">
                         <span className="text-sm text-gray-700 font-poppins mt-4 mx-4">
                             Module Course Name
                         </span>
                         <div className='mx-3 font-poppins text-sm'>
-                            <select
+                            <input
                                 id="numberOfLectures"
-                                value={numberOfLectures}
-                                onChange={(e) => setNumberOfLectures(e.target.value)}
+                                value={formData.name}
+                                type='text'
+                                onChange={(e) => setFormData({...formData,name:e.target.value})}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-300"
-                            >
-                                <option value={1}>HTML & CSS</option>
-                                <option value={2}>HTML & CSS</option>
-                                <option value={3}>HTML & CSS</option>
-                                <option value={4}>HTML & CSS</option>
-                                <option value={5}>HTML & CSS</option>
-                            </select>
+                            />
                         </div>
                         <div className='pt-4 flex justify-between items-center'>
                             <span className="text-sm text-gray-700 font-poppins pt- mx-4">
@@ -66,10 +102,10 @@ const ModuleModal = ({ isVisible, onClose }) => {
                         </div>
                         <input
                             type="text"
+                            value={formData.subSectionName}
                             placeholder="Add your module name"
                             className="border-2 rounded-md p-2 m-3 text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:font-poppins text-sm"
-                            value={moduleDescription}
-                            onChange={handleDescriptionChange}
+                            onChange={handleTextOFSubSectionName}
                         />
                         <span className="text-sm text-gray-700 font-poppins pt-4 mx-4">
                             Number of Lectures
@@ -77,8 +113,8 @@ const ModuleModal = ({ isVisible, onClose }) => {
                         <div className='font-poppins text-sm px-3'>
                             <select
                                 id="numberOfLectures"
-                                value={numberOfLectures}
-                                onChange={(e) => setNumberOfLectures(e.target.value)}
+                                value={formData.numberOfSectionItems}
+                                onChange={(e) => setFormData({...formData,numberOfSectionItems:e.target.value})}
                                 className="w-1/4 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-300"
                             >
                                 <option value={1}>1</option>
@@ -96,7 +132,7 @@ const ModuleModal = ({ isVisible, onClose }) => {
                             <Trash2 size={18} className='text-blue-900 mr-2' />
                             <span className=''>Delete</span>
                         </button>
-                        <button className="bg-[#0859DE] text-white font-poppins text-sm rounded-md p-2 px-4 m-2 hover:bg-blue-600 transition">
+                        <button onClick={handleSubmit} className="bg-[#0859DE] text-white font-poppins text-sm rounded-md p-2 px-4 m-2 hover:bg-blue-600 transition">
                             Create Module
                         </button>
                     </div>

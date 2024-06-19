@@ -1,11 +1,26 @@
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react'
 import { EllipsisVertical, ChevronUp, ChevronDown } from 'lucide-react'
+import { useDispatch } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { deleteSection } from '../store/slice/courseReducer';
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
-export default function Dropdown() {
+export default function Dropdown({sectionId}) {
+    const params = useParams();
+    const {uuid} = params;
+    const dispatch = useDispatch();
+
+    const handleDelete = async() => {
+        try{
+            const res = await dispatch(deleteSection(sectionId,uuid));
+        }catch(error){
+            console.log("error")
+        }
+    }
+
     return (
         <Menu as="div" className="relative inline-block text-left font-poppins">
             <div>
@@ -39,14 +54,14 @@ export default function Dropdown() {
                         </MenuItem>
                         <MenuItem>
                             {({ focus }) => (
-                                <a
-                                    href="#"
+                                <button
+                                    onClick={handleDelete}
                                     className={classNames(
                                         focus ? 'bg-gray-100 text-red-400' : 'text-red-400',
                                         'block px-4 py-2 text-sm',
                                     )}
                                 >
-                                    Delete Module                               </a>
+                                    Delete Module                               </button>
                             )}
                         </MenuItem>
                         {/* <MenuItem>

@@ -40,11 +40,11 @@ const Accordion = () => {
                                 :
                                 <ChevronRight size={20} className='text-slate-400 cursor-pointer' onClick={() => handleToggle(index)} />}
                             <span className='font-poppins text-sm font-semibold mx-3'>
-                                Module {module?.orderNumber + ': ' + module?.name}
+                                Module {(index+1) + ': ' + module?.name}
                             </span>
                         </div>
                         <div>
-                            <Dropdown />
+                            <Dropdown sectionId={module?.id}/>
                         </div>
                     </div>
                     <Transition
