@@ -5,7 +5,12 @@ import CoursesModal from '../../components/CoursesModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCourses } from '../../store/slice/courseReducer';
 import Spinner from '../../components/Loader/Spinner';
+import CoursesModal from '../../../components/CoursesModal';
+import SettingsModal from '../../../components/SettingsModal';
+import { useNavigate } from 'react-router-dom';
+
 const Courses = () => {
+    const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState("1")
     const [isModalVisible, setIsModalVisible] = useState(false);
     const dispatch = useDispatch();
@@ -32,14 +37,23 @@ const Courses = () => {
           console.log(err);
         });
     }
+    const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
 
     const handleClick = () => {
         setIsModalVisible(true);
-    };
+    }
 
     const handleCloseModal = () => {
         setIsModalVisible(false);
-    };
+    }
+
+    const handleSettingsClick = () => {
+        setIsSettingsModalVisible(true);
+    }
+
+    const handleCloseSettingsModal = () => {
+        setIsSettingsModalVisible(false);
+    }
 
     const handleClear = () => {
         setSearch('');
@@ -113,7 +127,7 @@ const Courses = () => {
                         </form>
                     </div>
                     <div className='flex flex-wrap w-full h-[60vh] overflow-auto gap-2'>
-                        {courses && courses.map((item, index) => {
+                        {(courses && courses?.length>0) ? courses.map((item, index) => {
                             return (
                                 <div key={index} className='w-[30%] mt-4 h-[25vh] mr-6 relative bg-white rounded-md mb-1 '>
                                     <div className='flex p-5 pb-3 border-b-2 border-[#59963626]'>
@@ -132,16 +146,23 @@ const Courses = () => {
                                         </div>
                                     </div>
                                     <div className='bg-[#599636] pb-3  pt-3 flex rounded-b-md divide-x-2 items-center text-center'>
-                                        <Settings className='text-white w-1/2 cursor-pointer' size={20} />
-                                        <p className='text-white w-1/2 font-poppins text-sm cursor-pointer'>View</p>
+                                        <Settings className='text-white w-1/2 cursor-pointer' size={20} onClick={handleSettingsClick} />
+                                        <p className='text-white w-1/2 font-poppins text-sm cursor-pointer' onClick={() => {
+                                            navigate(`/admin/home/courses/view`)
+                                        }}>View</p>
                                     </div>
                                 </div>
                             )
-                        })}
+                        }) :
+                            <div className='flex justify-center items-center w-full h-full mt-48'>
+                                <p className='font-poppins text-md font-md text-gray-400'>No Course</p>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
             <CoursesModal isVisible={isModalVisible} onClose={handleCloseModal} />
+            <SettingsModal isVisible={isSettingsModalVisible} onClose={handleCloseSettingsModal} />
         </div >
     )
 }

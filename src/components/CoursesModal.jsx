@@ -101,14 +101,14 @@ const CoursesModal = ({ isVisible, onClose }) => {
                                 tabBarStyle={{ fontFamily: "Poppins", marginRight: 1, marginBottom: 0 }}>
                                 <Tabs.TabPane tab={
                                     <div className="flex items-center mx-1">
-                                        <p className="text-md">Courses</p>
+                                        <p className="text-md">Video Courses</p>
                                     </div>
                                 } key="1">
                                 </Tabs.TabPane>
                             </Tabs>
                         </ConfigProvider>
                     </div>
-                    <div className="flex flex-col space-y-1 border-b-2 pb-8">
+                    <div className="flex flex-col space-y-1 border-b-2 pb-24">
                         <span className="text-sm text-gray-700 font-poppins mt-4 mx-4">
                             Course Name <span className="text-blue-500">*</span>
                         </span>
@@ -118,7 +118,7 @@ const CoursesModal = ({ isVisible, onClose }) => {
                             placeholder="Course name"
                             className="border-2 rounded-md p-2 m-3 text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:font-poppins text-sm"
                         />
-                        <span className="text-sm text-gray-700 font-poppins pt-2.5 mx-4">
+                        <span className="text-sm text-gray-700 font-poppins pt-4 mx-4">
                             Description <span className="text-blue-500">*</span>
                         </span>
                         <textarea
@@ -128,7 +128,7 @@ const CoursesModal = ({ isVisible, onClose }) => {
                             rows={4}
                             className="border-2 rounded-md p-2 m-3 text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:font-poppins text-sm"
                         />
-                        <span className="text-sm text-gray-700 font-poppins pt-2.5 mx-4">
+                        <span className="text-sm text-gray-700 font-poppins pt-4 mx-4">
                             Upload Thumbnail <span className='text-blue-500'>*</span>
                         </span>
                         <div className="mx-4 h-28 flex items-center justify-center bg-gray-50 border border-dashed border-blue-500 rounded-lg">

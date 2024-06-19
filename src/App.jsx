@@ -1,16 +1,19 @@
 import Login from './pages/auth/Login'
 import { Route, Routes, Navigate } from "react-router-dom";
-import Courses from './pages/home/Courses';
+import Courses from './pages/home/courses/Courses';
 import PrivateRoute from './components/Private';
 import Dashboard from './pages/home/Dashboard';
-import Certificate from './pages/home/Certificate';
-import Feedback from './pages/home/Feedback';
-import MentorProfile from './pages/home/MentorProfile';
-import Mentor from './pages/home/Mentor';
+import Students from './pages/home/Students';
+import Mentors from './pages/home/Mentors';
+import Doubts from './pages/home/Doubts';
+import Requests from './pages/home/Requests';
+import Announcement from './pages/home/Announcement';
+import Discussion from './pages/home/Discussion';
+import View from './pages/home/courses/View';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { verifyToken } from './store/slice/authReducer';
-import Spinner from './components/Loader/Spinner';
+
 function App() {
   const dispatch = useDispatch();
   const {loading} = useSelector(state => state.auth);
@@ -22,12 +25,17 @@ function App() {
     <Routes>
       <Route path="/admin">
         <Route path="home" element={<PrivateRoute />}>
-          <Route path="courses" element={<Courses />} />
+          <Route path="courses" >
+            <Route path="" element={<Courses />} />
+            <Route path="view" element={<View />} />
+          </Route>
           <Route path="" element={<Dashboard />} />
-          <Route path="certificate" element={<Certificate />} />
-          <Route path="feedback" element={<Feedback />} />
-          <Route path="mentor_profile" element={<MentorProfile />} />
-          <Route path="mentor" element={<Mentor />} />
+          <Route path="students" element={<Students />} />
+          <Route path="mentors" element={<Mentors />} />
+          <Route path="doubts" element={<Doubts />} />
+          <Route path="requests" element={<Requests />} />
+          <Route path="discussion" element={<Discussion />} />
+          <Route path="announcement" element={<Announcement />} />
         </Route>
         <Route path="login" element={<Login />} />
       </Route>
