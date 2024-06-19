@@ -59,10 +59,12 @@ export const sendOTPAuth = (email) => async (dispatch) => {
 
     if (success) {
       notification.success({ message: 'OTP Sent Successfully' });
+      return true;
     } else {
       notification.error({ message: 'Login Error', description: message });
+      return false;
     }
-    return true;
+
   } catch (error) {
     deleteHeader('auth');
     notification.error({ message: 'Login Error', description: error.message });

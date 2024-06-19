@@ -47,10 +47,10 @@ export const createCourse = (course) => async (dispatch) => {
     }
 }
 
-export const getCourses = (page,limit) => async (dispatch) => {
+export const getCourses = (page,limit,search) => async (dispatch) => {
     try {
         dispatch(setLoading(true));
-        const res = await serviceGet(`admin/admin/v1/course/course?all=true&page=${page}&limit=${limit}`);
+        const res = await serviceGet(`admin/admin/v1/course?all=true&offset=${page}&limit=${limit}&search=${search || ''}`);
         const { message, success,data } = res;
         if (success) {
             dispatch(setCourses(data));
