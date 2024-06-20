@@ -4,6 +4,7 @@ import { Tabs, ConfigProvider } from 'antd';
 import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { createNewModuleOfCourse } from '../store/slice/courseReducer';
+import RichTextEditor from './RichTextEditor';
 const ModuleModal = ({ isVisible, onClose }) => {
     const [activeTab, setActiveTab] = useState("1")
     const fileInputRef = useRef(null);
