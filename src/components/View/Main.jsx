@@ -64,20 +64,30 @@ const Main = () => {
                         <span className='font-poppins text-orange-700'>Frontend Web development</span>
                     </div>
                     <Accordion accordionData={accordionData} />
+                    <div className='mx-4 mb-10'>
+                        <button className='bg-[#0859DE] w-full rounded-md p-1.5 mb-3'
+                            onClick={handleClick}
+                        >
+                            <span className='font-poppins text-sm text-white'>
+                                + Add Module
+                            </span>
+                        </button>
+                    </div>
                     <div className='whitespace-nowrap inline rounded-full bg-purple-200 px-2 text-xs py-1 mb-4'>
                         <span className='font-poppins text-purple-700'>Backend Web development</span>
                     </div>
                     <Accordion accordionData={accordionData} />
+                    <div className='mx-4 mb-10'>
+                        <button className='bg-[#0859DE] w-full rounded-md p-1.5 mb-3'
+                            onClick={handleClick}
+                        >
+                            <span className='font-poppins text-sm text-white'>
+                                + Add Module
+                            </span>
+                        </button>
+                    </div>
                 </div>
-                <div className='mx-4 mb-10'>
-                    <button className='bg-[#0859DE] w-full rounded-md p-1.5 mb-3'
-                        onClick={handleClick}
-                    >
-                        <span className='font-poppins text-sm text-white'>
-                            + Add Module
-                        </span>
-                    </button>
-                </div>
+
             </div>
             <ModuleModal isVisible={isModalVisible} onClose={handleCloseModal} />
         </div>
