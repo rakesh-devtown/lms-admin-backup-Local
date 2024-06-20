@@ -6,7 +6,7 @@ import { Dropdown } from 'antd';
 import ModuleDropdown from './ModuleDropdown';
 import EditLectureModal from './EditLectureModal';
 
-const Accordion = ({accordionData}) => {
+const Accordion = ({ accordionData }) => {
     const [openIndex, setOpenIndex] = useState(null);
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -134,6 +134,7 @@ const Accordion = ({accordionData}) => {
 
                         </div>
                     </Transition>
+
                 </div>
             ))}
             <EditLectureModal isVisible={isModalVisible} onClose={handleCloseModal} />
