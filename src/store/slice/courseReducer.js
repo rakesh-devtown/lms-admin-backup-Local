@@ -31,8 +31,13 @@ const courseSlice = createSlice({
                 sections?.sort((a,b)=>a.orderNumber-b.orderNumber);
                 sections.forEach(section=>{
                     section?.sectionItems?.sort((a,b)=>a.orderNumber-b.orderNumber);
+                    section?.subSections?.sort((a,b)=>a.orderNumber-b.orderNumber);
+                    section?.subSections?.forEach(subSection=>{
+                        subSection?.sectionItems?.sort((a,b)=>a.orderNumber-b.orderNumber);
+                    })
                 })
             }
+            //console.log(sections)
             state.currentCourse = {...course, sections:sections || []};
         }
     }

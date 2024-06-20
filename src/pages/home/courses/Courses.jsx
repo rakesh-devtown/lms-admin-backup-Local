@@ -157,7 +157,7 @@ const Courses = () => {
                                     </div>
                                     <div className='m-3 mr-4 mt-2 mb-3'>
                                         <div className='whitespace-nowrap inline items-center px-2 bg-[#59963626] rounded-xl'>
-                                            <span className='text-[#599636] font-poppins text-xs'>{item.numberOfStudents} Students On Board</span>
+                                            <span className='text-[#599636] font-poppins text-xs'>{item.numberOfStudents} Students On Board {item?.enrollmentCount}</span>
                                         </div>
                                     </div>
                                     <div className='bg-[#599636] pb-3  pt-3 flex rounded-b-md divide-x-2 items-center text-center'>

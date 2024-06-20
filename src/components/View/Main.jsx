@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react';
 import { CircleHelp, ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Accordion from '../Accordion';
 import ModuleModal from '../ModuleModal';
+import { useDispatch, useSelector } from 'react-redux';
+import { getCurriculumOfCourse } from '../../store/slice/courseReducer';
 const Main = () => {
     const navigate = useNavigate();
     const [isModalVisible, setIsModalVisible] = useState(false);
-
+    const params = useParams();
+    const { uuid } = params;
+    const dispatch = useDispatch();
+    const {currentCourse:{sections}} = useSelector(state => state.course);
 
     const handleClick = () => {
         setIsModalVisible(true);
@@ -15,6 +20,9 @@ const Main = () => {
     const handleCloseModal = () => {
         setIsModalVisible(false);
     }
+
+    //console.log(sections)
+
     const accordionData = [
         {
             title: 'Module 1: Untitled',
@@ -38,8 +46,12 @@ const Main = () => {
         },
     ];
 
+    useEffect(()=>{
+        dispatch(getCurriculumOfCourse(uuid));
+    },[uuid])
+
     return (
-        <div>
+        <div className='h-full'>
             <div className='bg-white p-5 mt-3'>
                 <div className='flex justify-end items-center'>
                     <p className='font-poppins text-sm'>Select Week/Topic</p>
@@ -54,7 +66,7 @@ const Main = () => {
                 </div>
             </div>
 
-            <div className='bg-white mt-3 pt-0.5'>
+            <div className='bg-white mt-3 pt-0.5 h-[65vh] overflow-auto'>
                 <div className='mx-4 my-3 bg-blue-200 justify-between flex p-5'>
                     <span className='font-poppins mx-4 text-xs font-semibold'>Description</span>
                     <span className='font-poppins text-xs font-semibold'>Action</span>
@@ -68,6 +80,15 @@ const Main = () => {
                         <span className='font-poppins text-purple-700'>Backend Web development</span>
                     </div>
                     <Accordion accordionData={accordionData} />
+
+                    {
+                        sections && sections.map((section,index) => (
+                            <div key={index} className='whitespace-nowrap inline rounded-full bg-purple-200 px-2 text-xs py-1 mb-4'>
+                                <span className='font-poppins text-purple-700'>{section.name}</span>
+                            </div>
+                        ))
+                    }
+
                 </div>
                 <div className='mx-4 mb-10'>
                     <button className='bg-[#0859DE] w-full rounded-md p-1.5 mb-3'
