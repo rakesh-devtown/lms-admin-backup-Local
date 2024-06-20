@@ -108,6 +108,7 @@ const Courses = () => {
                                 placeholder='Please enter'
                             />
                             <button className='bg-[#1890FF] text-white px-4 py-1.5 rounded-sm font-poppins text-sm border-2 mx-2'>Search</button>
+                            <button className='bg-white text-black px-4 py-1.5 rounded-sm font-poppins text-sm border-2'>Clear</button>
                         </div>
                     </div>
                     <div className='flex flex-wrap w-full'>

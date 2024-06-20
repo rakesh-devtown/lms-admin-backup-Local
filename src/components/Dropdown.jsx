@@ -5,8 +5,8 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
-export default function ModuleDropdown() {
-    return (            
+export default function Dropdown() {
+    return (
         <Menu as="div" className="relative inline-block text-left font-poppins">
             <div>
                 <MenuButton className="">
