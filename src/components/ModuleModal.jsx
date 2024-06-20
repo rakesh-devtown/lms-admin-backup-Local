@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { X, Trash2 } from 'lucide-react';
 import { Tabs, ConfigProvider } from 'antd';
+import RichTextEditor from './RichTextEditor';
 const ModuleModal = ({ isVisible, onClose }) => {
     const [activeTab, setActiveTab] = useState("1")
     const fileInputRef = useRef(null);
