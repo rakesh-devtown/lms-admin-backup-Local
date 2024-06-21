@@ -1,14 +1,26 @@
 import { useState, useEffect } from 'react';
-import { ConfigProvider, Tabs, Table, Tag, Space } from 'antd';
+import { ConfigProvider, Tabs, Table, Tag, Space, notification } from 'antd';
 import { ArrowDownToLine, CircleHelp } from 'lucide-react';
 import DeleteStudentModal from '../DeleteStudentModal';
+import Papa from 'papaparse';
+import Spinner from '../Loader/Spinner';
+import { useSelector } from 'react-redux';
 
 const Students = () => {
   const [activeTab, setActiveTab] = useState("1")
   const [searchText, setSearchText] = useState('')
   const [uploadedFile, setUploadedFile] = useState(null);
+  const [studentLoading, setStudentLoading] = useState(false)
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [students, setStudents] = useState([])
   const [deleteStudent,setDeleteStudent]=useState(false)
+  const {currentCourse} = useSelector(state => state.course); 
+  const [formData, setFormData] = useState({
+    firstName:'',
+    lastName:'',
+    email: "",
+    phone: "",
+  })
   const handleClick = () => {
     setIsModalVisible(true);
   }
@@ -21,12 +33,78 @@ const Students = () => {
     setDeleteStudent(true);
   }
 
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setUploadedFile(file);
-    }
+  const handleFileUpload = async(event) => {
+    try {
+      setStudentLoading(true)
+      setUploadedFile(null)
+      const file = event.target.files[0];
+      if(!file) return notification.error({message:'Error',description:'Please select a file'}) 
+      if(file.type!=='text/csv') return notification.error({message:'Error',description:'Please select a csv file'})
+      //console.log(file)
+      if (file) {
+        setUploadedFile(file);
+      }
+  
+      Papa.parse(file, {
+          skipEmptyLines: true,
+          complete: function ({ data }) {
+              const st = []
+              data.forEach(s => {
+                  const [firstName, lastName, email,phone] = s
+                  if (email.toLowerCase().trim().match(
+                      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) {
+                      
+                        let data={
+                          name:`${firstName.trim()} ${lastName.trim()}`,
+                          email:email.toLowerCase().trim(),
+                          phone:phone
+                        }
+                        st.push(data)
+                  } else {
+                      console.log('email doesnt match', email)
+                  }
+              })
+              setStudents(prev => [...st])
+          },
+          error: error => {
+              console.log(error)
+          },
+      })
+
+      return true
+
+  } catch (error) {
+      console.log(error)
+  }finally{
+      setStudentLoading(false)
+  }
   };
+
+
+  const handleAddBatchStudent=()=>{
+    console.log(currentCourse)
+    if(!formData.firstName || !formData.lastName || !formData.email || !formData.phone){
+        return notification.error({message:'Error',description:'All fields are required'})
+    }
+    const data={
+      name:`${formData.firstName.trim()} ${formData.lastName.trim()}`,
+      email:formData.email,
+      phone:formData.phone
+    }
+
+    if(data.name.trim().length<=3){
+      return notification.error({message:'Error',description:'Invalid name'})
+    }
+    setStudents([data])
+  }
+
+  const addStudentsVisCSV=async()=>{
+    try{
+      if(students.length===0) return notification.error({message:'Error',description:'No student to add'})
+    }catch(err){
+      console.log(err)
+    }
+  }
 
 
   const columns = [
@@ -67,7 +145,7 @@ const Students = () => {
           String(record?.farmDetails?.address).toLowerCase().includes(value.toLowerCase())
       },
       render: (_, record) => (
-        <div className="flex items-center w-full">
+        <div className="flex items-center w-full h-full overflow-auto">
           <label className="inline-flex items-center cursor-pointer">
             <input type="checkbox" value="" className="sr-only peer" />
 
@@ -133,6 +211,11 @@ const Students = () => {
       tags: ['cool', 'teacher'],
     },
   ];
+
+
+
+
+
   return (
     <div className="">
       <div className='bg-white'>
@@ -174,41 +257,50 @@ const Students = () => {
       </div> */}
 
       {activeTab === '1' &&
-        <div className='bg-white mt-3'>
+        <div className='bg-white mt-3 h-[72vh] overflow-auto'>
+          {studentLoading && <Spinner/>}
           <div className='pt-5'>
             <span className='font-poppins mx-7 pt-4 font-semibold'>Add Student</span>
             <div className='flex mx-9 mt-4'>
               <div className='flex flex-col w-1/2'>
                 <span className='font-poppins text-sm'>Student First Name<span className='text-blue-500'>*</span></span>
                 <input
+                  value={formData.firstName}
+                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                   type="text"
-                  placeholder="Your name"
+                  placeholder="first name"
                   className="border-2 rounded-md p-2.5 mt-1 mr-5 text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:font-poppins text-sm"
                 />
                 <span className='font-poppins text-sm mt-4'>Student Last Name<span className='text-blue-500'>*</span></span>
                 <input
                   type="text"
-                  placeholder="Your name"
+                  value={formData.lastName}
+                  placeholder="last name"
+                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                   className="border-2 rounded-md p-2.5 mt-1 mr-5 text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:font-poppins text-sm"
                 />
               </div>
               <div className='flex flex-col w-1/2'>
                 <span className='font-poppins text-sm'>Student Email Address<span className='text-blue-500'>*</span></span>
                 <input
-                  type="text"
-                  placeholder="Your name"
+                  type="email"
+                  placeholder="Email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="border-2 rounded-md p-2.5 mt-1 mr-5 text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:font-poppins text-sm"
                 />
                 <span className='font-poppins text-sm mt-4'>Student Phone Number<span className='text-blue-500'>*</span></span>
                 <input
                   type="text"
-                  placeholder="Your name"
+                  placeholder="phone number"
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  value={formData.phone}
                   className="border-2 rounded-md p-2.5 mt-1 mr-5 text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:font-poppins text-sm"
                 />
               </div>
             </div>
             <div className='flex justify-end mx-14 mt-4'>
-              <button className='bg-[#1890FF] text-white px-14 py-1.5 rounded-md font-poppins text-sm border-2'>Add</button>
+              <button onClick={handleAddBatchStudent} className='bg-[#1890FF] text-white px-14 py-1.5 rounded-md font-poppins text-sm border-2'>Add</button>
             </div>
           </div>
           <div className="flex flex-col md:flex-row justify-between items-center p-8">
@@ -221,8 +313,10 @@ const Students = () => {
                   onChange={handleFileUpload}
                 />
                 <label htmlFor='fileUpload' className='flex w-[78vh] h-[14vh] flex-col items-center justify-center cursor-pointer'>
-                  {uploadedFile ? <div>
+                  {uploadedFile ? 
+                  <div>
                     <p className="text-base text-blue-500 font-poppins">{uploadedFile.name}</p>
+                    {<p className=' text-blue-700'>Correct Student Details : {students.length}</p>}
                   </div>
                     :
                     <>
@@ -237,31 +331,34 @@ const Students = () => {
 
 
               </div>
+            
             </div>
 
             <div className="border rounded-md w-[78vh] h-[25vh]">
               <table className="w-full divide-y divide-gray-200 font-poppins">
                 <thead className="bg-gray-50">
                   <tr className='divide-x border-b'>
-                    <th className="px-3 py-3 text-left text-xs font-medium text-black tracking-wider">First Name</th>
-                    <th className="px-3 py-3 text-left text-xs font-medium text-black tracking-wider">Last Name</th>
-                    <th className="px-3 py-3 text-left text-xs font-medium text-black tracking-wider">Email Address</th>
-                    <th className="px-3 py-3 text-left text-xs font-medium text-black tracking-wider">Phone Number</th>
+                    <th className="px-3 py-3 text-left text-xs font-medium text-black tracking-wider">firstName</th>
+                    <th className="px-3 py-3 text-left text-xs font-medium text-black tracking-wider">lastName</th>
+                    <th className="px-3 py-3 text-left text-xs font-medium text-black tracking-wider">email</th>
+                    <th className="px-3 py-3 text-left text-xs font-medium text-black tracking-wider">phone</th>
                   </tr>
                 </thead>
                 <tbody>
                 </tbody>
               </table>
               <div className="mt-12 px-48 text-center">
+                <a target='_blank' href={window.location.origin+'/src/assets/add_student_csv_format.csv'}>
                 <button className="bg-white border-[#0859DE] border-2 flex font-poppins items-center text-sm text-[#0859DE] py-2 px-4 rounded-lg">
                   <ArrowDownToLine size={16} className="mr-2" />
                   Download CSV Format
                 </button>
+                </a>
               </div>
             </div>
           </div>
           <div className='flex justify-end mx-14 pb-4'>
-            <button className='bg-[#1890FF] text-white px-14 py-1.5 rounded-md font-poppins text-sm border-2'>Add</button>
+            <button onClick={addStudentsVisCSV} className='bg-[#1890FF] text-white px-14 py-1.5 rounded-md font-poppins text-sm border-2'>Add</button>
           </div>
         </div>
       }

@@ -5,46 +5,35 @@ import Accordion from '../Accordion';
 import ModuleModal from '../ModuleModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCurriculumOfCourse } from '../../store/slice/courseReducer';
+import AccordionSecond from '../Acoordion/AccordionSecond';
 const Main = () => {
     const navigate = useNavigate();
-    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isModalVisible, setIsModalVisible] = useState({
+        visible: false,
+        subSection: true,
+        parentSectionId:''
+    });
     const params = useParams();
     const { uuid } = params;
     const dispatch = useDispatch();
-    const {currentCourse:{sections}} = useSelector(state => state.course);
+    const {currentCourse} = useSelector(state => state.course);
 
-    const handleClick = () => {
-        setIsModalVisible(true);
+    const handleClick = (subSection,parentSectionId) => {
+        //console.log(subSection,parentSectionId)
+        setIsModalVisible({
+            visible: true,
+            subSection: subSection,
+            parentSectionId:parentSectionId
+        });
     }
 
     const handleCloseModal = () => {
-        setIsModalVisible(false);
+        setIsModalVisible({
+            visible: false,
+            subSection: true,
+        });
     }
 
-    //console.log(sections)
-
-    const accordionData = [
-        {
-            title: 'Module 1: Untitled',
-            days: ['Day 1: Untitled', 'Day 2: Untitled', 'Day 3: Untitled', 'Day 4: Untitled', 'Day 5: Untitled'],
-        },
-        {
-            title: 'Module 2: Untitled',
-            days: ['Day 1: Untitled', 'Day 2: Untitled', 'Day 3: Untitled', 'Day 4: Untitled', 'Day 5: Untitled'],
-        },
-        {
-            title: 'Module 2: Untitled',
-            days: ['Day 1: Untitled', 'Day 2: Untitled', 'Day 3: Untitled', 'Day 4: Untitled', 'Day 5: Untitled'],
-        },
-        {
-            title: 'Module 2: Untitled',
-            days: ['Day 1: Untitled', 'Day 2: Untitled', 'Day 3: Untitled', 'Day 4: Untitled', 'Day 5: Untitled'],
-        },
-        {
-            title: 'Module 2: Untitled',
-            days: ['Day 1: Untitled', 'Day 2: Untitled', 'Day 3: Untitled', 'Day 4: Untitled', 'Day 5: Untitled'],
-        },
-    ];
 
     useEffect(()=>{
         dispatch(getCurriculumOfCourse(uuid));
@@ -68,40 +57,65 @@ const Main = () => {
 
             <div className='bg-white mt-3 pt-0.5 h-[65vh] overflow-auto'>
                 <div className='mx-4 my-3 bg-blue-200 justify-between flex p-5'>
-                    <span className='font-poppins mx-4 text-xs font-semibold'>Description</span>
+                    <span className='font-poppins mx-4 text-xs font-semibold'>{ currentCourse?.description}</span>
                     <span className='font-poppins text-xs font-semibold'>Action</span>
                 </div>
                 <div className='mx-4 rounded-lg pb-4'>
-                    <div className='whitespace-nowrap inline rounded-full bg-orange-200 px-2 text-xs py-1'>
-                        <span className='font-poppins text-orange-700'>Frontend Web development</span>
-                    </div>
-                    <Accordion accordionData={accordionData} />
-                    <div className='mx-4 mb-10'>
+
+                    { currentCourse &&
+                        currentCourse?.sections.map((section, index) => (
+                            <div key={index} className='mb-0'>
+                                {
+                                    section?.subsections?.length > 0 ? 
+                                    <div>
+                                        <div className='mt-4'>
+                                            <div className={` whitespace-nowrap inline rounded-full px-2 text-xs py-1 ${index%2 ? "bg-orange-200" : "bg-purple-200"}`}>
+                                                <span className={`font-poppins ${index%2 ? "text-orange-700" : "text-purple-700"}`}>{section.name}</span>
+                                            </div>
+                                        </div>
+                                        <Accordion accordionData={section.subsections} />
+                                        <div className='mb-2 flex justify-center items-center'>
+                                            <button className={`${index%2 ? "bg-orange-600" : "bg-purple-800"} rounded-md p-1.5 mb-3 w-[60%] `}
+                                                onClick={handleClick.bind(this, false,section.id)}
+                                            >
+                                                <span className='font-poppins text-sm text-white'>
+                                                    + Add Module
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    :
+                                    <AccordionSecond accordionData={section} index={index} />
+                                }
+                                {/* <Accordion accordionData={accordionData} />
+                                <div className='mx-4 mb-10'>
+                                    <button className='bg-[#0859DE] w-full rounded-md p-1.5 mb-3'
+                                        onClick={handleClick}
+                                    >
+                                        <span className='font-poppins text-sm text-white'>
+                                            + Add Module
+                                        </span>
+                                    </button>
+                                </div> */}
+                            </div>
+                        ))
+                    
+                    }
+
+                    <div className='mx-4 mb-10 my-4'>
                         <button className='bg-[#0859DE] w-full rounded-md p-1.5 mb-3'
-                            onClick={handleClick}
+                            onClick={handleClick.bind(this, true)}
                         >
                             <span className='font-poppins text-sm text-white'>
                                 + Add Module
                             </span>
                         </button>
                     </div>
-                    <div className='whitespace-nowrap inline rounded-full bg-purple-200 px-2 text-xs py-1 mb-4'>
-                        <span className='font-poppins text-purple-700'>Backend Web development</span>
-                    </div>
-                    <Accordion accordionData={accordionData} />
-                    <div className='mx-4 mb-10'>
-                        <button className='bg-[#0859DE] w-full rounded-md p-1.5 mb-3'
-                            onClick={handleClick}
-                        >
-                            <span className='font-poppins text-sm text-white'>
-                                + Add Module
-                            </span>
-                        </button>
-                    </div>
+
                 </div>
 
             </div>
-            <ModuleModal isVisible={isModalVisible} onClose={handleCloseModal} />
+            <ModuleModal parentSectionId={isModalVisible.parentSectionId} subSection={isModalVisible.subSection} isVisible={isModalVisible.visible} onClose={handleCloseModal} />
         </div>
     )
 }

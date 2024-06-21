@@ -6,7 +6,7 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
-export default function ModuleDropdown() {
+export default function ModuleDropdown({onClickDelete,data}) {
     const [isModalVisible, setIsModalVisible] = useState(false);
 
 
@@ -37,7 +37,7 @@ export default function ModuleDropdown() {
                     <div className="py-1">
                         <MenuItem>
                             {({ focus }) => (
-                                <span
+                                <button
                                     onClick={handleClick}
                                     className={classNames(
                                         focus ? 'bg-gray-100 text-blue-500' : 'text-blue-500',
@@ -45,19 +45,20 @@ export default function ModuleDropdown() {
                                     )}
                                 >
                                     Edit Module
-                                </span>
+                                </button>
                             )}
                         </MenuItem>
                         <MenuItem>
                             {({ focus }) => (
-                                <a
-                                    href="#"
+                                <button
+                                    onClick={onClickDelete}
                                     className={classNames(
                                         focus ? 'bg-gray-100 text-red-400' : 'text-red-400',
                                         'block px-4 py-2 text-sm',
                                     )}
                                 >
-                                    Delete Module                               </a>
+                                    Delete Module
+                                    </button>
                             )}
                         </MenuItem>
                         {/* <MenuItem>
@@ -79,7 +80,7 @@ export default function ModuleDropdown() {
                     </div>
                 </MenuItems>
             </Transition>
-            <EditModuleModal isVisible={isModalVisible} onClose={handleCloseModal} />
+            { isModalVisible && <EditModuleModal data={data} isVisible={isModalVisible} onClose={handleCloseModal} />}
         </Menu>
     )
 }

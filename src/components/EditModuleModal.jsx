@@ -1,31 +1,57 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { X, Trash2 } from 'lucide-react';
-import { Tabs, ConfigProvider } from 'antd';
+import { Tabs, ConfigProvider, notification } from 'antd';
 import RichTextEditor from './RichTextEditor';
-const EditModuleModal = ({ isVisible, onClose }) => {
-    const [activeTab, setActiveTab] = useState("1")
+import { useDispatch } from 'react-redux';
+import { editSection } from '../store/slice/courseReducer';
+const EditModuleModal = ({ isVisible, onClose, data }) => {
+
     const fileInputRef = useRef(null);
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [moduleDescription, setModuleDescription] = useState("");
-    const [numberOfLectures, setNumberOfLectures] = useState(1);
+    const dispatch = useDispatch();
 
-
-    const handleButtonClick = () => {
-        fileInputRef.current.click();
-    };
-
-    const handleFileChange = (event) => {
-        setSelectedFile(event.target.files[0]);
-    }
+    const [formData, setFormData] = useState({
+        name: data?.name,
+        description: data?.description,
+        id: data?.id
+    })
 
     const handleDescriptionChange = (event) => {
         const text = event.target.value;
         if (text.length <= 100) {
-            setModuleDescription(text);
+            setFormData({ ...formData, name: text });
         }
     };
 
+    const submitForm = async() => {
+        try {
+            if(!formData.name) return notification.error({message:'Error',description:'Please enter module name'})
+            
+            const sendData = {
+                name: formData.name.trim(),
+                description: formData.description,
+                id: formData.id
+            }
+            if(sendData.name === data.name) return notification.error({message:'Error',description:'Change the module name to Update'})
+            if(sendData.name.length>100) return notification.error({message:'Error',description:'Module name should be less than 100 characters'})
+            if(sendData.name.length===0) return notification.error({message:'Error',description:'Module name should not be empty'})
+            const res = await dispatch(editSection(sendData));
+            if (res) {
+                onClose();
+            }
+        }catch(err){
+            console.log(err)
+        }
+    }
+
     if (!isVisible) return null;
+
+    useEffect(()=>{
+        setFormData({
+            name: data?.name,
+            description: data?.description,
+            id: data?.id
+        })
+    },[data])
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
@@ -41,14 +67,6 @@ const EditModuleModal = ({ isVisible, onClose }) => {
                         <span>Edit Module Details</span>
                     </div>
                     <div className="flex flex-col space-y-2 border-b-2 pb-20">
-                        <span className="text-sm text-gray-700 font-poppins mt-4 mx-4">
-                            Course Section <span className='text-blue-500'>(Optional)</span>
-                        </span>
-                        <input
-                            type="text"
-                            placeholder="Add course section"
-                            className="border-2 rounded-md p-2 m-3 text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:font-poppins text-sm"
-                        />
                         <div className='pt-4 flex justify-between items-center'>
                             <span className="text-sm text-gray-700 font-poppins pt- mx-4">
                                 Edit Module Name
@@ -61,11 +79,11 @@ const EditModuleModal = ({ isVisible, onClose }) => {
                             type="text"
                             placeholder="Add your module name"
                             className="border-2 rounded-md p-2 m-3 text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:font-poppins text-sm"
-                            value={moduleDescription}
+                            value={formData.name}
                             onChange={handleDescriptionChange}
                         />
-                        <span className="text-sm text-gray-700 font-poppins pt-4 mx-4">
-                            Edit number of lectures
+                        {/* <span className="text-sm text-gray-700 font-poppins pt-4 mx-4">
+                            Add More Lectures
                         </span>
                         <div className='font-poppins text-sm px-3'>
                             <select
@@ -74,22 +92,24 @@ const EditModuleModal = ({ isVisible, onClose }) => {
                                 onChange={(e) => setNumberOfLectures(e.target.value)}
                                 className="w-1/4 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-300"
                             >
+                                <option value={1}>0</option>
                                 <option value={1}>1</option>
                                 <option value={2}>2</option>
                                 <option value={3}>3</option>
                                 <option value={4}>4</option>
                                 <option value={5}>5</option>
                             </select>
-                        </div>
+                        </div> */}
 
                     </div>
                     <div className='flex justify-between mt-1 mx-1'>
 
-                        <button className="border-2 flex items-center border-[#A0B5D7] text-blue-900 font-poppins text-sm font-medium rounded-md p-2 px-4 m-2 hover:bg-slate-200 transition">
-                            <Trash2 size={18} className='text-blue-900 mr-2' />
-                            <span className=''>Delete</span>
+                        <button 
+                            onClick={onClose}
+                            className="border-2 flex items-center border-[#A0B5D7] text-blue-900 font-poppins text-sm font-medium rounded-md p-2 px-4 m-2 hover:bg-slate-200 transition">
+                            <span className=''>Close</span>
                         </button>
-                        <button className="bg-[#0859DE] text-white font-poppins text-sm rounded-md p-2 px-10 m-2 hover:bg-blue-600 transition">
+                        <button onClick={submitForm} className="bg-[#0859DE] text-white font-poppins text-sm rounded-md p-2 px-10 m-2 hover:bg-blue-600 transition">
                             Save
                         </button>
                     </div>

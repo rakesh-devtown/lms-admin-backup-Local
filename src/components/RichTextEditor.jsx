@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
-const RichTextEditor = ({flag}) => {
-    const [value, setValue] = useState('');
+const RichTextEditor = ({flag,value,setValue}) => {
+    const [data, setData] = useState(value)
 
     return (
         <div className="rounded-lg">
             <ReactQuill
                 value={value}
                 onChange={setValue}
-                className={`px-4 rounded-lg ${flag===1 ? 'h-56' : 'h-16'} font-poppins`}
+                className={`px-4 rounded-lg ${flag===1 ? 'h-56' : 'h-20'} font-poppins`}
                 modules={{
                     toolbar: [
                         ['bold', 'italic', 'underline', 'strike', 'blockquote'],

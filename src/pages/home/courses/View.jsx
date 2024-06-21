@@ -9,6 +9,7 @@ import Certificate from '../../../components/View/Certificate';
 import Activities from '../../../components/View/Activities';
 import Discussion from '../../../components/View/Discussion';
 import { useSelector } from 'react-redux';
+import Spinner from '../../../components/Loader/Spinner';
 const View = () => {
     const navigate = useNavigate();
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -16,7 +17,7 @@ const View = () => {
     const { uuid } = params;
 
     const [activeTab, setActiveTab] = useState(0);
-    const {currentCourse} = useSelector(state => state.course);
+    const {currentCourse,loading} = useSelector(state => state.course);
     const handleClick = () => {
         setIsModalVisible(true);
     }
@@ -25,30 +26,11 @@ const View = () => {
         setIsModalVisible(false);
     }
 
-    useEffect(()=>{
-        //dispatch(getCurriculumOfCourse(uuid));
-    },[uuid])
-
-    const data = [
-        {
-            "title": "Full Stack Web Development",
-            "code": "CCJ202403",
-            "numberOfStudents": "55",
-            "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxe6IR3EKgALq0lEUvpW3GmPH8rpAv1cK0_w&s"
-        }
-        ,
-        {
-            "title": "Full Stack Web Development",
-            "code": "CCJ202403",
-            "numberOfStudents": "55",
-            "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxe6IR3EKgALq0lEUvpW3GmPH8rpAv1cK0_w&s"
-        }
-        ,
-
-    ]
+ 
     return (
 
         <div className="flex">
+            {loading && <Spinner large/>}
             <div className="flex-grow">
                 <div className="flex-row ml-4 h-full">
                     <div className=" bg-white">

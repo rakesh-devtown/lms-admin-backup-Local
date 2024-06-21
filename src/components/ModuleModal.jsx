@@ -1,11 +1,11 @@
 import { useState, useRef } from 'react';
 import { X, Trash2 } from 'lucide-react';
-import { Tabs, ConfigProvider } from 'antd';
+import { Tabs, ConfigProvider, notification } from 'antd';
 import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { createNewModuleOfCourse } from '../store/slice/courseReducer';
+import { createNewModuleOfCourse, createSubSectionOfSection } from '../store/slice/courseReducer';
 import RichTextEditor from './RichTextEditor';
-const ModuleModal = ({ isVisible, onClose }) => {
+const ModuleModal = ({ isVisible, onClose, subSection,parentSectionId }) => {
     const [activeTab, setActiveTab] = useState("1")
     const fileInputRef = useRef(null);
     const [selectedFile, setSelectedFile] = useState(null);
@@ -15,13 +15,16 @@ const ModuleModal = ({ isVisible, onClose }) => {
     const params = useParams();
     const { uuid } = params;
 
+    //console.log(subSection,parentSectionId)
+
     const [formData,setFormData] = useState({
         courseId: uuid,
         description:"",
         name:"",
         subSection:false,
         subSectionName:'',
-        numberOfSectionItems:0
+        sectionId:parentSectionId,
+        numberOfSectionItems:1
     })
 
     const handleTextOFSubSectionName = (e) => {
@@ -32,24 +35,33 @@ const ModuleModal = ({ isVisible, onClose }) => {
         }
     }
 
-    const handleButtonClick = () => {
-        fileInputRef.current.click();
-    };
-
-    const handleFileChange = (event) => {
-        setSelectedFile(event.target.files[0]);
-    }
-
-    const handleDescriptionChange = (event) => {
-        const text = event.target.value;
-        if (text.length <= 100) {
-            setModuleDescription(text);
-        }
-    };
-
     const handleSubmit = async() => {
         try{
-            const res= await dispatch(createNewModuleOfCourse(formData))
+            let sendData = {
+                ...formData,
+                name:formData.name.trim(),
+                subSectionName:formData.subSectionName.trim(),
+            }
+            sendData.courseId=uuid
+            if(!subSection)
+            {
+                sendData.sectionId = parentSectionId
+            }
+            else if(sendData.subSection)
+            {
+                let tmp = sendData.name
+                sendData.name = sendData.subSectionName
+                sendData.subSectionName = tmp
+            }
+
+            if(sendData.name.length === 0) return notification.error({message:'Module Creation Failed',description:'Module name is required'})
+           //console.log(sendData)
+            let res;
+            if(!subSection){
+                res = await dispatch(createSubSectionOfSection(sendData));
+            }else{
+                res = await dispatch(createNewModuleOfCourse(sendData))
+            }
             if(res){
                 setFormData({
                     ...formData,
@@ -63,6 +75,16 @@ const ModuleModal = ({ isVisible, onClose }) => {
         }catch{
             console.log("error")
         }
+    }
+
+    const onClear = () => {
+        setFormData({
+            ...formData,
+            name:'',
+            subSectionName:'',
+            numberOfSectionItems:1,
+            subSection:subSection
+        })
     }
 
     if (!isVisible) return null;
@@ -81,29 +103,35 @@ const ModuleModal = ({ isVisible, onClose }) => {
                         <span>Add Module</span>
                     </div>
                     <div className="flex flex-col space-y-2 border-b-2 pb-8">
-                        <span className="text-sm text-gray-700 font-poppins mt-4 mx-4">
-                            Course Section <span className='text-blue-500'>(Optional)</span>
-                        </span>
-                        <input
-                            type="text"
-                            placeholder="Add course section"
-                            className="border-2 rounded-md p-2 m-3 text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:font-poppins text-sm"
+                        {subSection && 
+                        <>
+                            <span className="text-sm text-gray-700 font-poppins mt-4 mx-4">
+                                Course Section <span className='text-blue-500'>(Optional)</span>
+                            </span>
+                            <input
+                                value={formData.subSectionName}
+                                onChange={handleTextOFSubSectionName}
+                                type="text"
+                                placeholder="Add course section"
+                                className="border-2 rounded-md p-2 m-3 text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:font-poppins text-sm"
 
-                        />
+                            />
+                        </>
+                        }
                         <div className='pt-4 flex justify-between items-center'>
                             <span className="text-sm text-gray-700 font-poppins pt- mx-4">
                                 Module Name
                             </span>
-                            <span className='font-poppins text-sm px-5'>
+                            {/* <span className='font-poppins text-sm px-5'>
                                 {moduleDescription.length}/100
-                            </span>
+                            </span> */}
                         </div>
                         <input
                             type="text"
-                            value={formData.subSectionName}
+                            value={formData.name}
+                            onChange={(e) => setFormData({...formData,name:e.target.value})}
                             placeholder="Add your module name"
                             className="border-2 rounded-md p-2 m-3 text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:font-poppins text-sm"
-                            onChange={handleTextOFSubSectionName}
                         />
                         <span className="text-sm text-gray-700 font-poppins pt-4 mx-4">
                             Number of Lectures
@@ -126,9 +154,9 @@ const ModuleModal = ({ isVisible, onClose }) => {
                     </div>
                     <div className='flex justify-between mt-1 mx-1'>
 
-                        <button className="border-2 flex items-center border-[#A0B5D7] text-blue-900 font-poppins text-sm font-medium rounded-md p-2 px-4 m-2 hover:bg-slate-200 transition">
+                        <button onClick={onClear} className="border-2 flex items-center border-[#A0B5D7] text-blue-900 font-poppins text-sm font-medium rounded-md p-2 px-4 m-2 hover:bg-slate-200 transition">
                             <Trash2 size={18} className='text-blue-900 mr-2' />
-                            <span className=''>Delete</span>
+                            <span className=''>Clear</span>
                         </button>
                         <button onClick={handleSubmit} className="bg-[#0859DE] text-white font-poppins text-sm rounded-md p-2 px-4 m-2 hover:bg-blue-600 transition">
                             Create Module

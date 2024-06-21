@@ -104,7 +104,7 @@ const Courses = () => {
                                 <p className='font-poppins text-lg font-semibold'>Batches</p>
                                 <div className=''>
                                     <button className='bg-white text-black px-4 py-1 rounded-sm border-2 mx-4 font-poppins text-sm' onClick={handleClick} >+ Create Courses</button>
-                                    <button className='bg-[#1890FF] text-white px-4 py-1 rounded-sm font-poppins text-sm border-2'>Publish</button>
+                                    {/* <button className='bg-[#1890FF] text-white px-4 py-1 rounded-sm font-poppins text-sm border-2'>Publish</button> */}
                                 </div>
                             </div>
                             <Tabs defaultActiveKey="1"
