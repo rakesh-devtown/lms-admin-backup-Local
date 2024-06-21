@@ -2,17 +2,27 @@ import { useState, useRef } from 'react';
 import { X, Trash2 } from 'lucide-react';
 import RichTextEditor from './RichTextEditor';
 const EditLectureModal = ({ isVisible, onClose }) => {
-    const fileInputRef = useRef(null);
-    const [selectedFile, setSelectedFile] = useState(null);
+    const videoInputRef = useRef(null);
+    const thumbnailInputRef = useRef(null);
+    const [selectedVideo, setSelectedVideo] = useState(null);
+    const [selectedThumbnail, setSelectedThumbnail] = useState(null);
     const [moduleDescription, setModuleDescription] = useState("");
 
-    const handleButtonClick = () => {
-        fileInputRef.current.click();
+    const handleVideoButtonClick = () => {
+        videoInputRef.current.click();
     };
 
-    const handleFileChange = (event) => {
-        setSelectedFile(event.target.files[0]);
-    }
+    const handleVideoChange = (event) => {
+        setSelectedVideo(event.target.files[0]);
+    };
+
+    const handleThumbnailButtonClick = () => {
+        thumbnailInputRef.current.click();
+    };
+
+    const handleThumbnailChange = (event) => {
+        setSelectedThumbnail(event.target.files[0]);
+    };
 
     const handleDescriptionChange = (event) => {
         const text = event.target.value;
@@ -69,26 +79,26 @@ const EditLectureModal = ({ isVisible, onClose }) => {
                             <RichTextEditor flag={2} />
                         </div>
                         <span className="flex flex-col pb-1 text-normal text-[#2F366E] font-poppins pt-14 mx-4">
-                            Upload Thumbnail
+                            Study Materials
                             <span className='font-poppins text-xs text-slate-400'>Upload any files to help your students complete this module</span>
                         </span>
                         <div className="mx-4 h-28 flex items-center justify-center bg-gray-50 border border-dashed border-blue-500 rounded-lg">
                             <div className="text-center">
 
-                                {selectedFile ? <span className='font-poppins text-sm text-gray-700'>{selectedFile?.name}</span> :
+                                {selectedThumbnail ? <span className='font-poppins text-sm text-gray-700'>{selectedThumbnail?.name}</span> :
                                     <>
                                         <p className="text-sm text-gray-500 font-poppins">Drag Your File(s) Here</p>
                                         <button
                                             className="mt-4 px-4 py-2 border font-poppins border-dashed border-blue-500 text-blue-500 rounded-md hover:bg-blue-500 hover:text-white transition"
-                                            onClick={handleButtonClick}
+                                            onClick={handleThumbnailButtonClick}
                                         >
                                             Upload
                                         </button>
                                         <input
                                             type="file"
-                                            ref={fileInputRef}
+                                            ref={thumbnailInputRef}
                                             className="hidden"
-                                            onChange={handleFileChange}
+                                            onChange={handleThumbnailChange}
                                         />
                                     </>
                                 }
@@ -110,20 +120,20 @@ const EditLectureModal = ({ isVisible, onClose }) => {
                         <div className="mx-4 h-28 flex items-center justify-center bg-gray-50 border border-dashed border-blue-500 rounded-lg">
                             <div className="text-center">
 
-                                {selectedFile ? <span className='font-poppins text-sm text-gray-700'>{selectedFile?.name}</span> :
+                                {selectedVideo ? <span className='font-poppins text-sm text-gray-700'>{selectedVideo?.name}</span> :
                                     <>
                                         <p className="text-sm text-gray-500 font-poppins">Drag Your File(s) Here</p>
                                         <button
                                             className="mt-4 px-4 py-2 border font-poppins border-dashed border-blue-500 text-blue-500 rounded-md hover:bg-blue-500 hover:text-white transition"
-                                            onClick={handleButtonClick}
+                                            onClick={handleVideoButtonClick}
                                         >
                                             Upload
                                         </button>
                                         <input
                                             type="file"
-                                            ref={fileInputRef}
+                                            ref={videoInputRef}
                                             className="hidden"
-                                            onChange={handleFileChange}
+                                            onChange={handleVideoChange}
                                         />
                                     </>
                                 }
