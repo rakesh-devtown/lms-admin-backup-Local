@@ -1,7 +1,7 @@
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react'
-import { EllipsisVertical, ChevronUp, ChevronDown } from 'lucide-react'
+import { EllipsisVertical } from 'lucide-react'
 import { useState } from 'react';
-import EditModuleModal from './EditModuleModal';
+import EditModuleModal from '../Modal/EditModuleModal';
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }

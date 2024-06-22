@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { X, Trash2 } from 'lucide-react';
 import { Tabs, ConfigProvider, notification } from 'antd';
-import RichTextEditor from './RichTextEditor';
 import { useDispatch } from 'react-redux';
 import { editSection } from '../store/slice/courseReducer';
 const EditModuleModal = ({ isVisible, onClose, data }) => {

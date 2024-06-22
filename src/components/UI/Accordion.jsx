@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Transition } from '@headlessui/react';
 import { Plus, ChevronDown, ChevronRight, X, Trash2 } from 'lucide-react';
-import videologo from '../assets/videologo.png';
+import videologo from '../../assets/videologo.png';
 import { Dropdown, notification } from 'antd';
 import ModuleDropdown from './ModuleDropdown';
 import EditLectureModal from './EditLectureModal';

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { CircleHelp, ArrowLeft } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Accordion from '../Accordion';
-import ModuleModal from '../ModuleModal';
+import Accordion from '../UI/Accordion';
+import ModuleModal from '../Modal/ModuleModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCurriculumOfCourse } from '../../store/slice/courseReducer';
 import AccordionSecond from '../Acoordion/AccordionSecond';

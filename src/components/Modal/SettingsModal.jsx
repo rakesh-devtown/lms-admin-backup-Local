@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { X, Trash, Edit } from 'lucide-react';
 import { Tabs, ConfigProvider, notification } from 'antd';
-import bg from '../assets/bg.png';
 import { useDispatch } from 'react-redux';
 import { uploadFile } from '../store/slice/uploadReducer';
 import { updateCourse } from '../store/slice/courseReducer';

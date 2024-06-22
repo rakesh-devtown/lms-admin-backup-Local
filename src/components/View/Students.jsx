@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ConfigProvider, Tabs, Table, Tag, Space, notification } from 'antd';
 import { ArrowDownToLine, CircleHelp } from 'lucide-react';
-import DeleteStudentModal from '../DeleteStudentModal';
+import DeleteStudentModal from '../Modal/DeleteStudentModal';
 import Papa from 'papaparse';
 import Spinner from '../Loader/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
@@ -172,7 +172,7 @@ const Students = () => {
           <label className="inline-flex items-center cursor-pointer">
             <input type="checkbox" value="" className="sr-only peer" />
 
-        
+
             <svg onClick={handleClick} width="46" height="26" viewBox="0 0 46 26" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect width="44" height="22" rx="11" fill="#1890FF" />
               <g filter="url(#filter0_d_2097_9963)">
@@ -317,11 +317,11 @@ const Students = () => {
               </div>
             </div>
             <div className='flex justify-end mx-14 mt-4'>
-              <button onClick={handleAddBatchStudent} className='bg-[#1890FF] text-white px-14 py-1.5 rounded-md font-poppins text-sm border-2'>Add</button>
+              <button onClick={handleAddBatchStudent} className='bg-[#0859DE] text-white px-14 py-1.5 rounded-md font-poppins text-sm border-2'>Add</button>
             </div>
           </div>
           <div className="flex flex-col md:flex-row justify-between items-center p-8">
-            <div className="ml-2 border-2 border-dashed border-gray-300 rounded-md p-10 text-center w-[75vh] mb-6 md:mb-0">
+            <div className="mx-1 border-2 border-dashed border-gray-300 rounded-md p-10 text-center w-[75vh] mb-6 md:mb-0">
               <div className="flex flex-col items-center justify-center h-full">
                 <input
                   type="file"
@@ -351,7 +351,7 @@ const Students = () => {
             
             </div>
 
-            <div className="border rounded-md w-[78vh] h-[25vh]">
+            <div className="border rounded-md w-[78vh] h-[25vh] mx-2">
               <table className="w-full divide-y divide-gray-200 font-poppins">
                 <thead className="bg-gray-50">
                   <tr className='divide-x border-b'>
@@ -375,7 +375,7 @@ const Students = () => {
             </div>
           </div>
           <div className='flex justify-end mx-14 pb-4'>
-            <button onClick={addStudentsVisCSV} className='bg-[#1890FF] text-white px-14 py-1.5 rounded-md font-poppins text-sm border-2'>Add</button>
+            <button onClick={addStudentsVisCSV} className='bg-[#8C8C8C80]  text-white px-14 py-1.5 rounded-md font-poppins text-sm border-2'>Add</button>
           </div>
         </div>
       }
@@ -406,7 +406,7 @@ const Students = () => {
           </div>
         </div>
       }
-      <DeleteStudentModal isVisible={isModalVisible} onClose={handleCloseModal} handleDeleteStudent={handleDeleteStudent}/>
+      <DeleteStudentModal isVisible={isModalVisible} onClose={handleCloseModal} handleDeleteStudent={handleDeleteStudent} />
     </div>
   )
 }

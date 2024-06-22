@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { X, Trash2, Edit, Book, BookA, NotebookTextIcon, Video, GalleryThumbnailsIcon, LucideGalleryThumbnails, GalleryVerticalEnd } from 'lucide-react';
-import RichTextEditor from './RichTextEditor';
+import RichTextEditor from '../UI/RichTextEditor';
 import { useDispatch, useSelector } from 'react-redux';
 import Spinner from './Loader/Spinner';
 import { addSectionItemData, getSectionItemById } from '../store/slice/courseReducer';

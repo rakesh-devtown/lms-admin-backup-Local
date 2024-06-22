@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import CertificateModal from '../CertificateModal';
-import CertificateAccordion from '../CertificateAccordion';
+import CertificateModal from '../Modal/CertificateModal';
+import CertificateAccordion from '../UI/CertificateAccordion';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllCertificatesOfCourse } from '../../store/slice/courseReducer';
 import Spinner from '../Loader/Spinner';

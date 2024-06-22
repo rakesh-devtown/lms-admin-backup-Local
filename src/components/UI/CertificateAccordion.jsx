@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Transition } from '@headlessui/react';
 import { Plus, ChevronDown, ChevronRight, X, Trash2 } from 'lucide-react';
-import bg from '../assets/bg.png';
+import bg from '../../assets/bg.png';
 import ModuleDropdown from './ModuleDropdown';
 
 const CertificateAccordion = ({ accordionData }) => {
