@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
-import { CircleHelp, ArrowLeft } from 'lucide-react';
+import { CircleHelp} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Accordion from '../Accordion';
 import ModuleModal from '../ModuleModal';
 const Main = () => {
-    const navigate = useNavigate();
     const [isModalVisible, setIsModalVisible] = useState(false);
 
 
