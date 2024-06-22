@@ -66,7 +66,7 @@ export const sendOTPAuth = (email) => async (dispatch) => {
     }
 
   } catch (error) {
-    deleteHeader('auth');
+    deleteHeader('Authorization');
     notification.error({ message: 'Login Error', description: error.message });
     return false;
   } finally {
@@ -100,7 +100,7 @@ export const verifyOTPAuth = (email,otp) => async (dispatch) => {
           });
 
           localStorage.setItem("token", token);
-          setHeader("auth", `bearer ${token}`);
+          setHeader('Authorization', `Bearer ${token}`);
           dispatch(loginSuccess({ token, user }));
           return true;
         } else {
@@ -109,7 +109,7 @@ export const verifyOTPAuth = (email,otp) => async (dispatch) => {
         }
       } catch (error) {
         console.log(error);
-        deleteHeader("auth");
+        deleteHeader("Authorization");
         notification.error({
           message: "Login Error",
           description: "An error occurred during login",
@@ -134,6 +134,7 @@ export const verifyToken = () => async (dispatch) => {
 
     if (success) {
       const { user, token } = data;
+      setHeader('Authorization', `Bearer ${token}`);
       dispatch(loginSuccess({ user, token: token}));
       return true;
     } else {
@@ -141,6 +142,7 @@ export const verifyToken = () => async (dispatch) => {
     }
     return false;
   } catch (error) {
+    deleteHeader('Authorization');
     dispatch(logout());
     return false;
   } finally {

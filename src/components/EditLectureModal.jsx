@@ -97,6 +97,8 @@ const EditLectureModal = ({ isVisible, onClose }) => {
                 video:currentSectionItem?.videoLink,
             })
 
+            console.log(currentSectionItem)
+
             if(currentSectionItem?.studyMaterial){
                 setSelectedFile({name:String(currentSectionItem?.studyMaterial).substring(String(currentSectionItem?.studyMaterial).length - 36)});
             }
@@ -132,7 +134,7 @@ const EditLectureModal = ({ isVisible, onClose }) => {
                             type="text"
                             placeholder="Add your module name"
                             className="border-2 rounded-md p-2 m-3 text-[#2F366E] font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:font-poppins text-sm"
-                            value={formData.title}
+                            value={formData?.title}
                             onChange={handleDescriptionChange}
                         />
 

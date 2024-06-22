@@ -303,3 +303,23 @@ export const editSection = (section) => async (dispatch,getState) => {
         dispatch(setLoading(false));
     }
 }
+
+export const addStudentToBatch= (students) => async (dispatch) => {
+    try {
+        dispatch(setLoading(true));
+        const res = await servicePost(`admin/admin/v1/student/batch/student`, {
+            students:students
+        });
+        const { message, success } = res;
+        if (success) {
+            notification.success({ message: 'Students Added', description: message });
+            return true;
+        } else {
+            notification.error({ message: 'Student Addition Failed', description: message });
+        }
+    }catch (error) {
+        notification.error({ message: 'Student Addition Failed', description: error.message });
+    }finally{
+        dispatch(setLoading(false));
+    }
+}

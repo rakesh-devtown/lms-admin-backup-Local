@@ -4,7 +4,8 @@ import { ArrowDownToLine, CircleHelp } from 'lucide-react';
 import DeleteStudentModal from '../DeleteStudentModal';
 import Papa from 'papaparse';
 import Spinner from '../Loader/Spinner';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { addStudentToBatch } from '../../store/slice/courseReducer';
 
 const Students = () => {
   const [activeTab, setActiveTab] = useState("1")
@@ -14,7 +15,10 @@ const Students = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [students, setStudents] = useState([])
   const [deleteStudent,setDeleteStudent]=useState(false)
-  const {currentCourse} = useSelector(state => state.course); 
+  const {currentCourse,loading} = useSelector(state => state.course); 
+
+  const dispatch = useDispatch();
+
   const [formData, setFormData] = useState({
     firstName:'',
     lastName:'',
@@ -37,12 +41,19 @@ const Students = () => {
     try {
       setStudentLoading(true)
       setUploadedFile(null)
+      
       const file = event.target.files[0];
       if(!file) return notification.error({message:'Error',description:'Please select a file'}) 
       if(file.type!=='text/csv') return notification.error({message:'Error',description:'Please select a csv file'})
       //console.log(file)
       if (file) {
         setUploadedFile(file);
+      }
+
+      const batchId = currentCourse?.batches[0]?.id;
+      if(!batchId)
+      {
+        return notification.error({message:'Error',description:'No batch to add student to'})
       }
   
       Papa.parse(file, {
@@ -57,7 +68,8 @@ const Students = () => {
                         let data={
                           name:`${firstName.trim()} ${lastName.trim()}`,
                           email:email.toLowerCase().trim(),
-                          phone:phone
+                          phone:phone,
+                          batchId:batchId
                         }
                         st.push(data)
                   } else {
@@ -81,27 +93,44 @@ const Students = () => {
   };
 
 
-  const handleAddBatchStudent=()=>{
-    console.log(currentCourse)
-    if(!formData.firstName || !formData.lastName || !formData.email || !formData.phone){
-        return notification.error({message:'Error',description:'All fields are required'})
-    }
-    const data={
-      name:`${formData.firstName.trim()} ${formData.lastName.trim()}`,
-      email:formData.email,
-      phone:formData.phone
-    }
+  const handleAddBatchStudent=async()=>{
+    try{
+      const batchId = currentCourse?.batches[0]?.id;
+      if(!formData.firstName || !formData.lastName || !formData.email || !formData.phone){
+          return notification.error({message:'Error',description:'All fields are required'})
+      }
+      if(!batchId)
+      {
+        return notification.error({message:'Error',description:'No batch to add student to'})
+      }
+      const data={
+        name:`${formData.firstName.trim()} ${formData.lastName.trim()}`,
+        email:formData.email,
+        phone:formData.phone,
+        batchId:batchId
+      }
 
-    if(data.name.trim().length<=3){
-      return notification.error({message:'Error',description:'Invalid name'})
+      if(data.name.trim().length<=3){
+        return notification.error({message:'Error',description:'Invalid name'})
+      }
+      
+      await dispatch(addStudentToBatch([data]))
+
+    }catch(err){
+      console.log(err)
     }
-    setStudents([data])
   }
 
   const addStudentsVisCSV=async()=>{
     try{
-      if(students.length===0) return notification.error({message:'Error',description:'No student to add'})
-    }catch(err){
+      if(students.length===0) return notification.error({message:'Error',description:'No student to add'})    
+      
+        const res = await dispatch(addStudentToBatch(students))
+        if(res){
+          setStudents([])
+          setUploadedFile(null)
+        }  
+      }catch(err){
       console.log(err)
     }
   }
@@ -258,7 +287,7 @@ const Students = () => {
 
       {activeTab === '1' &&
         <div className='bg-white mt-3 h-[72vh] overflow-auto'>
-          {studentLoading && <Spinner/>}
+          {(studentLoading || loading) && <Spinner/>}
           <div className='pt-5'>
             <span className='font-poppins mx-7 pt-4 font-semibold'>Add Student</span>
             <div className='flex mx-9 mt-4'>

@@ -53,7 +53,10 @@ export const serviceGet = async (path, headers) => {
             : `http://localhost:8080${path.slice(4)}`
         }`,
         {
-          headers: headers,
+          headers: {
+            ...headers,
+            'Content-Type': 'application/json'
+          },
         }
       )
       .then(function (response) {
