@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
-import { CircleHelp, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import Accordion from '../../../components/Accordion';
-import ModuleModal from '../../../components/ModuleModal';
+import ModuleModal from '../../../components/Modal/ModuleModal';
 import Main from '../../../components/View/Main';
 import Students from '../../../components/View/Students';
 import Certificate from '../../../components/View/Certificate';
@@ -56,7 +55,7 @@ const View = () => {
 
         <div className="flex">
             <div className="flex-grow">
-                <div className="flex-row ml-4">
+                <div className="flex-row mx-2">
                     <div className=" bg-white mb-">
                         <div className='flex p-5 justify-between'>
                             <div className='flex items-center'>

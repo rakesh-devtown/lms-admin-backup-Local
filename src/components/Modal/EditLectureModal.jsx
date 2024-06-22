@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { X, Trash2 } from 'lucide-react';
-import RichTextEditor from './RichTextEditor';
+import RichTextEditor from '../UI/RichTextEditor';
 const EditLectureModal = ({ isVisible, onClose }) => {
     const videoInputRef = useRef(null);
     const thumbnailInputRef = useRef(null);

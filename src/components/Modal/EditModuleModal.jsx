@@ -1,13 +1,14 @@
 import { useState, useRef } from 'react';
 import { X, Trash2 } from 'lucide-react';
 import { Tabs, ConfigProvider } from 'antd';
-import RichTextEditor from './RichTextEditor';
-const ModuleModal = ({ isVisible, onClose }) => {
+import RichTextEditor from '../UI/RichTextEditor';
+const EditModuleModal = ({ isVisible, onClose }) => {
     const [activeTab, setActiveTab] = useState("1")
     const fileInputRef = useRef(null);
     const [selectedFile, setSelectedFile] = useState(null);
     const [moduleDescription, setModuleDescription] = useState("");
     const [numberOfLectures, setNumberOfLectures] = useState(1);
+
 
     const handleButtonClick = () => {
         fileInputRef.current.click();
@@ -37,7 +38,7 @@ const ModuleModal = ({ isVisible, onClose }) => {
                 </div>
                 <div className="flex-1 bg-white mt-12 rounded-lg w-[100vh] h-[60vh] overflow-auto">
                     <div className='border-b-2 p-4 pb-3 text-slate-700 font-poppins'>
-                        <span>Add Module</span>
+                        <span>Edit Module Details</span>
                     </div>
                     <div className="flex flex-col space-y-2 border-b-2 pb-20">
                         <span className="text-sm text-gray-700 font-poppins mt-4 mx-4">
@@ -47,14 +48,13 @@ const ModuleModal = ({ isVisible, onClose }) => {
                             type="text"
                             placeholder="Add course section"
                             className="border-2 rounded-md p-2 m-3 text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:font-poppins text-sm"
-
                         />
                         <div className='pt-4 flex justify-between items-center'>
                             <span className="text-sm text-gray-700 font-poppins pt- mx-4">
-                                Module Name
+                                Edit Module Name
                             </span>
                             <span className='font-poppins text-sm px-5'>
-                                {moduleDescription.length}/100
+                                {/* {moduleDescription.length}/100 */}
                             </span>
                         </div>
                         <input
@@ -65,7 +65,7 @@ const ModuleModal = ({ isVisible, onClose }) => {
                             onChange={handleDescriptionChange}
                         />
                         <span className="text-sm text-gray-700 font-poppins pt-4 mx-4">
-                            Number of Lectures
+                            Edit number of lectures
                         </span>
                         <div className='font-poppins text-sm px-3'>
                             <select
@@ -89,8 +89,8 @@ const ModuleModal = ({ isVisible, onClose }) => {
                             <Trash2 size={18} className='text-blue-900 mr-2' />
                             <span className=''>Delete</span>
                         </button>
-                        <button className="bg-[#0859DE] text-white font-poppins text-sm rounded-md p-2 px-4 m-2 hover:bg-blue-600 transition">
-                            Create Module
+                        <button className="bg-[#0859DE] text-white font-poppins text-sm rounded-md p-2 px-10 m-2 hover:bg-blue-600 transition">
+                            Save
                         </button>
                     </div>
                 </div>
@@ -99,4 +99,4 @@ const ModuleModal = ({ isVisible, onClose }) => {
     );
 };
 
-export default ModuleModal;
+export default EditModuleModal;
