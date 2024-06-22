@@ -42,7 +42,7 @@ const DeleteStudentModal = ({ isVisible, onClose,handleDeleteStudent }) => {
                                     </clipPath>
                                 </defs>
                             </svg>
-                            Are you sure you want to delete this student?
+                            Are you sure you want to Archive this course from student?
                         </span>
                         <div className='px-5 flex justify-end items-center'>
                             <button className='bg-[#F9FAFB] text-black px-7 py-1 mx-3 rounded-md font-poppins text-sm border-2' onClick={onClose}>No</button>

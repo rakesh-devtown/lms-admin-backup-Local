@@ -34,6 +34,7 @@ const VideoUploadModal=({visible,onClose})=>{
     return () => uppyInstance.close();
   }, []);
 
+
   if (!uppy) return null;
 	return (
         <>

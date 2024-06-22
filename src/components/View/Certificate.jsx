@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react';
 import CertificateModal from '../CertificateModal';
 import CertificateAccordion from '../CertificateAccordion';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllCertificatesOfCourse } from '../../store/slice/courseReducer';
+import Spinner from '../Loader/Spinner';
 
 const Certificate = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const {currentCourseCertificates,loading, currentCourse} = useSelector(state => state.course);
+  const dispatch = useDispatch();
   const handleClick = () => {
     setIsModalVisible(true);
   }
@@ -12,34 +17,18 @@ const Certificate = () => {
     setIsModalVisible(false);
   }
 
+  useEffect(()=>{
+    dispatch(getAllCertificatesOfCourse(currentCourse?.id));
+  },[])
 
-  const accordionData = [
-    {
-      title: 'Certificate 1',
-      days: ['Day 1: Untitled', 'Day 2: Untitled', 'Day 3: Untitled', 'Day 4: Untitled', 'Day 5: Untitled'],
-    },
-    {
-      title: 'Certificate 2',
-      days: ['Day 1: Untitled', 'Day 2: Untitled', 'Day 3: Untitled', 'Day 4: Untitled', 'Day 5: Untitled'],
-    },
-    {
-      title: 'Certificate 3',
-      days: ['Day 1: Untitled', 'Day 2: Untitled', 'Day 3: Untitled', 'Day 4: Untitled', 'Day 5: Untitled'],
-    },
-    {
-      title: 'Certificate 4',
-      days: ['Day 1: Untitled', 'Day 2: Untitled', 'Day 3: Untitled', 'Day 4: Untitled', 'Day 5: Untitled'],
-    },
-    {
-      title: 'Certificate 5',
-      days: ['Day 1: Untitled', 'Day 2: Untitled', 'Day 3: Untitled', 'Day 4: Untitled', 'Day 5: Untitled'],
-    },
-  ];
+
+  
   return (
-    <div className="">
+    <div className=" h-[80vh] overflow-auto">
+      {loading && <Spinner/>}
       <div className='bg-white mt-3 p-4'>
         <div className='mx- rounded-lg pb-2'>
-          <CertificateAccordion accordionData={accordionData} />
+          <CertificateAccordion accordionData={currentCourseCertificates} />
         </div>
         <button className='bg-[#0859DE] w-full py-2 font-poppins text-white text-normal rounded-md transition' onClick={handleClick}>+ Add Certificate</button>
       </div>

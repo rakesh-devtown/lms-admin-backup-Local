@@ -8,6 +8,8 @@ const courseSlice = createSlice({
         currentCourse: null,
         currentSectionItem: null,
         loading: false,
+        currentBatchStudents: [],
+        currentCourseCertificates: []
     },
     name:'course',
     reducers:{
@@ -46,11 +48,17 @@ const courseSlice = createSlice({
         },
         setCurrentSectionItem: (state, action) => {
             state.currentSectionItem = action.payload;
+        },
+        setCurrentBatchStudents: (state, action) => {
+            state.currentBatchStudents = action.payload;
+        },
+        setCurrentCourseCertificates: (state, action) => {
+            state.currentCourseCertificates = action.payload;
         }
     }
 });
 
-export const {setViewCourseNull, setLoading, setCourses, addCourse, setViewCourse, updateCourseState,setCurrentSectionItem } = courseSlice.actions;
+export const {setViewCourseNull, setLoading, setCourses, addCourse, setViewCourse, updateCourseState,setCurrentSectionItem, setCurrentBatchStudents, setCurrentCourseCertificates } = courseSlice.actions;
 export default courseSlice.reducer;
 
 export const createCourse = (course) => async (dispatch) => {
@@ -319,6 +327,59 @@ export const addStudentToBatch= (students) => async (dispatch) => {
         }
     }catch (error) {
         notification.error({ message: 'Student Addition Failed', description: error.message });
+    }finally{
+        dispatch(setLoading(false));
+    }
+}
+
+export const getBatchEnrolledStudents = (batchId,page,limit) => async (dispatch) => {
+    try {
+        dispatch(setLoading(true));
+        const res = await serviceGet(`admin/admin/v1/student/batch/enrollments?id=${batchId}&page=${page}&limit=${limit}`);
+        const { message, success,data } = res;
+        if (success) {
+            dispatch(setCurrentBatchStudents(data));
+        } else {
+            notification.error({ message: 'Student Fetch Failed', description: message });
+        }
+    } catch (error) {
+        notification.error({ message: 'Student Fetch Failed', description: error.message });
+    }finally{
+        dispatch(setLoading(false));
+    }
+}
+
+export const getAllCertificatesOfCourse = (courseId) => async (dispatch) => {
+    try {
+        dispatch(setLoading(true));
+        const res = await serviceGet(`admin/admin/v1/certificate?courseId=${courseId}`);
+        const { message, success,data } = res;
+        if (success) {
+            dispatch(setCurrentCourseCertificates(data));
+        } else {
+            notification.error({ message: 'Certificate Fetch Failed', description: message });
+        }
+    } catch (error) {
+        notification.error({ message: 'Certificate Fetch Failed', description: error.message });
+    }finally{
+        dispatch(setLoading(false));
+    }
+}
+
+export const createCertificateTemplate = (certificate) => async (dispatch) => {
+    try {
+        dispatch(setLoading(true));
+        const res = await servicePost(`admin/admin/v1/certificate/create`, certificate);
+        const { message, success,data } = res;
+        if (success) {
+            notification.success({ message: 'Certificate Template Created', description: message });
+            await dispatch(getAllCertificatesOfCourse(certificate?.courseId));
+            return true;
+        } else {
+            notification.error({ message: 'Certificate Creation Failed', description: message });
+        }
+    } catch (error) {
+        notification.error({ message: 'Certificate Creation Failed', description: error.message });
     }finally{
         dispatch(setLoading(false));
     }

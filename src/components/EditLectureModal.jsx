@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { X, Trash2, Edit, Book, BookA, NotebookTextIcon, Video } from 'lucide-react';
+import { X, Trash2, Edit, Book, BookA, NotebookTextIcon, Video, GalleryThumbnailsIcon, LucideGalleryThumbnails, GalleryVerticalEnd } from 'lucide-react';
 import RichTextEditor from './RichTextEditor';
 import { useDispatch, useSelector } from 'react-redux';
 import Spinner from './Loader/Spinner';
@@ -16,6 +16,10 @@ const EditLectureModal = ({ isVisible, onClose }) => {
         visible:false,
         url:''
     });
+    const videoInputRef = useRef(null);
+    const thumbnailInputRef = useRef(null);
+    const [selectedVideo, setSelectedVideo] = useState(null);
+    const [selectedThumbnail, setSelectedThumbnail] = useState(null);
     const [moduleDescription, setModuleDescription] = useState("");
     const {currentSectionItem,loading,currentCourse} = useSelector(state => state.course);
     const dispatch = useDispatch();
@@ -41,6 +45,17 @@ const EditLectureModal = ({ isVisible, onClose }) => {
             console.log(err);
         }
     }
+    const handleStudyFileClick = () => {
+        fileInputRef.current.click();
+    };
+
+    const handleThumbnailButtonClick = () => {
+        thumbnailInputRef.current.click();
+    };
+
+    const handleThumbnailChange = (event) => {
+        setSelectedThumbnail(event.target.files[0]);
+    };
 
     const handleDescriptionChange = (event) => {
         const text = event.target.value;
@@ -160,7 +175,7 @@ const EditLectureModal = ({ isVisible, onClose }) => {
                             />
                         </div>
                         <span className="flex flex-col pb-1 text-normal text-[#2F366E] font-poppins pt-14 mx-4">
-                            Upload Any Study Material
+                            Study Materials
                             <span className='font-poppins text-xs text-slate-400'>Upload any files to help your students complete this module</span>
                         </span>
                         <div className="mx-4 h-28 flex items-center justify-center bg-gray-50 border border-dashed border-blue-500 rounded-lg">
@@ -174,7 +189,7 @@ const EditLectureModal = ({ isVisible, onClose }) => {
                                         </div>
                                         <button
                                                 className="font-poppins text-blue-500 rounded-md transition border-0 px-5"
-                                                onClick={handleButtonClick}
+                                                onClick={handleStudyFileClick}
                                                 >
                                                     <Edit size={20} />
                                         </button>
@@ -190,15 +205,15 @@ const EditLectureModal = ({ isVisible, onClose }) => {
                                         <p className="text-sm text-gray-500 font-poppins">Drag Your File(s) Here</p>
                                         <button
                                             className="mt-4 px-4 py-2 border font-poppins border-dashed border-blue-500 text-blue-500 rounded-md hover:bg-blue-500 hover:text-white transition"
-                                            onClick={handleThumbnailButtonClick}
+                                            onClick={handleStudyFileClick}
                                         >
                                             Upload
                                         </button>
                                         <input
                                             type="file"
-                                            ref={thumbnailInputRef}
+                                            ref={fileInputRef}
                                             className="hidden"
-                                            onChange={handleThumbnailChange}
+                                            onChange={handleFileChange}
                                         />
                                     </>
                                 }
@@ -215,6 +230,58 @@ const EditLectureModal = ({ isVisible, onClose }) => {
                             className="border-2 rounded-md p-2 m-3 text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:font-poppins text-sm"
 
                         />
+
+
+                        {/* // Video Thumbnail */}
+                                
+                        <span className="flex flex-col pb-1 text-normal text-[#2F366E] font-poppins pt-4 mx-4">
+                            Video Thumbnail
+                            <span className='font-poppins text-xs text-slate-400'>Upload any files to help your students complete this module</span>
+                        </span>
+                        <div className="mx-4 h-28 flex items-center justify-center bg-gray-50 border border-dashed border-blue-500 rounded-lg">
+                            <div className="text-center">
+
+                                {selectedThumbnail ? 
+                                    <div className='mx-4 h-28 flex justify-between items-center '>
+                                        <div className='flex items-center'>
+                                            <GalleryVerticalEnd className='w-[7vh] h-[7vh] mx-5 object-cover rounded-md' color='blue' />
+                                            <a href={formData?.thumbnail} target='_blank'><span className='font-poppins text-sm text-[#0859DE]'>{String(formData?.thumbnail)?.substring(String(formData?.thumbnail).length - 36)}</span></a>
+                                        </div>
+                                        <button
+                                                className="font-poppins text-blue-500 rounded-md transition border-0 px-5"
+                                                onClick={handleThumbnailButtonClick}
+                                                >
+                                                    <Edit size={20} />
+                                        </button>
+                                        <input
+                                            type="file"
+                                            ref={thumbnailInputRef}
+                                            className="hidden"
+                                            onChange={handleFileChange}
+                                        />
+                                    </div>
+                                 :
+                                    <>
+                                        <p className="text-sm text-gray-500 font-poppins">Drag Your File(s) Here</p>
+                                        <button
+                                            className="mt-4 px-4 py-2 border font-poppins border-dashed border-blue-500 text-blue-500 rounded-md hover:bg-blue-500 hover:text-white transition"
+                                            onClick={handleThumbnailButtonClick}
+                                        >
+                                            Upload
+                                        </button>
+                                        <input
+                                            type="file"
+                                            accept='image/*'
+                                            ref={thumbnailInputRef}
+                                            className="hidden"
+                                            onChange={handleThumbnailChange}
+                                        />
+                                    </>
+                                }
+                            </div>
+                        </div>
+
+                        {/* //Video Upload */}
                         <span className="flex flex-col pb-1 text-normal text-[#2F366E] font-poppins pt-4 mx-4">
                             Upload Lecture Video
                             <span className='font-poppins text-xs text-slate-400'>Supported File: MP4, MKV, etc.</span>
@@ -232,12 +299,6 @@ const EditLectureModal = ({ isVisible, onClose }) => {
                                                 >
                                                     <Edit size={20} />
                                         </button>
-                                        <input
-                                            type="file"
-                                            ref={videoInputRef}
-                                            className="hidden"
-                                            onChange={handleVideoChange}
-                                        />
                              </div>
                             :
                             <button

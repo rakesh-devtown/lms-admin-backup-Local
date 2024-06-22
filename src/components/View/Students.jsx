@@ -5,7 +5,7 @@ import DeleteStudentModal from '../DeleteStudentModal';
 import Papa from 'papaparse';
 import Spinner from '../Loader/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
-import { addStudentToBatch } from '../../store/slice/courseReducer';
+import { addStudentToBatch, getBatchEnrolledStudents } from '../../store/slice/courseReducer';
 
 const Students = () => {
   const [activeTab, setActiveTab] = useState("1")
@@ -15,7 +15,7 @@ const Students = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [students, setStudents] = useState([])
   const [deleteStudent,setDeleteStudent]=useState(false)
-  const {currentCourse,loading} = useSelector(state => state.course); 
+  const {currentCourse,loading, currentBatchStudents} = useSelector(state => state.course); 
 
   const dispatch = useDispatch();
 
@@ -139,34 +139,28 @@ const Students = () => {
   const columns = [
     {
       title: 'Student Name',
-      dataIndex: 'name',
-      key: 'name',
-      // filteredValue: [searchText],
-      // onFilter: (value, record) => {
-      //     return String(record?.name).toLowerCase().includes(value.toLowerCase())
-      //         ||
-      //         String(record?.emailAddress).toLowerCase().includes(value.toLowerCase())
-      // },
-      // render: (_, record) =>
-      //     <div className="flex items-center w-full">
-
-      //     </div>
+      key: 'userId',
+      render: (_, record) => (
+        <span>{record?.user?.name}</span>
+      )
     },
     {
       title: 'Student Email Address',
       dataIndex: 'address',
-      key: 'age',
-      render: (text) => (
-        <span className='font-poppins text-[#1890FF]'>{text}</span>
+      key: 'email',
+      render: (_,record) => (
+        <span className='font-poppins text-[#1890FF]'>{record?.user?.email}</span>
       )
     },
     {
       title: 'Joined at',
-      dataIndex: 'address',
-      key: 'address',
+      key: 'createdAt',
+      render: (_, record) => (
+        <span>{new Date(record?.createdAt).toLocaleDateString()}</span>
+      )
     },
     {
-      title: 'Status',
+      title: 'Archive',
       filteredValue: [searchText],
       onFilter: (value, record) => {
         return String(record?.farmDetails?.name).toLowerCase().includes(value.toLowerCase())
@@ -201,22 +195,12 @@ const Students = () => {
                 </clipPath>
               </defs>
             </svg>
-
-
           </label>
         </div>
       ),
     },
-    // {
-    //   title: 'Action',
-    //   key: 'action',
-    //   render: (_, record) => (
-    //     <Space size="middle">
-    //       <a>Delete</a>
-    //     </Space>
-    //   ),
-    // },
   ];
+
   const data = [
     {
       key: '1',
@@ -241,6 +225,10 @@ const Students = () => {
     },
   ];
 
+
+  useEffect(() => {
+    dispatch(getBatchEnrolledStudents(currentCourse?.batches[0]?.id,1,20))
+  },[])
 
 
 
@@ -274,7 +262,7 @@ const Students = () => {
               <div className="flex items-center">
                 <p className="">View Students</p>
                 <div className={`${activeTab === '2' ? 'bg-blue-100' : 'bg-gray-200'} ml-2 rounded-full`}>
-                  <p className={`px-1.5 ${activeTab === '2' ? '' : 'text-slate-400'} text-xs`}>2.5K</p>
+                  <p className={`px-1.5 ${activeTab === '2' ? '' : 'text-slate-400'} text-xs`}>{currentBatchStudents?.totalEnrollments || 0}</p>
                 </div>
               </div>
             } key="2">
@@ -413,7 +401,7 @@ const Students = () => {
                 },
               }}
             >
-              <Table columns={columns} className='rounded-md border' dataSource={data} />
+              <Table columns={columns} className='rounded-md border' dataSource={currentBatchStudents?.enrollments || []} />
             </ConfigProvider>
           </div>
         </div>
