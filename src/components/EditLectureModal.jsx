@@ -20,8 +20,8 @@ const EditLectureModal = ({ isVisible, onClose }) => {
     const {currentSectionItem,loading,currentCourse} = useSelector(state => state.course);
     const dispatch = useDispatch();
 
-    const handleButtonClick = () => {
-        fileInputRef.current.click();
+    const handleVideoButtonClick = () => {
+        videoInputRef.current.click();
     };
 
     const handleFileChange = async(event) => {
@@ -190,15 +190,15 @@ const EditLectureModal = ({ isVisible, onClose }) => {
                                         <p className="text-sm text-gray-500 font-poppins">Drag Your File(s) Here</p>
                                         <button
                                             className="mt-4 px-4 py-2 border font-poppins border-dashed border-blue-500 text-blue-500 rounded-md hover:bg-blue-500 hover:text-white transition"
-                                            onClick={handleButtonClick}
+                                            onClick={handleThumbnailButtonClick}
                                         >
                                             Upload
                                         </button>
                                         <input
                                             type="file"
-                                            ref={fileInputRef}
+                                            ref={thumbnailInputRef}
                                             className="hidden"
-                                            onChange={handleFileChange}
+                                            onChange={handleThumbnailChange}
                                         />
                                     </>
                                 }
@@ -234,9 +234,9 @@ const EditLectureModal = ({ isVisible, onClose }) => {
                                         </button>
                                         <input
                                             type="file"
-                                            ref={fileInputRef}
+                                            ref={videoInputRef}
                                             className="hidden"
-                                            onChange={handleFileChange}
+                                            onChange={handleVideoChange}
                                         />
                              </div>
                             :
