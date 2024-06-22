@@ -149,7 +149,7 @@ const Students = () => {
     },
   ];
   return (
-    <div className="flex-row mx-2">
+    <div className="flex-row mx-2 h-[80vh]">
       <div className='bg-white'>
         <ConfigProvider
           theme={{
@@ -189,8 +189,9 @@ const Students = () => {
         </ConfigProvider>
       </div>
 
+      <div className='h-[73vh] bg-white overflow-auto mt-3'>
       {activeTab === '1' &&
-        <div className='bg-white mt-3'>
+        <div className=''>
           <div className='pt-5'>
             <span className='font-poppins mx-7 pt-4 font-semibold'>Add Student</span>
             <div className='flex mx-9 mt-4'>
@@ -291,7 +292,7 @@ const Students = () => {
       {activeTab === '2' &&
 
         <div>
-          <div className='bg-white p-5 mt-3'>
+          <div className=' p-5 mt-3'>
             <div className='flex justify-end items-center'>
               <input
                 type="text"
@@ -314,6 +315,7 @@ const Students = () => {
           </div>
         </div>
       }
+      </div>
       <DeleteStudentModal isVisible={isModalVisible} onClose={handleCloseModal} handleDeleteStudent={handleDeleteStudent} />
     </div>
   )

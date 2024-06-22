@@ -3,11 +3,11 @@ import { Transition } from '@headlessui/react';
 import { Plus, ChevronDown, ChevronRight, X, Trash2 } from 'lucide-react';
 import videologo from '../../assets/videologo.png';
 import { Dropdown, notification } from 'antd';
-import ModuleDropdown from './ModuleDropdown';
-import EditLectureModal from './EditLectureModal';
+import ModuleDropdown from "./ModuleDropdown";
+import EditLectureModal from '../Modal/EditLectureModal';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { addSectionItem, deleteSection, deleteSectionItems, getSectionItemById } from '../store/slice/courseReducer';
+import { addSectionItem, deleteSection, deleteSectionItems, getSectionItemById } from '../../store/slice/courseReducer';
 
 const Accordion = ({ accordionData }) => {
     const [openIndex, setOpenIndex] = useState(null);

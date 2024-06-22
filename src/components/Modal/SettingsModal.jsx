@@ -2,8 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { X, Trash, Edit } from 'lucide-react';
 import { Tabs, ConfigProvider, notification } from 'antd';
 import { useDispatch } from 'react-redux';
-import { uploadFile } from '../store/slice/uploadReducer';
-import { updateCourse } from '../store/slice/courseReducer';
+import { uploadFile } from '../../store/slice/uploadReducer';
+import { updateCourse } from '../../store/slice/courseReducer';
 const SettingsModal = ({ isVisible, onClose,data }) => {
     const [activeTab, setActiveTab] = useState("1")
     const fileInputRef = useRef(null);

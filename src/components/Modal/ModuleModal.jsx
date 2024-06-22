@@ -3,7 +3,7 @@ import { X, Trash2 } from 'lucide-react';
 import { Tabs, ConfigProvider, notification } from 'antd';
 import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { createNewModuleOfCourse, createSubSectionOfSection } from '../store/slice/courseReducer';
+import { createNewModuleOfCourse, createSubSectionOfSection } from '../../store/slice/courseReducer';
 const ModuleModal = ({ isVisible, onClose, subSection,parentSectionId }) => {
     const [activeTab, setActiveTab] = useState("1")
     const fileInputRef = useRef(null);

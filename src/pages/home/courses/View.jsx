@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { CircleHelp, ArrowLeft } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Accordion from '../../../components/Accordion';
 import ModuleModal from '../../../components/Modal/ModuleModal';
 import Main from '../../../components/View/Main';
 import Students from '../../../components/View/Students';

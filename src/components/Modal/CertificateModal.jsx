@@ -2,8 +2,8 @@ import { useState, useRef } from 'react';
 import { X, Trash2, Edit } from 'lucide-react';
 import { notification } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { uploadFile } from '../store/slice/uploadReducer';
-import { createCertificateTemplate } from '../store/slice/courseReducer';
+import { uploadFile } from '../../store/slice/uploadReducer';
+import { createCertificateTemplate } from '../../store/slice/courseReducer';
 
 
 const CertificateModal = ({ isVisible, onClose }) => {

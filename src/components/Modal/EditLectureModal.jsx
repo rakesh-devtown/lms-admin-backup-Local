@@ -2,12 +2,12 @@ import { useState, useRef, useEffect } from 'react';
 import { X, Trash2, Edit, Book, BookA, NotebookTextIcon, Video, GalleryThumbnailsIcon, LucideGalleryThumbnails, GalleryVerticalEnd } from 'lucide-react';
 import RichTextEditor from '../UI/RichTextEditor';
 import { useDispatch, useSelector } from 'react-redux';
-import Spinner from './Loader/Spinner';
-import { addSectionItemData, getSectionItemById } from '../store/slice/courseReducer';
+import Spinner from '../Loader/Spinner';
+import { addSectionItemData, getSectionItemById } from '../../store/slice/courseReducer';
 import { notification } from 'antd';
-import { uploadFile } from '../store/slice/uploadReducer';
-import VideoUploadModal from './VideoUploader/VideoUploadModal';
-import VideoPlayer from './VideoUploader/VideoPlayer';
+import { uploadFile } from '../../store/slice/uploadReducer';
+import VideoUploadModal from '../VideoUploader/VideoUploadModal';
+import VideoPlayer from '../VideoUploader/VideoPlayer';
 const EditLectureModal = ({ isVisible, onClose }) => {
     const fileInputRef = useRef(null);
     const [selectedFile, setSelectedFile] = useState(null);

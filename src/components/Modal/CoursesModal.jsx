@@ -2,9 +2,9 @@ import { useState, useRef } from 'react';
 import { X } from 'lucide-react';
 import { Tabs, ConfigProvider, notification } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import Spinner from './Loader/Spinner';
-import { uploadFile } from '../store/slice/uploadReducer';
-import { createCourse } from '../store/slice/courseReducer';
+import Spinner from '../Loader/Spinner';
+import { uploadFile } from '../../store/slice/uploadReducer';
+import { createCourse } from '../../store/slice/courseReducer';
 const CoursesModal = ({ isVisible, onClose }) => {
     const [activeTab, setActiveTab] = useState("1")
     const fileInputRef = useRef(null);

@@ -2,8 +2,8 @@ import { Dropdown, notification } from "antd"
 import videologo from "../../assets/videologo.png"
 import { useState } from "react";
 import { ChevronDown, ChevronRight, Plus, Trash2, X } from "lucide-react";
-import EditLectureModal from "../EditLectureModal";
-import ModuleDropdown from "../ModuleDropdown";
+import EditLectureModal from "../Modal/EditLectureModal"
+import ModuleDropdown from "../UI/ModuleDropdown";
 import { Transition } from "@headlessui/react";
 import { useDispatch, useSelector } from "react-redux";
 import { addSectionItem, deleteSection, deleteSectionItems, getSectionItemById } from "../../store/slice/courseReducer";
