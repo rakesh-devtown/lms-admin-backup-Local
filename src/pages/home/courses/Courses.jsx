@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { ConfigProvider, Tabs } from 'antd';
 import { CircleHelp, Settings, Copy } from 'lucide-react';
-import CoursesModal from '../../../components/CoursesModal';
-import SettingsModal from '../../../components/SettingsModal';
+import CoursesModal from '../../../components/Modal/CoursesModal';
+import SettingsModal from '../../../components/Modal/SettingsModal';
 import { useNavigate } from 'react-router-dom';
 const Courses = () => {
     const navigate = useNavigate();
@@ -60,7 +60,7 @@ const Courses = () => {
     return (
         <div className="flex">
             <div className="flex-grow">
-                <div className="flex-row ml-4">
+                <div className="flex-row mx-2">
                     <div className=" bg-white mb-3">
                         <ConfigProvider
                             theme={{

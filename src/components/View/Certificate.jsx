@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import CertificateModal from '../CertificateModal';
-import CertificateAccordion from '../CertificateAccordion';
+import CertificateModal from '../Modal/CertificateModal';
+import CertificateAccordion from '../UI/CertificateAccordion';
 
 const Certificate = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);

@@ -1,15 +1,7 @@
-import React, { useState } from "react";
-import { LayoutDashboard, UserRound, UsersRound, UserRoundPlusIcon, LogOut, Info, Tractor, Home, ChevronRight, ChevronFirst } from "lucide-react";
+import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
-import left from "../assets/left.png";
-import home from "../assets/home.png";
-import cert from "../assets/cert.png";
-import feedback from "../assets/feedback.png";
-import mp from "../assets/mp.png";
-import mentor from "../assets/mentor.png";
-import gs from "../assets/gs.png";
 const Sidenav = () => {
     const navigate = useNavigate()
     const location = useLocation();

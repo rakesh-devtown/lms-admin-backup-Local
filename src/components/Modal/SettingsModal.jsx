@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { X, Trash } from 'lucide-react';
 import { Tabs, ConfigProvider } from 'antd';
-import bg from '../assets/bg.png';
+import bg from '../../assets/bg.png';
 const SettingsModal = ({ isVisible, onClose }) => {
     const [activeTab, setActiveTab] = useState("1")
     const fileInputRef = useRef(null);

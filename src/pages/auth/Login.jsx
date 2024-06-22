@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import bg from '../../assets/bg.png'
 import login1 from '../../assets/login1.png'
 import devtownLogo from '../../assets/devtownLogo.png'
 import { Mail, LockKeyhole, EyeOff, Eye } from 'lucide-react'
