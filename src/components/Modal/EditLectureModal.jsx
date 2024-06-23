@@ -53,8 +53,26 @@ const EditLectureModal = ({ isVisible, onClose }) => {
         thumbnailInputRef.current.click();
     };
 
-    const handleThumbnailChange = (event) => {
-        setSelectedThumbnail(event.target.files[0]);
+    const handleThumbnailChange = async(event) => {
+        try{
+            try{
+                const file = event.target.files[0];
+                if(!file)
+                {
+                    return;
+                }
+                const url = await dispatch(uploadFile(file,'',`/course/${currentCourse?.id}/thumbnail`));
+                if(url)
+                {
+                    setSelectedThumbnail(file);
+                    setFormData({...formData, videoThumbnail:url});
+                }
+            }catch(err){
+                console.log(err);
+            }
+        }catch(err){
+            console.log(err);
+        }   
     };
 
     const handleDescriptionChange = (event) => {
@@ -70,6 +88,7 @@ const EditLectureModal = ({ isVisible, onClose }) => {
         note:"",
         link:"",
         studyMaterial:"",
+        videoThumbnail:"",
     })
 
     const saveLecture = async() => {
@@ -110,6 +129,7 @@ const EditLectureModal = ({ isVisible, onClose }) => {
                 link:currentSectionItem?.link,
                 studyMaterial:currentSectionItem?.studyMaterial,
                 video:currentSectionItem?.videoLink,
+                videoThumbnail:currentSectionItem?.videoThumbnail
             })
 
             console.log(currentSectionItem)
@@ -245,7 +265,7 @@ const EditLectureModal = ({ isVisible, onClose }) => {
                                     <div className='mx-4 h-28 flex justify-between items-center '>
                                         <div className='flex items-center'>
                                             <GalleryVerticalEnd className='w-[7vh] h-[7vh] mx-5 object-cover rounded-md' color='blue' />
-                                            <a href={formData?.thumbnail} target='_blank'><span className='font-poppins text-sm text-[#0859DE]'>{String(formData?.thumbnail)?.substring(String(formData?.thumbnail).length - 36)}</span></a>
+                                            <a href={formData?.videoThumbnail} target='_blank'><span className='font-poppins text-sm text-[#0859DE]'>{String(formData?.videoThumbnail)?.substring(String(formData?.videoThumbnail).length - 36)}</span></a>
                                         </div>
                                         <button
                                                 className="font-poppins text-blue-500 rounded-md transition border-0 px-5"
