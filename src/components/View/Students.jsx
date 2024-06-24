@@ -365,7 +365,7 @@ const Students = () => {
                 </tbody>
               </table>
               <div className="mt-12 px-48 text-center">
-                <a target='_blank' href={window.location.origin+'/src/assets/add_student_csv_format.csv'}>
+                <a target='_blank' href={'https://student-platform-assets.s3.ap-south-1.amazonaws.com/course/e13acf65-862b-4890-8790-c31ac9f602c0/studyMaterial/25248056846550fa72cd20987cb11304.csv'}>
                 <button className="bg-white border-[#0859DE] border-2 flex font-poppins items-center text-sm text-[#0859DE] py-2 px-4 rounded-lg">
                   <ArrowDownToLine size={16} className="mr-2" />
                   Download CSV Format
