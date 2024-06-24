@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Spin } from 'antd';
 import Spinner from '../../components/Loader/Spinner';
-import { authSlice, sendOTPAuth, verifyOTPAuth} from '../../store/slice/authReducer';
+import { authSlice, sendOTPAuth, verifyOTPAuth } from '../../store/slice/authReducer';
 const Login = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
@@ -15,7 +15,7 @@ const Login = () => {
     const [otpSend, setOtpSend] = useState(false);
     const [otp, setOtp] = useState('');
     const dispatch = useDispatch();
-    const {loading, isAuthenticated} = useSelector(state => state.auth);
+    const { loading, isAuthenticated } = useSelector(state => state.auth);
 
     const handleToggle = () => {
         if (type === 'password') {
@@ -27,40 +27,39 @@ const Login = () => {
         }
     }
 
-    const handleSubmit = async() => {
-        try{
-            const success = await dispatch(verifyOTPAuth(email.trim(),otp.trim()));
-            if(success)
-            {
+    const handleSubmit = async () => {
+        try {
+            const success = await dispatch(verifyOTPAuth(email.trim(), otp.trim()));
+            if (success) {
                 navigate('/admin/home')
             }
-        }catch(error){
+        } catch (error) {
             console.log(error)
         }
     }
 
-    const getCode = async() => {
-        try{
+    const getCode = async () => {
+        try {
             console.log('Sending OTP')
             const isSend = await dispatch(sendOTPAuth(email.trim()))
             setOtpSend(isSend)
             console.log('OTP Send')
-        }catch(error){
+        } catch (error) {
             console.log(error)
         }
     }
 
-    useEffect(()=>{
-        if(isAuthenticated){
+    useEffect(() => {
+        if (isAuthenticated) {
             navigate('/admin/home')
         }
-    },[isAuthenticated])
+    }, [isAuthenticated])
 
     return (
         <div className="min-h-screen z-10 relative flex items-center justify-center bg-cover bg-center"
         >
 
-            {loading && <Spinner large/>}
+            {loading && <Spinner large />}
             <div className="bg-white rounded-2xl drop-shadow-[0_0px_10px_rgba(0,0,0,0.25)] p-8 flex items-center max-w-4xl">
                 <div className="flex-1 border-r-2 mx-8 pr-6">
                     <img src={login1} alt="Illustration" className="max-w-full" />
@@ -99,7 +98,7 @@ const Login = () => {
                                 {icon === EyeOff ? <EyeOff size={16} className="absolute mr-10 cursor-pointer" /> : <Eye className='absolute mr-10 cursor-pointer' size={16} />}
                             </span>
                         </div>
-                        <button className={`ml-3 w-1/3 bg-white rounded border ${ otpSend && ' opacity-30'}`} disabled={otpSend} onClick={getCode}>
+                        <button className={`ml-3 w-1/3 bg-white rounded border ${otpSend && ' opacity-30'}`} disabled={otpSend} onClick={getCode}>
                             <span className='font-poppins text-sm'>Get Code</span>
                         </button>
                     </div>

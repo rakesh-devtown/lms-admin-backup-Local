@@ -1,23 +1,25 @@
 import { useState } from 'react';
 import { Transition } from '@headlessui/react';
-import { Plus, ChevronDown, ChevronRight, X, Trash2 } from 'lucide-react';
-import bg from '../../assets/bg.png';
-import ModuleDropdown from './ModuleDropdown';
+import { ChevronDown, ChevronRight } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteCertificateTemplate } from '../../store/slice/courseReducer';
+import toast from 'react-hot-toast';
 
 const CertificateAccordion = ({ accordionData }) => {
     const [openIndex, setOpenIndex] = useState(null);
     const [activeDropdown, setActiveDropdown] = useState(null);
-    const [isModalVisible, setIsModalVisible] = useState(false);
+    const { currentCourse } = useSelector(state => state.course);
 
+    const dispatch = useDispatch();
 
-    const handleClick = () => {
-        setIsModalVisible(true);
-        setActiveDropdown(null);
+    const handleDelete = (certificateId, courseId) => {
+        try {
+            const res = dispatch(deleteCertificateTemplate(certificateId, courseId));
+        } catch (err) {
+            console.log(err);
+        }
     }
 
-    const handleCloseModal = () => {
-        setIsModalVisible(false);
-    }
     const handleToggle = (index) => {
         setOpenIndex(openIndex === index ? null : index);
     };
@@ -84,29 +86,19 @@ const CertificateAccordion = ({ accordionData }) => {
                                 </span>
                                 <div className="mx-4 h-28 flex items-center justify-center bg-gray-50 border border-dashed border-blue-500 rounded-lg">
                                     <div className="text-center">
-                                        {/* 
-                                {selectedFile ? <span className='font-poppins text-sm text-gray-700'>{selectedFile?.name}</span> :
-                                    <>
-                                        <p className="text-sm text-gray-500 font-poppins">Drag Your File(s) Here</p>
-                                        <button
-                                            className="mt-4 px-4 py-2 border font-poppins border-dashed border-blue-500 text-blue-500 rounded-md hover:bg-blue-500 hover:text-white transition"
-                                            onClick={handleButtonClick}
-                                        >
-                                            Upload
-                                        </button>
-                                        <input
-                                            type="file"
-                                            ref={fileInputRef}
-                                            className="hidden"
-                                            onChange={handleFileChange}
-                                        />
-                                    </>
-                                } */}
+
 
                                         <div className='flex items-center'>
                                             <img src={module?.url} className='w-[20vh] h-[11vh] mx-5 object-cover rounded-md' />
                                             <a target='_blank' href={module?.url} className='font-poppins text-sm text-[#0859DE]'>{String(module?.url).substring(String(module?.url).length - 30)}</a>
                                         </div>                                    </div>
+                                </div>
+                            </div>
+                            <div className='flex justify-end space-x-4 mr-4'>
+                                <div>
+                                    <button className='bg-white border-2 border-gray-400 w-full py-2 font-poppins text-white text-normal rounded-md transition' onClick={() => handleDelete(module?.id, currentCourse?.id)}>
+                                        <span className='font-poppins text-sm mx-4 text-black'>Delete Certifcate</span>
+                                    </button>
                                 </div>
                             </div>
                         </div>

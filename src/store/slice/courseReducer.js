@@ -384,3 +384,22 @@ export const createCertificateTemplate = (certificate) => async (dispatch) => {
         dispatch(setLoading(false));
     }
 }
+
+export const deleteCertificateTemplate = (certificateId,courseId) => async (dispatch) => {
+    try {
+        dispatch(setLoading(true));
+        const res = await servicePost(`admin/admin/v1/certificate/delete?certificateId=${certificateId}`);
+        const { message, success,data } = res;
+        if (success) {
+            notification.success({ message: 'Certificate Template Deleted', description: message });
+            await dispatch(getAllCertificatesOfCourse(courseId));
+            return true;
+        } else {
+            notification.error({ message: 'Certificate Deletion Failed', description: message });
+        }
+    } catch (error) {
+        notification.error({ message: 'Certificate Deletion Failed', description: error.message });
+    }finally{
+        dispatch(setLoading(false));
+    }
+}
