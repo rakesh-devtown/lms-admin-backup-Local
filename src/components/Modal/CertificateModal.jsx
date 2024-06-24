@@ -3,23 +3,18 @@ import { X, Trash2, Edit } from 'lucide-react';
 import { notification } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { uploadFile } from '../../store/slice/uploadReducer';
-import { createCertificateTemplate } from '../../store/slice/courseReducer';
-
-
+import { createCertificateTemplate, deleteCertificateTemplate } from '../../store/slice/courseReducer';
 const CertificateModal = ({ isVisible, onClose }) => {
-    const [activeTab, setActiveTab] = useState("1")
     const fileInputRef = useRef(null);
     const [selectedFile, setSelectedFile] = useState(null);
-    const [moduleDescription, setModuleDescription] = useState("");
-    const [numberOfLectures, setNumberOfLectures] = useState(1);
     const { currentCourse } = useSelector(state => state.course);
 
     const dispatch = useDispatch();
 
     const [formData, setFormData] = useState({
         courseId: currentCourse?.id,
-        name:'',
-        url:'',
+        name: '',
+        url: '',
     });
 
 
@@ -27,26 +22,23 @@ const CertificateModal = ({ isVisible, onClose }) => {
         fileInputRef.current.click();
     };
 
-    const handleFileChange = async(event) => {
-        try{
+    const handleFileChange = async (event) => {
+        try {
             setSelectedFile(null);
             const file = event.target.files[0];
-            if(!file)
-            {
+            if (!file) {
                 return;
             }
-            if(file.type!=='image/jpeg' && file.type!=='image/png' && file.type!=='image/jpg')
-            {
-                return notification.error({message:'Invalid File Type',description:'Please upload a valid image file'});
+            if (file.type !== 'image/jpeg' && file.type !== 'image/png' && file.type !== 'image/jpg') {
+                return notification.error({ message: 'Invalid File Type', description: 'Please upload a valid image file' });
             }
 
-            const url = await dispatch(uploadFile(file,'',`/course/cert-templates/${currentCourse?.id || 'section'}/certificate`));
-            if(url)
-            {
+            const url = await dispatch(uploadFile(file, '', `/course/cert-templates/${currentCourse?.id || 'section'}/certificate`));
+            if (url) {
                 setSelectedFile(file);
-                setFormData({...formData,url});
+                setFormData({ ...formData, url });
             }
-        }catch(err){
+        } catch (err) {
             console.log(err);
         }
     }
@@ -58,46 +50,58 @@ const CertificateModal = ({ isVisible, onClose }) => {
         }
     };
 
-    const handleSubmit=()=>{
-        try{
-            if(!formData.name)
-            {
-                return notification.error({message:'Invalid Input',description:'Please enter a valid certificate name'});
+    const handleSubmit = () => {
+        try {
+            if (!formData.name) {
+                return notification.error({ message: 'Invalid Input', description: 'Please enter a valid certificate name' });
             }
-            if(!formData.url)
-            {
-                return notification.error({message:'Invalid Input',description:'Please upload a valid certificate image'});
+            if (!formData.url) {
+                return notification.error({ message: 'Invalid Input', description: 'Please upload a valid certificate image' });
             }
 
-            if(!formData.courseId)
-            {
-                return notification.error({message:'Invalid Input',description:'Try to reload the page and try again'});
+            if (!formData.courseId) {
+                return notification.error({ message: 'Invalid Input', description: 'Try to reload the page and try again' });
             }
 
             const data = {
-                courseId:formData.courseId,
-                name:formData.name.trim(),
-                url:formData.url,
+                courseId: formData.courseId,
+                name: formData.name.trim(),
+                url: formData.url,
             }
 
-            if(data.name.length<=1)
-            {
-                return notification.error({message:'Invalid Input',description:'Please enter a valid certificate name'});
+            if (data.name.length <= 1) {
+                return notification.error({ message: 'Invalid Input', description: 'Please enter a valid certificate name' });
             }
 
             const res = dispatch(createCertificateTemplate(data));
-            if(res)
-            {
+            if (res) {
                 //notification.success({message:'Certificate Template Created',description:'Certificate template has been created successfully'});
                 onClose();
             }
 
             //dispatch(createCertificate(formData));
             //onClose();
-        }catch(err){
+        } catch (err) {
             console.log(err);
         }
     }
+    
+    const handleDelete = () => {
+        try {
+
+            const res = dispatch(deleteCertificateTemplate(formData.courseId));
+            if (res) {
+                //notification.success({message:'Certificate Template Created',description:'Certificate template has been created successfully'});
+                onClose();
+            }
+
+            //dispatch(createCertificate(formData));
+            //onClose();
+        } catch (err) {
+            console.log(err);
+        }
+    }
+    
 
     if (!isVisible) return null;
 
@@ -111,7 +115,7 @@ const CertificateModal = ({ isVisible, onClose }) => {
                     </button>
                 </div>
                 <div className="flex-1 bg-white mt-12 rounded-lg w-[100vh] h-[60vh] overflow-auto">
-                    <div className="flex flex-col space-y-2 border-b-2 pb-10">
+                    <div className="flex flex-col space-y-2 border-b-2 pb-28">
                         <div className='pt-4 flex justify-between items-center'>
                             <span className="text-normal text-[#2F366E] font-poppins pt- mx-4">
                                 Certificate Name
@@ -129,22 +133,22 @@ const CertificateModal = ({ isVisible, onClose }) => {
                         />
                         <span className="flex flex-col pb-1 text-normal text-[#2F366E] font-poppins pt-4 mx-4">
                             Certificate Image
-                            <span className='font-poppins text-xs text-slate-400'>Supported File: MP4, MKV, etc.</span>
+                            <span className='font-poppins text-xs text-slate-400'>Supported File: PNG, JPG, JPEG</span>
                         </span>
                         <div className="mx-4 h-28 flex items-center justify-center bg-gray-50 border border-dashed border-blue-500 rounded-lg">
                             <div className="text-center">
 
-                                {selectedFile ?     
+                                {selectedFile ?
                                     <div className='mx-4 h-28 flex justify-between items-center '>
                                         <div className='flex items-center'>
                                             <img src={formData?.url} className='h-[10vh] mx-5 object-cover rounded-md' color='blue' />
                                             <a href={formData?.url} target='_blank'><span className='font-poppins text-sm text-[#0859DE]'>{String(formData?.url)?.substring(String(formData?.url).length - 36)}</span></a>
                                         </div>
                                         <button
-                                                className="font-poppins text-blue-500 rounded-md transition border-0 px-5"
-                                                onClick={handleButtonClick}
-                                                >
-                                                    <Edit size={20} />
+                                            className="font-poppins text-blue-500 rounded-md transition border-0 px-5"
+                                            onClick={handleButtonClick}
+                                        >
+                                            <Edit size={20} />
                                         </button>
                                         <input
                                             type="file"
@@ -176,7 +180,7 @@ const CertificateModal = ({ isVisible, onClose }) => {
                         </div>
 
                     </div>
-                    <div className='flex justify-between mt-1 mx-1'>
+                    <div className='flex mt-2 justify-between mx-1'>
 
                         <button className="border-2 flex items-center border-[#A0B5D7] text-blue-900 font-poppins text-sm font-medium rounded-md p-2 px-4 m-2 hover:bg-slate-200 transition">
                             <Trash2 size={18} className='text-blue-900 mr-2' />

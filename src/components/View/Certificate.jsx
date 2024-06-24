@@ -7,7 +7,7 @@ import Spinner from '../Loader/Spinner';
 
 const Certificate = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const {currentCourseCertificates,loading, currentCourse} = useSelector(state => state.course);
+  const { currentCourseCertificates, loading, currentCourse } = useSelector(state => state.course);
   const dispatch = useDispatch();
   const handleClick = () => {
     setIsModalVisible(true);
@@ -17,15 +17,13 @@ const Certificate = () => {
     setIsModalVisible(false);
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     dispatch(getAllCertificatesOfCourse(currentCourse?.id));
-  },[])
+  }, [])
 
-
-  
   return (
     <div className=" h-[80vh] overflow-auto">
-      {loading && <Spinner/>}
+      {loading && <Spinner />}
       <div className='bg-white mt-3 p-4'>
         <div className='mx- rounded-lg pb-2'>
           <CertificateAccordion accordionData={currentCourseCertificates} />
