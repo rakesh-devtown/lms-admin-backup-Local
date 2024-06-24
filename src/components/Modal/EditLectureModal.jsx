@@ -89,6 +89,7 @@ const EditLectureModal = ({ isVisible, onClose }) => {
         link:"",
         studyMaterial:"",
         videoThumbnail:"",
+        isPublished:true,
     })
 
     const saveLecture = async() => {
@@ -129,13 +130,17 @@ const EditLectureModal = ({ isVisible, onClose }) => {
                 link:currentSectionItem?.link,
                 studyMaterial:currentSectionItem?.studyMaterial,
                 video:currentSectionItem?.videoLink,
-                videoThumbnail:currentSectionItem?.videoThumbnail
+                videoThumbnail:currentSectionItem?.videoThumbnail,
+                isPublished:true
             })
 
             console.log(currentSectionItem)
 
             if(currentSectionItem?.studyMaterial){
                 setSelectedFile({name:String(currentSectionItem?.studyMaterial).substring(String(currentSectionItem?.studyMaterial).length - 36)});
+            }
+            if(currentSectionItem?.videoThumbnail){
+                setSelectedThumbnail({name:String(currentSectionItem?.videoThumbnail).substring(String(currentSectionItem?.videoThumbnail).length - 36)});
             }
         }
     },[currentSectionItem])
