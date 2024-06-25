@@ -17,7 +17,7 @@ const VideoUploadModal=({visible,onClose})=>{
     const uppyInstance = new Uppy({
       autoProceed: true,
       restrictions: {
-        maxFileSize: 500 * 1024 * 1024, // 500MB
+        maxFileSize: 1000 * 1024 * 1024, // 1GB
         maxNumberOfFiles: 1,
         allowedFileTypes: ['video/*'],
       },
