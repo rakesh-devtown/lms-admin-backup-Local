@@ -141,11 +141,11 @@ const Courses = () => {
                             <button type='button' className='bg-white text-black px-4 py-1.5 rounded-sm font-poppins text-sm border-2' onClick={handleClear}>Clear</button>
                         </form>
                     </div>
-                    <div className='flex flex-wrap w-full h-[60vh] overflow-auto gap-2'>
+                    <div className='flex flex-wrap w-full h-[60vh] overflow-auto'>
                         {(courses && courses?.length > 0) ? courses.map((item, index) => {
                             return (
-                                <div key={index} className='w-[51vh] mt-4 h-[25vh] mr-6 bg-white rounded-md mb-1 '>
-                                    <div className='flex p-5 pb-20 w-100 h-12 border-b-2 border-[#59963626] bg-white'>
+                                <div key={index} className='w-[31%] mt-4 h-[25vh] mr-6 bg-white rounded-md mb-12 '>
+                                    <div className='flex p-5 pb-28 w-100 h-12 border-b-2 border-[#59963626] bg-white'>
                                         <img src={item.bannerImg} className='w-[7vh] h-[7vh] object-cover mt-3' />
                                         <div className='flex-1 justify-between items-center mx-2'>
                                             <p className='font-poppins text-xl font-semibold px-2'>{item.name.length > 35 ? item.name.slice(0, 35) + '...' : item.name}</p>
