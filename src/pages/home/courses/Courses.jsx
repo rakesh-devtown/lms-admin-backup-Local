@@ -14,34 +14,34 @@ const Courses = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const dispatch = useDispatch();
     const [page, setPage] = useState(0);
-    const {loading, courses} = useSelector(state => state.course);
+    const { loading, courses } = useSelector(state => state.course);
     const [search, setSearch] = useState('');
 
     const [isSettingsModalVisible, setIsSettingsModalVisible] = useState({
         isVisible: false,
-        data:{}
+        data: {}
     });
 
     const [isCopied, setIsCopied] = useState(false);
 
     // This is the function we wrote earlier
     async function copyTextToClipboard(text) {
-      if ('clipboard' in navigator) {
-        return await navigator.clipboard.writeText(text);
-      } 
+        if ('clipboard' in navigator) {
+            return await navigator.clipboard.writeText(text);
+        }
     }
-  
+
     // onClick handler function for the copy button
     const handleCopyClick = (text) => {
-      copyTextToClipboard(text)
-        .then(() => {
-          notification.success({ message: 'Copied to clipboard' });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+        copyTextToClipboard(text)
+            .then(() => {
+                notification.success({ message: 'Copied to clipboard' });
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
-    
+
 
     const handleClick = () => {
         setIsModalVisible(true);
@@ -61,27 +61,27 @@ const Courses = () => {
     const handleCloseSettingsModal = () => {
         setIsSettingsModalVisible({
             isVisible: false,
-            data:{}
+            data: {}
         });
     }
 
     const handleClear = () => {
         setSearch('');
-        dispatch(getCourses(page,20));
+        dispatch(getCourses(page, 20));
     }
 
     const handleSearchSubmit = (e) => {
         e.preventDefault();
-        dispatch(getCourses(page,20,search));
+        dispatch(getCourses(page, 20, search));
     }
 
     const viewCourse = (courseId) => {
-       // dispatch(getCurriculumOfCourse(courseId));
+        // dispatch(getCurriculumOfCourse(courseId));
         navigate(`/admin/home/courses/view/${courseId}`)
     }
 
     useEffect(() => {
-        dispatch(getCourses(page,20));
+        dispatch(getCourses(page, 20));
     }, [])
 
     return (
@@ -142,27 +142,28 @@ const Courses = () => {
                         </form>
                     </div>
                     <div className='flex flex-wrap w-full h-[60vh] overflow-auto gap-2'>
-                        {(courses && courses?.length>0) ? courses.map((item, index) => {
+                        {(courses && courses?.length > 0) ? courses.map((item, index) => {
                             return (
-                                <div key={index} className='w-[30%] mt-4 h-[25vh] mr-6 relative bg-white rounded-md mb-1 '>
-                                    <div className='flex p-5 pb-3 border-b-2 border-[#59963626]'>
+                                <div key={index} className='w-[51vh] mt-4 h-[25vh] mr-6 bg-white rounded-md mb-1 '>
+                                    <div className='flex p-5 pb-20 w-100 h-12 border-b-2 border-[#59963626] bg-white'>
                                         <img src={item.bannerImg} className='w-[7vh] h-[7vh] object-cover mt-3' />
-                                        <div className='flex-row justify-between items-center mx-2'>
-                                            <p className='font-poppins text-xl font-semibold px-2'>{item.name}</p>
+                                        <div className='flex-1 justify-between items-center mx-2'>
+                                            <p className='font-poppins text-xl font-semibold px-2'>{item.name.length > 35 ? item.name.slice(0, 35) + '...' : item.name}</p>
                                             <div className='flex items-center'>
-                                                <p className='font-poppins text-xs mx-2 mt-1 text-[#599636]'>{item?.batches?.length>0 ? item?.batches[0]?.id : ''}</p>
-                                                <Copy onClick={handleCopyClick.bind(this,item?.batches?.length>0 ? item?.batches[0]?.id : '')} className='text-[#599636] cursor-pointer mt-1' size={12} />
+                                                <p className='font-poppins text-xs mx-2 mt-1 text-[#599636]'>{item?.batches?.length > 0 ? item?.batches[0]?.id : ''}</p>
+                                                <Copy onClick={handleCopyClick.bind(this, item?.batches?.length > 0 ? item?.batches[0]?.id : '')} className='text-[#599636] cursor-pointer mt-1' size={12} />
                                             </div>
                                         </div>
                                     </div>
-                                    <div className='m-3 mr-4 mt-2 mb-3'>
-                                        <div className='whitespace-nowrap inline items-center px-2 bg-[#59963626] rounded-xl'>
+
+                                    <div className='m-3 mr-4'>
+                                        <div className='whitespace-nowrap inline items-center px-2 pb-1 bg-[#59963626] rounded-xl'>
                                             <span className='text-[#599636] font-poppins text-xs'>{item.numberOfStudents} Students On Board {item?.enrollmentCount}</span>
                                         </div>
                                     </div>
-                                    <div className='bg-[#599636] pb-3  pt-3 flex rounded-b-md divide-x-2 items-center text-center'>
-                                        <Settings className='text-white w-1/2 cursor-pointer' size={20} onClick={handleSettingsClick.bind(this,item)} />
-                                        <p className='text-white w-1/2 font-poppins text-sm cursor-pointer' onClick={viewCourse.bind(this,item?.id)}>View</p>
+                                    <div className='bg-[#599636] pb-3 pt-3 mt-3 flex rounded-b-md divide-x-2 items-center text-center'>
+                                        <Settings className='text-white w-1/2 cursor-pointer' size={20} onClick={handleSettingsClick.bind(this, item)} />
+                                        <p className='text-white w-1/2 font-poppins text-sm cursor-pointer' onClick={viewCourse.bind(this, item?.id)}>View</p>
                                     </div>
                                 </div>
                             )
@@ -175,7 +176,7 @@ const Courses = () => {
                 </div>
             </div>
             <CoursesModal isVisible={isModalVisible} onClose={handleCloseModal} />
-            { isSettingsModalVisible.isVisible && <SettingsModal data={isSettingsModalVisible.data} isVisible={isSettingsModalVisible.isVisible} onClose={handleCloseSettingsModal} />}
+            {isSettingsModalVisible.isVisible && <SettingsModal data={isSettingsModalVisible.data} isVisible={isSettingsModalVisible.isVisible} onClose={handleCloseSettingsModal} />}
         </div >
     )
 }
