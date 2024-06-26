@@ -11,37 +11,35 @@ import VideoPlayer from '../VideoUploader/VideoPlayer';
 const EditLectureModal = ({ isVisible, onClose }) => {
     const fileInputRef = useRef(null);
     const [selectedFile, setSelectedFile] = useState(null);
-    const [videoModal,setVideoModal] = useState(false);
-    const [videoPlayerModal,setVideoPlayerModal] = useState({
-        visible:false,
-        url:''
+    const [videoModal, setVideoModal] = useState(false);
+    const [videoPlayerModal, setVideoPlayerModal] = useState({
+        visible: false,
+        url: ''
     });
     const videoInputRef = useRef(null);
     const thumbnailInputRef = useRef(null);
     const [selectedVideo, setSelectedVideo] = useState(null);
     const [selectedThumbnail, setSelectedThumbnail] = useState(null);
     const [moduleDescription, setModuleDescription] = useState("");
-    const {currentSectionItem,loading,currentCourse} = useSelector(state => state.course);
+    const { currentSectionItem, loading, currentCourse } = useSelector(state => state.course);
     const dispatch = useDispatch();
 
     const handleVideoButtonClick = () => {
         videoInputRef.current.click();
     };
 
-    const handleFileChange = async(event) => {
-        try{
+    const handleFileChange = async (event) => {
+        try {
             const file = event.target.files[0];
-            if(!file)
-            {
+            if (!file) {
                 return;
             }
-            const url = await dispatch(uploadFile(file,'',`/course/${currentCourse?.id || 'section'}/studyMaterial`));
-            if(url)
-            {
+            const url = await dispatch(uploadFile(file, '', `/course/${currentCourse?.id || 'section'}/studyMaterial`));
+            if (url) {
                 setSelectedFile(file);
-                setFormData({...formData, studyMaterial:url});
+                setFormData({ ...formData, studyMaterial: url });
             }
-        }catch(err){
+        } catch (err) {
             console.log(err);
         }
     }
@@ -53,26 +51,24 @@ const EditLectureModal = ({ isVisible, onClose }) => {
         thumbnailInputRef.current.click();
     };
 
-    const handleThumbnailChange = async(event) => {
-        try{
-            try{
+    const handleThumbnailChange = async (event) => {
+        try {
+            try {
                 const file = event.target.files[0];
-                if(!file)
-                {
+                if (!file) {
                     return;
                 }
-                const url = await dispatch(uploadFile(file,'',`/course/${currentCourse?.id}/thumbnail`));
-                if(url)
-                {
+                const url = await dispatch(uploadFile(file, '', `/course/${currentCourse?.id}/thumbnail`));
+                if (url) {
                     setSelectedThumbnail(file);
-                    setFormData({...formData, videoThumbnail:url});
+                    setFormData({ ...formData, videoThumbnail: url });
                 }
-            }catch(err){
+            } catch (err) {
                 console.log(err);
             }
-        }catch(err){
+        } catch (err) {
             console.log(err);
-        }   
+        }
     };
 
     const handleDescriptionChange = (event) => {
@@ -84,73 +80,73 @@ const EditLectureModal = ({ isVisible, onClose }) => {
 
     const [formData, setFormData] = useState({
         title: "",
-        content:"",
-        note:"",
-        link:"",
-        studyMaterial:"",
-        videoThumbnail:"",
-        isPublished:true,
+        content: "",
+        note: "",
+        link: "",
+        studyMaterial: "",
+        videoThumbnail: "",
+        isPublished: true,
     })
 
-    const saveLecture = async() => {
-        try{
-            if(!currentSectionItem?.id) return notification.error({message:'Error',description:'please refresh the page and try again'});
-            const data={
-                title:String(formData?.title).trim(),
+    const saveLecture = async () => {
+        try {
+            if (!currentSectionItem?.id) return notification.error({ message: 'Error', description: 'please refresh the page and try again' });
+            const data = {
+                title: String(formData?.title).trim(),
                 ...formData,
             }
             //if(data.title.length === 0) return notification.error({message:'Error',description:'Please enter the title'});
-            if(data?.title?.length===0 || !data?.title) return notification.error({message:'Error',description:'Please enter the title'});
-           const res= await dispatch(addSectionItemData(data,currentSectionItem?.id));
-           if(res){
+            if (data?.title?.length === 0 || !data?.title) return notification.error({ message: 'Error', description: 'Please enter the title' });
+            const res = await dispatch(addSectionItemData(data, currentSectionItem?.id));
+            if (res) {
                 onClose();
             }
-        }catch(err){
+        } catch (err) {
             console.log(err)
         }
     }
 
-    const handleVideoUploadClose=async()=>{
-        try{
+    const handleVideoUploadClose = async () => {
+        try {
             setVideoModal(false);
             await dispatch(getSectionItemById(currentSectionItem?.id))
-        }catch(err){
+        } catch (err) {
             console.log(err);
         }
     }
 
     if (!isVisible) return null;
 
-    useEffect(()=>{
-        if(currentSectionItem){
+    useEffect(() => {
+        if (currentSectionItem) {
             setFormData({
-                title:currentSectionItem?.title,
-                content:currentSectionItem?.content,
-                note:currentSectionItem?.note,
-                link:currentSectionItem?.link,
-                studyMaterial:currentSectionItem?.studyMaterial,
-                video:currentSectionItem?.videoLink,
-                videoThumbnail:currentSectionItem?.videoThumbnail,
-                isPublished:true
+                title: currentSectionItem?.title,
+                content: currentSectionItem?.content,
+                note: currentSectionItem?.note,
+                link: currentSectionItem?.link,
+                studyMaterial: currentSectionItem?.studyMaterial,
+                video: currentSectionItem?.videoLink,
+                videoThumbnail: currentSectionItem?.videoThumbnail,
+                isPublished: true
             })
 
             console.log(currentSectionItem)
 
-            if(currentSectionItem?.studyMaterial){
-                setSelectedFile({name:String(currentSectionItem?.studyMaterial).substring(String(currentSectionItem?.studyMaterial).length - 36)});
+            if (currentSectionItem?.studyMaterial) {
+                setSelectedFile({ name: String(currentSectionItem?.studyMaterial).substring(String(currentSectionItem?.studyMaterial).length - 36) });
             }
-            if(currentSectionItem?.videoThumbnail){
-                setSelectedThumbnail({name:String(currentSectionItem?.videoThumbnail).substring(String(currentSectionItem?.videoThumbnail).length - 36)});
+            if (currentSectionItem?.videoThumbnail) {
+                setSelectedThumbnail({ name: String(currentSectionItem?.videoThumbnail).substring(String(currentSectionItem?.videoThumbnail).length - 36) });
             }
         }
-    },[currentSectionItem])
+    }, [currentSectionItem])
 
     //console.log(currentSectionItem)
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
             <div className="p-10 relative">
-                {loading && <Spinner/>}
+                {loading && <Spinner />}
                 <div className="absolute top-2 right-1 mt-12 mr-11">
                     <button
                         onClick={onClose}>
@@ -177,7 +173,32 @@ const EditLectureModal = ({ isVisible, onClose }) => {
                             value={formData?.title}
                             onChange={handleDescriptionChange}
                         />
-
+                        <span className="flex flex-col pb-1 text-normal text-[#2F366E] font-poppins pt-4 mx-4">
+                            Upload Lecture Video
+                            <span className='font-poppins text-xs text-slate-400'>Supported File: MP4, MKV, etc.</span>
+                        </span>
+                        {
+                            formData.video ?
+                                <div className='mx-4 h-28 flex justify-between items-center '>
+                                    <div className='flex items-center'>
+                                        <Video className='w-[7vh] h-[7vh] mx-5 object-cover rounded-md' color='blue' />
+                                        <button onClick={() => { setVideoPlayerModal({ visible: true, url: formData?.video }) }}><span className='font-poppins text-sm text-[#0859DE]'>{String(formData?.video)?.substring(String(formData?.video).length - 36)}</span></button>
+                                    </div>
+                                    <button
+                                        className="font-poppins text-blue-500 rounded-md transition border-0 px-5"
+                                        onClick={() => setVideoModal(true)}
+                                    >
+                                        <Edit size={20} />
+                                    </button>
+                                </div>
+                                :
+                                <button
+                                    className="mx-4 mt-4 px-4 py-2 border font-poppins rounded-md bg-blue-500 text-white w-[20%]"
+                                    onClick={() => setVideoModal(true)}
+                                >
+                                    Upload
+                                </button>
+                        }
                         <div className='pt-4 flex justify-between items-center'>
                             <span className="text-noraml text-[#2F366E] font-poppins pt- mx-4">
                                 Description
@@ -188,13 +209,13 @@ const EditLectureModal = ({ isVisible, onClose }) => {
                             <RichTextEditor flag={1}
                                 value={formData.content}
                                 setValue={(value) => setFormData({ ...formData, content: value })}
-                             />
+                            />
                         </div>
                         <span className="text-normal text-[#2F366E] font-poppins pt-14 mx-4">
                             Notes
                         </span>
                         <div className="w-full font-poppins">
-                            <RichTextEditor flag={2} 
+                            <RichTextEditor flag={2}
                                 value={formData.note}
                                 setValue={(value) => setFormData({ ...formData, note: value })}
                             />
@@ -206,17 +227,17 @@ const EditLectureModal = ({ isVisible, onClose }) => {
                         <div className="mx-4 h-28 flex items-center justify-center bg-gray-50 border border-dashed border-blue-500 rounded-lg">
                             <div className="text-center">
 
-                                {selectedFile ? 
+                                {selectedFile ?
                                     <div className='mx-4 h-28 flex justify-between items-center '>
                                         <div className='flex items-center'>
                                             <NotebookTextIcon className='w-[7vh] h-[7vh] mx-5 object-cover rounded-md' color='blue' />
                                             <a href={formData?.studyMaterial} target='_blank'><span className='font-poppins text-sm text-[#0859DE]'>{String(formData?.studyMaterial)?.substring(String(formData?.studyMaterial).length - 36)}</span></a>
                                         </div>
                                         <button
-                                                className="font-poppins text-blue-500 rounded-md transition border-0 px-5"
-                                                onClick={handleStudyFileClick}
-                                                >
-                                                    <Edit size={20} />
+                                            className="font-poppins text-blue-500 rounded-md transition border-0 px-5"
+                                            onClick={handleStudyFileClick}
+                                        >
+                                            <Edit size={20} />
                                         </button>
                                         <input
                                             type="file"
@@ -225,7 +246,7 @@ const EditLectureModal = ({ isVisible, onClose }) => {
                                             onChange={handleFileChange}
                                         />
                                     </div>
-                                 :
+                                    :
                                     <>
                                         <p className="text-sm text-gray-500 font-poppins">Drag Your File(s) Here</p>
                                         <button
@@ -258,7 +279,7 @@ const EditLectureModal = ({ isVisible, onClose }) => {
 
 
                         {/* // Video Thumbnail */}
-                                
+
                         <span className="flex flex-col pb-1 text-normal text-[#2F366E] font-poppins pt-4 mx-4">
                             Video Thumbnail
                             <span className='font-poppins text-xs text-slate-400'>Upload any files to help your students complete this module</span>
@@ -266,17 +287,17 @@ const EditLectureModal = ({ isVisible, onClose }) => {
                         <div className="mx-4 h-28 flex items-center justify-center bg-gray-50 border border-dashed border-blue-500 rounded-lg">
                             <div className="text-center">
 
-                                {selectedThumbnail ? 
+                                {selectedThumbnail ?
                                     <div className='mx-4 h-28 flex justify-between items-center '>
                                         <div className='flex items-center'>
                                             <GalleryVerticalEnd className='w-[7vh] h-[7vh] mx-5 object-cover rounded-md' color='blue' />
                                             <a href={formData?.videoThumbnail} target='_blank'><span className='font-poppins text-sm text-[#0859DE]'>{String(formData?.videoThumbnail)?.substring(String(formData?.videoThumbnail).length - 36)}</span></a>
                                         </div>
                                         <button
-                                                className="font-poppins text-blue-500 rounded-md transition border-0 px-5"
-                                                onClick={handleThumbnailButtonClick}
-                                                >
-                                                    <Edit size={20} />
+                                            className="font-poppins text-blue-500 rounded-md transition border-0 px-5"
+                                            onClick={handleThumbnailButtonClick}
+                                        >
+                                            <Edit size={20} />
                                         </button>
                                         <input
                                             type="file"
@@ -285,7 +306,7 @@ const EditLectureModal = ({ isVisible, onClose }) => {
                                             onChange={handleFileChange}
                                         />
                                     </div>
-                                 :
+                                    :
                                     <>
                                         <p className="text-sm text-gray-500 font-poppins">Drag Your File(s) Here</p>
                                         <button
@@ -307,32 +328,7 @@ const EditLectureModal = ({ isVisible, onClose }) => {
                         </div>
 
                         {/* //Video Upload */}
-                        <span className="flex flex-col pb-1 text-normal text-[#2F366E] font-poppins pt-4 mx-4">
-                            Upload Lecture Video
-                            <span className='font-poppins text-xs text-slate-400'>Supported File: MP4, MKV, etc.</span>
-                        </span>
-                        {
-                            formData.video ?
-                            <div className='mx-4 h-28 flex justify-between items-center '>
-                                        <div className='flex items-center'>
-                                            <Video className='w-[7vh] h-[7vh] mx-5 object-cover rounded-md' color='blue' />
-                                            <button onClick={()=>{setVideoPlayerModal({visible:true,url:formData?.video})}}><span className='font-poppins text-sm text-[#0859DE]'>{String(formData?.video)?.substring(String(formData?.video).length - 36)}</span></button>
-                                        </div>
-                                        <button
-                                                className="font-poppins text-blue-500 rounded-md transition border-0 px-5"
-                                                onClick={()=>setVideoModal(true)}
-                                                >
-                                                    <Edit size={20} />
-                                        </button>
-                             </div>
-                            :
-                            <button
-                                className="mx-4 mt-4 px-4 py-2 border font-poppins rounded-md bg-blue-500 text-white w-[20%]"
-                                onClick={()=>setVideoModal(true)}
-                                >
-                                Upload
-                            </button>
-                        }
+
 
                     </div>
                     <div className='flex justify-between mt-1 sticky bottom-0 bg-white border-2'>
@@ -346,8 +342,8 @@ const EditLectureModal = ({ isVisible, onClose }) => {
                     </div>
                 </div>
             </div>
-            { videoModal && <VideoUploadModal onClose={handleVideoUploadClose} visible={videoModal}/>}
-            { videoPlayerModal.visible && <VideoPlayer open={videoPlayerModal.visible} video={videoPlayerModal.url} onClose={()=>setVideoPlayerModal({visible:false,url:null})}/> }
+            {videoModal && <VideoUploadModal onClose={handleVideoUploadClose} visible={videoModal} />}
+            {videoPlayerModal.visible && <VideoPlayer open={videoPlayerModal.visible} video={videoPlayerModal.url} onClose={() => setVideoPlayerModal({ visible: false, url: null })} />}
         </div>
     );
 };
