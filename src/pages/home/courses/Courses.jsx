@@ -141,14 +141,16 @@ const Courses = () => {
                             <button type='button' className='bg-white text-black px-4 py-1.5 rounded-sm font-poppins text-sm border-2' onClick={handleClear}>Clear</button>
                         </form>
                     </div>
-                    <div className='flex flex-wrap w-full h-[60vh] overflow-auto'>
+                    <div className='flex flex-wrap w-full h-[60vh] overflow-auto gap-2'>
                         {(courses && courses?.length > 0) ? courses.map((item, index) => {
                             return (
-                                <div key={index} className='w-[31%] mt-4 h-[25vh] mr-6 bg-white rounded-md mb-12 '>
-                                    <div className='flex p-5 pb-28 w-100 h-12 border-b-2 border-[#59963626] bg-white'>
+                                <div key={index} className='w-[51vh] mt-4 h-[28vh] mr-6 bg-white rounded-md mb-1 '>
+                                    <div className='flex p-5 w-100 h-auto border-b-2 border-[#59963626] bg-white'>
                                         <img src={item.bannerImg} className='w-[7vh] h-[7vh] object-cover mt-3' />
                                         <div className='flex-1 justify-between items-center mx-2'>
-                                            <p className='font-poppins text-xl font-semibold px-2'>{item.name.length > 35 ? item.name.slice(0, 35) + '...' : item.name}</p>
+                                            <div className=' h-7 overflow-hidden'>
+                                                <p className='font-poppins text-xl font-semibold px-2 inline'>{item.name.length > 25 ? item.name.slice(0, 25) + '...' : item.name}</p>
+                                            </div>
                                             <div className='flex items-center'>
                                                 <p className='font-poppins text-xs mx-2 mt-1 text-[#599636]'>{item?.batches?.length > 0 ? item?.batches[0]?.id : ''}</p>
                                                 <Copy onClick={handleCopyClick.bind(this, item?.batches?.length > 0 ? item?.batches[0]?.id : '')} className='text-[#599636] cursor-pointer mt-1' size={12} />
