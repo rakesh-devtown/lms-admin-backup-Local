@@ -97,7 +97,7 @@ const ModuleModal = ({ isVisible, onClose, subSection,parentSectionId }) => {
                         <X className='text-white' />
                     </button>
                 </div>
-                <div className="flex-1 bg-white mt-12 rounded-lg w-[100vh] h-[60vh] overflow-auto">
+                <div className="flex-1 bg-white mt-12 rounded-lg w-[100vh] h-[44vh] overflow-auto">
                     <div className='border-b-2 p-4 pb-3 text-slate-700 font-poppins'>
                         <span>Add Module</span>
                     </div>
@@ -147,11 +147,16 @@ const ModuleModal = ({ isVisible, onClose, subSection,parentSectionId }) => {
                                 <option value={3}>3</option>
                                 <option value={4}>4</option>
                                 <option value={5}>5</option>
+                                <option value={6}>6</option>
+                                <option value={7}>7</option>
+                                <option value={8}>8</option>
+                                <option value={9}>9</option>
+                                <option value={10}>10</option>
                             </select>
                         </div>
 
                     </div>
-                    <div className='flex justify-between mt-1 mx-1'>
+                    <div className='flex justify-between mt-3 mx-1'>
 
                         <button onClick={onClear} className="border-2 flex items-center border-[#A0B5D7] text-blue-900 font-poppins text-sm font-medium rounded-md p-2 px-4 m-2 hover:bg-slate-200 transition">
                             <Trash2 size={18} className='text-blue-900 mr-2' />
