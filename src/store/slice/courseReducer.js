@@ -54,11 +54,111 @@ const courseSlice = createSlice({
         },
         setCurrentCourseCertificates: (state, action) => {
             state.currentCourseCertificates = action.payload;
-        }
+        },
+        setSectionItemData: (state, action) => {
+            const {sectionItemId,sectionItem,sectionId} = action.payload;
+            console.log(sectionItem);
+            console.log(sectionId);
+            console.log(sectionItemId);
+            const findIndexOfSection = state.currentCourse?.sections.findIndex(section=>section.id === sectionId);
+            if(findIndexOfSection !== -1){
+                const findIndexOfSectionItem = state.currentCourse?.sections[findIndexOfSection].sectionItems.findIndex(item=>item.id === sectionItemId);
+                if(findIndexOfSectionItem !== -1){
+                    state.currentCourse.sections[findIndexOfSection].sectionItems[findIndexOfSectionItem] = sectionItem;
+                }
+             }
+             else{
+                let idOfParentSection=null;
+                state.currentCourse.sections.forEach(section=>{
+                    const findIndexOfSubSection = section.subsections.findIndex(subSection=>subSection.id === sectionId);
+                    if(findIndexOfSubSection !== -1){
+                        const findIndexOfSectionItem = section.subsections[findIndexOfSubSection].sectionItems.findIndex(item=>item.id === sectionItemId);
+                        if(findIndexOfSectionItem !== -1){
+                            section.subsections[findIndexOfSubSection].sectionItems[findIndexOfSectionItem] = sectionItem;
+                            idOfParentSection = section.id;
+                        }
+                    }
+                });
+            }
+        },
+        deleteSectionItemFromSection: (state, action) => {
+            const sectionItemId = action.payload;
+            const sections = state.currentCourse?.sections;
+            sections.forEach(section=>{
+                const findIndexOfSectionItem = section?.sectionItems.findIndex(item=>item.id === sectionItemId);
+                if(findIndexOfSectionItem !== -1){
+                    section.sectionItems.filter(item=>item.id !== sectionItemId);
+                    return;
+                }
+                section?.subsections.forEach(subSection=>{
+                    const findIndexOfSectionItem = subSection?.sectionItems.findIndex(item=>item.id === sectionItemId);
+                    if(findIndexOfSectionItem !== -1){
+                        subSection.sectionItems.filter(item=>item.id !== sectionItemId);
+                        return;
+                    }
+                });
+            });
+
+            state.currentCourse = {...state.currentCourse, sections:sections};
+        },
+        pushSectionItemInSection: (state, action) => {
+            const {sectionId,sectionItem} = action.payload;
+            if(!state.currentCourse)return;
+            const findIndexOfSection = state.currentCourse?.sections.findIndex(section=>section.id === sectionId);
+            //console.log(findIndexOfSection);
+            if(findIndexOfSection !== -1){
+                state.currentCourse?.sections[findIndexOfSection].sectionItems.push(sectionItem);
+                const totalSections = state.currentCourse?.sections.length;
+                for(let i = findIndexOfSection+1; i<totalSections; i+=1){
+                   // state.currentCourse?.sections[i].orderNumber = state.currentCourse?.sections[i].orderNumber + 1;
+                    state.currentCourse?.sections[i].sectionItems.forEach(item=>{
+                        item.orderNumber = item.orderNumber + 1;
+                    })
+                }
+
+            }else{
+                let idOfParentSection=null
+                state.currentCourse?.sections.forEach(section=>{
+                    const findIndexOfSubSection = section?.subsections.findIndex(subSection=>subSection.id === sectionId);
+                    if(findIndexOfSubSection !== -1){
+                        section?.subsections[findIndexOfSubSection].sectionItems.push(sectionItem);
+                        idOfParentSection = section.id 
+                        const totalSubSections = section?.subsections.length;
+                        for(let i = findIndexOfSubSection+1; i<totalSubSections; i+=1){
+                            //state.currentCourse?.sections[i].orderNumber = state.currentCourse?.sections[i].orderNumber + 1;
+                            section?.subsections[i].sectionItems.forEach(item=>{
+                                item.orderNumber = item.orderNumber + 1;
+                            })
+                        }   
+                        return;
+                    }
+                }); // loop through all sections
+
+                if(idOfParentSection)
+                {
+                    const findIndexOfSection = state.currentCourse?.sections.findIndex(section=>section.id === idOfParentSection);
+                    if(findIndexOfSection !== -1){
+                        const totalSections = state.currentCourse?.sections.length;
+                        for(let i = findIndexOfSection+1; i<totalSections; i+=1){
+                            //state.currentCourse?.sections[i].orderNumber = state.currentCourse?.sections[i].orderNumber + 1;
+                            state.currentCourse?.sections[i].subsections.forEach(subSection=>{
+                                //subSection.orderNumber = subSection.orderNumber + 1;
+                                subSection.sectionItems.forEach(item=>{
+                                    item.orderNumber = item.orderNumber + 1;
+                                })
+                            })
+                        }
+                    }
+                
+                }
+            }
+            
+        },
+        
     }
 });
 
-export const {setViewCourseNull, setLoading, setCourses, addCourse, setViewCourse, updateCourseState,setCurrentSectionItem, setCurrentBatchStudents, setCurrentCourseCertificates } = courseSlice.actions;
+export const {setViewCourseNull, setSectionItemData, deleteSectionItemFromSection, setLoading, setCourses, pushSectionItemInSection, addCourse, setViewCourse, updateCourseState,setCurrentSectionItem, setCurrentBatchStudents, setCurrentCourseCertificates } = courseSlice.actions;
 export default courseSlice.reducer;
 
 export const createCourse = (course) => async (dispatch) => {
@@ -205,7 +305,7 @@ export const createSubSectionOfSection = (subSection) => async (dispatch) => {
     }
 }
 
-export const addSectionItem = (sectionItem) => async (dispatch) => {
+export const addSectionItem = (sectionItem) => async (dispatch, getState) => {
     try {
         dispatch(setLoading(true));
         if(!sectionItem?.sectionId) return notification.error({ message: 'Section Item Creation Failed', description: 'Section Id is required' });
@@ -213,7 +313,8 @@ export const addSectionItem = (sectionItem) => async (dispatch) => {
         const { message, success,data } = res;
         if (success) {
             notification.success({ message: 'New Lecture Created', description: message });
-            await dispatch(getCurriculumOfCourse(sectionItem?.courseId));
+            await dispatch(pushSectionItemInSection({sectionId:sectionItem.sectionId,sectionItem:data}));
+            //await dispatch(getCurriculumOfCourse(sectionItem?.courseId));]
             return true;
         } else {
             notification.error({ message: 'Section Item Creation Failed', description: message });
@@ -236,6 +337,7 @@ export const deleteSectionItems = (sectionItemId) => async (dispatch,getState) =
         const { message, success } = res;
         if (success) {
             notification.success({ message: 'Section Item Deleted', description: message });
+            //await dispatch(deleteSectionItemFromSection(sectionItemId));
             await dispatch(getCurriculumOfCourse(currentCourse?.id));
             return true;
         } else {
@@ -275,10 +377,11 @@ export const addSectionItemData = (sectionItem,sectionItemId) => async (dispatch
         const {currentCourse} = state.course;
         if(!sectionItemId) return notification.error({ message: 'Section Item Update Failed', description: 'Section Item Id is required' });
         const res = await servicePost(`admin/admin/v1/curriculum/section-item/edit?id=${sectionItemId}`, sectionItem);
-        const { message, success } = res;
+        const { message, success,data } = res;
         if (success) {
             notification.success({ message: 'Lecture Updated', description: message });
-            await dispatch(getCurriculumOfCourse(currentCourse?.id));
+            await dispatch(setSectionItemData({sectionItemId:data.id,sectionItem:data,sectionId:data.sectionId}));
+            //await dispatch(getCurriculumOfCourse(currentCourse?.id));
             return true;
         } else {
             notification.error({ message: 'Lecture Update Failed', description: message });
