@@ -144,7 +144,7 @@ const Courses = () => {
                     <div className='flex flex-wrap w-full h-[60vh] overflow-auto gap-2'>
                         {(courses && courses?.length > 0) ? courses.map((item, index) => {
                             return (
-                                <div key={index} className='w-[51vh] mt-4 h-[28vh] mr-6 bg-white rounded-md mb-1 '>
+                                <div key={index} className='w-[31%] mt-5 h-[43%] mr-6 bg-white rounded-md mb-7 '>
                                     <div className='flex p-5 w-100 h-auto border-b-2 border-[#59963626] bg-white'>
                                         <img src={item.bannerImg} className='w-[7vh] h-[7vh] object-cover mt-3' />
                                         <div className='flex-1 justify-between items-center mx-2'>
