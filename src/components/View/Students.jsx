@@ -15,6 +15,7 @@ const Students = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [students, setStudents] = useState([])
   const [archived, setArchived] = useState(false)
+  const [page,setpage] = useState(1)
   const [deleteStudent, setDeleteStudent] = useState(false)
   const { currentCourse, loading, currentBatchStudents } = useSelector(state => state.course);
 
@@ -180,11 +181,11 @@ const Students = () => {
 
 
   useEffect(() => {
-    dispatch(getBatchEnrolledStudents(currentCourse?.batches[0]?.id, 1, 20))
-  }, [])
+    dispatch(getBatchEnrolledStudents(currentCourse?.batches[0]?.id, page, 20))
+  }, [page])
 
 
-
+  console.log(currentBatchStudents?.enrollments)
 
   return (
     <div className="">
@@ -358,7 +359,9 @@ const Students = () => {
                 columns={columns}
                 className='rounded-md border'
                 pagination={{
-                  pageSize: 20,
+                  total: currentBatchStudents?.totalEnrollments || 0,
+                  pageSize:20,
+                  onChange: (page) => setpage(page),
                   showSizeChanger: false,
                   showQuickJumper: false,
                   style: { display: 'flex', justifyContent: 'flex-end', marginRight: 40 },
