@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { ConfigProvider, Tabs, Table, Tag, Space, notification } from 'antd';
-import { ArrowDownToLine, CircleHelp } from 'lucide-react';
+import { ConfigProvider, Tabs, Table, notification, Switch } from 'antd';
+import { ArrowDownToLine } from 'lucide-react';
 import DeleteStudentModal from '../Modal/DeleteStudentModal';
 import Papa from 'papaparse';
 import Spinner from '../Loader/Spinner';
@@ -14,14 +14,15 @@ const Students = () => {
   const [studentLoading, setStudentLoading] = useState(false)
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [students, setStudents] = useState([])
-  const [deleteStudent,setDeleteStudent]=useState(false)
-  const {currentCourse,loading, currentBatchStudents} = useSelector(state => state.course); 
+  const [archived, setArchived] = useState(false)
+  const [deleteStudent, setDeleteStudent] = useState(false)
+  const { currentCourse, loading, currentBatchStudents } = useSelector(state => state.course);
 
   const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
-    firstName:'',
-    lastName:'',
+    firstName: '',
+    lastName: '',
     email: "",
     phone: "",
   })
@@ -34,103 +35,102 @@ const Students = () => {
   }
 
   const handleDeleteStudent = () => {
-    setDeleteStudent(true);
+    setArchived(true)
+    setIsModalVisible(false);
   }
 
-  const handleFileUpload = async(event) => {
+  const handleFileUpload = async (event) => {
     try {
       setStudentLoading(true)
       setUploadedFile(null)
-      
+
       const file = event.target.files[0];
-      if(!file) return notification.error({message:'Error',description:'Please select a file'}) 
-      if(file.type!=='text/csv') return notification.error({message:'Error',description:'Please select a csv file'})
+      if (!file) return notification.error({ message: 'Error', description: 'Please select a file' })
+      if (file.type !== 'text/csv') return notification.error({ message: 'Error', description: 'Please select a csv file' })
       //console.log(file)
       if (file) {
         setUploadedFile(file);
       }
 
       const batchId = currentCourse?.batches[0]?.id;
-      if(!batchId)
-      {
-        return notification.error({message:'Error',description:'No batch to add student to'})
+      if (!batchId) {
+        return notification.error({ message: 'Error', description: 'No batch to add student to' })
       }
-  
+
       Papa.parse(file, {
-          skipEmptyLines: true,
-          complete: function ({ data }) {
-              const st = []
-              data.forEach(s => {
-                  const [firstName, lastName, email,phone] = s
-                  if (email.toLowerCase().trim().match(
-                      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) {
-                      
-                        let data={
-                          name:`${firstName.trim()} ${lastName.trim()}`,
-                          email:email.toLowerCase().trim(),
-                          phone:phone,
-                          batchId:batchId
-                        }
-                        st.push(data)
-                  } else {
-                      console.log('email doesnt match', email)
-                  }
-              })
-              setStudents(prev => [...st])
-          },
-          error: error => {
-              console.log(error)
-          },
+        skipEmptyLines: true,
+        complete: function ({ data }) {
+          const st = []
+          data.forEach(s => {
+            const [firstName, lastName, email, phone] = s
+            if (email.toLowerCase().trim().match(
+              /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) {
+
+              let data = {
+                name: `${firstName.trim()} ${lastName.trim()}`,
+                email: email.toLowerCase().trim(),
+                phone: phone,
+                batchId: batchId
+              }
+              st.push(data)
+            } else {
+              console.log('email doesnt match', email)
+            }
+          })
+          setStudents(prev => [...st])
+        },
+        error: error => {
+          console.log(error)
+        },
       })
 
       return true
 
-  } catch (error) {
+    } catch (error) {
       console.log(error)
-  }finally{
+    } finally {
       setStudentLoading(false)
-  }
+    }
   };
 
 
-  const handleAddBatchStudent=async()=>{
-    try{
+  const handleAddBatchStudent = async () => {
+    try {
       const batchId = currentCourse?.batches[0]?.id;
-      if(!formData.firstName || !formData.lastName || !formData.email || !formData.phone){
-          return notification.error({message:'Error',description:'All fields are required'})
+      if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone) {
+        return notification.error({ message: 'Error', description: 'All fields are required' })
       }
-      if(!batchId)
-      {
-        return notification.error({message:'Error',description:'No batch to add student to'})
+      if (!batchId) {
+        return notification.error({ message: 'Error', description: 'No batch to add student to' })
       }
-      const data={
-        name:`${formData.firstName.trim()} ${formData.lastName.trim()}`,
-        email:formData.email,
-        phone:formData.phone,
-        batchId:batchId
+      const data = {
+        name: `${formData.firstName.trim()} ${formData.lastName.trim()}`,
+        email: formData.email,
+        phone: formData.phone,
+        batchId: batchId
       }
 
-      if(data.name.trim().length<=3){
-        return notification.error({message:'Error',description:'Invalid name'})
+      if (data.name.trim().length <= 3) {
+        return notification.error({ message: 'Error', description: 'Invalid name' })
       }
-      
+
       await dispatch(addStudentToBatch([data]))
 
-    }catch(err){
+    } catch (err) {
       console.log(err)
     }
   }
 
-  const addStudentsVisCSV=async()=>{
-    try{
-      if(students.length===0) return notification.error({message:'Error',description:'No student to add'})    
-      
-        const res = await dispatch(addStudentToBatch(students))
-        if(res){
-          setStudents([])
-          setUploadedFile(null)
-        }  
-      }catch(err){
+  const addStudentsVisCSV = async () => {
+    try {
+      if (students.length === 0) return notification.error({ message: 'Error', description: 'No student to add' })
+
+      const res = await dispatch(addStudentToBatch(students))
+      if (res) {
+        setStudents([])
+        setUploadedFile(null)
+      }
+    } catch (err) {
       console.log(err)
     }
   }
@@ -148,7 +148,7 @@ const Students = () => {
       title: 'Student Email Address',
       dataIndex: 'address',
       key: 'email',
-      render: (_,record) => (
+      render: (_, record) => (
         <span className='font-poppins text-[#1890FF]'>{record?.user?.email}</span>
       )
     },
@@ -167,68 +167,21 @@ const Students = () => {
           ||
           String(record?.farmDetails?.address).toLowerCase().includes(value.toLowerCase())
       },
-      render: (_, record) => (
-        <div className="flex items-center w-full h-full overflow-auto">
-          <label className="inline-flex items-center cursor-pointer">
-            <input type="checkbox" value="" className="sr-only peer" />
+      render: (_, record) => {
+        return (
+          <Switch checked={!archived ? true : false} onChange={handleClick} />
+        )
+      }
 
-
-            <svg onClick={handleClick} width="46" height="26" viewBox="0 0 46 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="44" height="22" rx="11" fill="#1890FF" />
-              <g filter="url(#filter0_d_2097_9963)">
-                <g clip-path="url(#clip0_2097_9963)">
-                  <rect x="24" y="2" width="18" height="18" rx="9" fill="white" />
-                </g>
-              </g>
-              <defs>
-                <filter id="filter0_d_2097_9963" x="20" y="0" width="26" height="26" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                  <feFlood flood-opacity="0" result="BackgroundImageFix" />
-                  <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
-                  <feOffset dy="2" />
-                  <feGaussianBlur stdDeviation="2" />
-                  <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0.137255 0 0 0 0 0.0431373 0 0 0 0.2 0" />
-                  <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_2097_9963" />
-                  <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_2097_9963" result="shape" />
-                </filter>
-                <clipPath id="clip0_2097_9963">
-                  <rect x="24" y="2" width="18" height="18" rx="9" fill="white" />
-                </clipPath>
-              </defs>
-            </svg>
-          </label>
-        </div>
-      ),
     },
   ];
 
-  const data = [
-    {
-      key: '1',
-      name: 'John Brown',
-      age: 32,
-      address: 'New York No. 1 Lake Park',
-      tags: ['nice', 'developer'],
-    },
-    {
-      key: '2',
-      name: 'Jim Green',
-      age: 42,
-      address: 'London No. 1 Lake Park',
-      tags: ['loser'],
-    },
-    {
-      key: '3',
-      name: 'Joe Black',
-      age: 32,
-      address: 'Sydney No. 1 Lake Park',
-      tags: ['cool', 'teacher'],
-    },
-  ];
+
 
 
   useEffect(() => {
-    dispatch(getBatchEnrolledStudents(currentCourse?.batches[0]?.id,1,20))
-  },[])
+    dispatch(getBatchEnrolledStudents(currentCourse?.batches[0]?.id, 1, 20))
+  }, [])
 
 
 
@@ -275,7 +228,7 @@ const Students = () => {
 
       {activeTab === '1' &&
         <div className='bg-white mt-3 h-[72vh] overflow-auto'>
-          {(studentLoading || loading) && <Spinner/>}
+          {(studentLoading || loading) && <Spinner />}
           <div className='pt-5'>
             <span className='font-poppins mx-7 pt-4 font-semibold'>Add Student</span>
             <div className='flex mx-9 mt-4'>
@@ -330,11 +283,11 @@ const Students = () => {
                   onChange={handleFileUpload}
                 />
                 <label htmlFor='fileUpload' className='flex w-[78vh] h-[14vh] flex-col items-center justify-center cursor-pointer'>
-                  {uploadedFile ? 
-                  <div>
-                    <p className="text-base text-blue-500 font-poppins">{uploadedFile.name}</p>
-                    {<p className=' text-blue-700'>Correct Student Details : {students.length}</p>}
-                  </div>
+                  {uploadedFile ?
+                    <div>
+                      <p className="text-base text-blue-500 font-poppins">{uploadedFile.name}</p>
+                      {<p className=' text-blue-700'>Correct Student Details : {students.length}</p>}
+                    </div>
                     :
                     <>
                       <svg width="49" height="48" viewBox="0 0 49 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -348,7 +301,7 @@ const Students = () => {
 
 
               </div>
-            
+
             </div>
 
             <div className="border rounded-md w-[78vh] h-[25vh] mx-2">
@@ -366,10 +319,10 @@ const Students = () => {
               </table>
               <div className="mt-12 px-48 text-center">
                 <a target='_blank' href={'https://student-platform-assets.s3.ap-south-1.amazonaws.com/course/e13acf65-862b-4890-8790-c31ac9f602c0/studyMaterial/25248056846550fa72cd20987cb11304.csv'}>
-                <button className="bg-white border-[#0859DE] border-2 flex font-poppins items-center text-sm text-[#0859DE] py-2 px-4 rounded-lg">
-                  <ArrowDownToLine size={16} className="mr-2" />
-                  Download CSV Format
-                </button>
+                  <button className="bg-white border-[#0859DE] border-2 flex font-poppins items-center text-sm text-[#0859DE] py-2 px-4 rounded-lg">
+                    <ArrowDownToLine size={16} className="mr-2" />
+                    Download CSV Format
+                  </button>
                 </a>
               </div>
             </div>
@@ -401,7 +354,16 @@ const Students = () => {
                 },
               }}
             >
-              <Table columns={columns} className='rounded-md border' dataSource={currentBatchStudents?.enrollments || []} />
+              <Table
+                columns={columns}
+                className='rounded-md border'
+                pagination={{
+                  pageSize: 20,
+                  showSizeChanger: false,
+                  showQuickJumper: false,
+                  style: { display: 'flex', justifyContent: 'flex-end', marginRight: 40 },
+                }}
+                dataSource={currentBatchStudents?.enrollments || []} />
             </ConfigProvider>
           </div>
         </div>
