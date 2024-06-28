@@ -382,8 +382,8 @@ const Students = () => {
 
       {activeTab === '2' &&
 
-        <div>
-          <div className='bg-white p-5 mt-3'>
+        <div className='h-full'>
+          <div className='bg-white p-5 mt-3 h-full'>
             <div className='flex justify-end items-center'>
               <input
                 type="text"
@@ -393,7 +393,7 @@ const Students = () => {
               <button className='bg-[#1890FF] text-white px-4 py-1.5 rounded-sm font-poppins text-sm border-2 mx-2'>Search</button>
             </div>
           </div>
-          <div className='p-6 bg-white mt-3'>
+          <div className='p-6 bg-white mt-3 h-[58vh] overflow-auto'>
             <ConfigProvider
               theme={{
                 token: {
