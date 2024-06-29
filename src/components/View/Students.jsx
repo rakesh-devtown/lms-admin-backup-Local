@@ -5,17 +5,19 @@ import DeleteStudentModal from '../Modal/DeleteStudentModal';
 import Papa from 'papaparse';
 import Spinner from '../Loader/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
+import { debounce } from 'lodash';
 import { addStudentToBatch, getBatchEnrolledStudents } from '../../store/slice/courseReducer';
 
 const Students = () => {
   const [activeTab, setActiveTab] = useState("1")
-  const [searchText, setSearchText] = useState('')
+  const [search, setSearch] = useState('')
   const [uploadedFile, setUploadedFile] = useState(null);
   const [studentLoading, setStudentLoading] = useState(false)
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [students, setStudents] = useState([])
   const [archived, setArchived] = useState(false)
-  const [deleteStudent, setDeleteStudent] = useState(false)
+  const [page, setpage] = useState(1)
+
   const { currentCourse, loading, currentBatchStudents } = useSelector(state => state.course);
 
   const dispatch = useDispatch();
@@ -161,12 +163,6 @@ const Students = () => {
     },
     {
       title: 'Archive',
-      filteredValue: [searchText],
-      onFilter: (value, record) => {
-        return String(record?.farmDetails?.name).toLowerCase().includes(value.toLowerCase())
-          ||
-          String(record?.farmDetails?.address).toLowerCase().includes(value.toLowerCase())
-      },
       render: (_, record) => {
         return (
           <Switch checked={!archived ? true : false} onChange={handleClick} />
@@ -176,14 +172,19 @@ const Students = () => {
     },
   ];
 
+  const debouncedSearch = debounce((search) => {
+    dispatch(getBatchEnrolledStudents(currentCourse?.batches[0]?.id, page, 20, search))
+  }, 2000);
 
+  const handleInputChange = (event) => {
+    setSearch(event.target.value);
+    debouncedSearch(event.target.value);
+  };
 
 
   useEffect(() => {
-    dispatch(getBatchEnrolledStudents(currentCourse?.batches[0]?.id, 1, 20))
-  }, [])
-
-
+    dispatch(getBatchEnrolledStudents(currentCourse?.batches[0]?.id, page, 20))
+  }, [page])
 
 
   return (
@@ -336,14 +337,18 @@ const Students = () => {
       {activeTab === '2' &&
 
         <div className='h-full'>
+          {(studentLoading || loading) && <Spinner />}
           <div className='bg-white p-5 mt-3 h-full'>
             <div className='flex justify-end items-center'>
               <input
                 type="text"
+                onChange={handleInputChange}
+                value={search}
                 className='border-2 border-gray-300 rounded-sm px-2 py-1.5 mx-2 font-poppins text-sm w-96'
                 placeholder='Search student using email/phone number'
               />
-              <button className='bg-[#1890FF] text-white px-4 py-1.5 rounded-sm font-poppins text-sm border-2 mx-2'>Search</button>
+              <button
+                className='bg-[#1890FF] text-white px-4 py-1.5 rounded-sm font-poppins text-sm border-2 mx-2'>Search</button>
             </div>
           </div>
           <div className='p-6 bg-white mt-3 h-[58vh] overflow-auto'>
@@ -358,7 +363,9 @@ const Students = () => {
                 columns={columns}
                 className='rounded-md border'
                 pagination={{
+                  total: currentBatchStudents?.totalEnrollments || 0,
                   pageSize: 20,
+                  onChange: (page) => setpage(page),
                   showSizeChanger: false,
                   showQuickJumper: false,
                   style: { display: 'flex', justifyContent: 'flex-end', marginRight: 40 },
