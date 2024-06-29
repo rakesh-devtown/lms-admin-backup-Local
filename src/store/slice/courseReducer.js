@@ -429,7 +429,12 @@ export const addStudentToBatch= (students) => async (dispatch) => {
             notification.error({ message: 'Student Addition Failed', description: message });
         }
     }catch (error) {
-        notification.error({ message: 'Student Addition Failed', description: error.message });
+        console.log(error);
+        const {response} = error;
+        const {data} = response;
+        // console.log(data);
+        // console.log(response);
+        notification.error({ message: 'Student Addition Failed', description: data?.data?.message || error.message });
     }finally{
         dispatch(setLoading(false));
     }
