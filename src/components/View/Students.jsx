@@ -137,10 +137,6 @@ const Students = () => {
     }
   }
 
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    dispatch(getBatchEnrolledStudents(currentCourse?.batches[0]?.id, page, 20, search))
-  }
 
   const columns = [
     {
@@ -185,7 +181,6 @@ const Students = () => {
     debouncedSearch(event.target.value);
   };
 
-  console.log(currentBatchStudents?.enrollments)
 
   useEffect(() => {
     dispatch(getBatchEnrolledStudents(currentCourse?.batches[0]?.id, page, 20))

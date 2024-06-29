@@ -9,7 +9,8 @@ const courseSlice = createSlice({
         currentSectionItem: null,
         loading: false,
         currentBatchStudents: [],
-        currentCourseCertificates: []
+        currentCourseCertificates: [],
+        allStudents: []
     },
     name: 'course',
     reducers: {
@@ -51,6 +52,9 @@ const courseSlice = createSlice({
         },
         setCurrentBatchStudents: (state, action) => {
             state.currentBatchStudents = action.payload;
+        },
+        setAllStudents: (state, action) => {
+            state.allStudents = action.payload;
         },
         setCurrentCourseCertificates: (state, action) => {
             state.currentCourseCertificates = action.payload;
@@ -157,7 +161,7 @@ const courseSlice = createSlice({
     }
 });
 
-export const { setViewCourseNull, setSectionItemData, deleteSectionItemFromSection, setLoading, setCourses, pushSectionItemInSection, addCourse, setViewCourse, updateCourseState, setCurrentSectionItem, setCurrentBatchStudents, setCurrentCourseCertificates } = courseSlice.actions;
+export const { setViewCourseNull, setSectionItemData, deleteSectionItemFromSection, setLoading, setCourses, pushSectionItemInSection, addCourse, setViewCourse, updateCourseState, setCurrentSectionItem, setCurrentBatchStudents, setAllStudents, setCurrentCourseCertificates } = courseSlice.actions;
 export default courseSlice.reducer;
 
 export const createCourse = (course) => async (dispatch) => {
@@ -441,6 +445,22 @@ export const getBatchEnrolledStudents = (batchId, page, limit, search) => async 
         const { message, success, data } = res;
         if (success) {
             dispatch(setCurrentBatchStudents(data));
+        } else {
+            notification.error({ message: 'Student Fetch Failed', description: message });
+        }
+    } catch (error) {
+        notification.error({ message: 'Student Fetch Failed', description: error.message });
+    } finally {
+        dispatch(setLoading(false));
+    }
+}
+export const getAllEnrolledStudents = (page, limit, search) => async (dispatch) => {
+    try {
+        dispatch(setLoading(true));
+        const res = await serviceGet(`admin/admin/v1/student/student?all=true&limit=${limit}&page=${page}&search=${search || ''}`);
+        const { message, success, data } = res;
+        if (success) {
+            dispatch(setAllStudents(data));
         } else {
             notification.error({ message: 'Student Fetch Failed', description: message });
         }
