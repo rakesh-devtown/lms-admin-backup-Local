@@ -149,7 +149,7 @@ const Courses = () => {
                                         <img src={item.bannerImg} className='w-[7vh] h-[7vh] object-cover mt-3' />
                                         <div className='flex-1 justify-between items-center mx-2'>
                                             <div className=' h-7 overflow-hidden'>
-                                                <p className='font-poppins text-xl font-semibold px-2 inline'>{item.name.length > 25 ? item.name.slice(0, 25) + '...' : item.name}</p>
+                                                <p className='font-poppins text-xl font-semibold px-2 inline'>{item.name.length > 20 ? item.name.slice(0, 20) + '...' : item.name}</p>
                                             </div>
                                             <div className='flex items-center'>
                                                 <p className='font-poppins text-xs mx-2 mt-1 text-[#599636]'>{item?.batches?.length > 0 ? item?.batches[0]?.id : ''}</p>
