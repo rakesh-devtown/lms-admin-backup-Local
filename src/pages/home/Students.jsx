@@ -180,16 +180,20 @@ const Students = () => {
     },
   ];
 
-  const debouncedSearch = debounce((search) => {
-    dispatch(getAllEnrolledStudents(page, 20, search))
-  }, 2000);
+
 
   const handleInputChange = (event) => {
     setSearch(event.target.value);
-    debouncedSearch(event.target.value);
+    // if(event.target.value.l){
+    //   dispatch(getAllEnrolledStudents(1, 20))
+    // }
   };
 
-console.log(allStudents[0])
+  const onClickSearch = async()=>{
+    await dispatch(getAllEnrolledStudents(1, 20, search))
+  }
+
+//console.log(allStudents[0])
   useEffect(() => {
     dispatch(getAllEnrolledStudents(page, 20))
   }, [page])
@@ -366,7 +370,7 @@ console.log(allStudents[0])
                 placeholder='Search student using email/phone number'
               />
               <button
-                className='bg-[#1890FF] text-white px-4 py-1.5 rounded-sm font-poppins text-sm border-2 mx-2'>Search</button>
+                className='bg-[#1890FF] text-white px-4 py-1.5 rounded-sm font-poppins text-sm border-2 mx-2' onClick={onClickSearch}>Search</button>
             </div>
           </div>
           <div className='p-6 bg-white mt-3 h-[58vh] overflow-auto'>

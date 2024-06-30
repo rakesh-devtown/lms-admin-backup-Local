@@ -172,14 +172,21 @@ const Students = () => {
     },
   ];
 
-  const debouncedSearch = debounce((search) => {
-    dispatch(getBatchEnrolledStudents(currentCourse?.batches[0]?.id, page, 20, search))
-  }, 2000);
+  // const debouncedSearch = debounce((search) => {
+  //   dispatch(getBatchEnrolledStudents(currentCourse?.batches[0]?.id, page, 20, search))
+  // }, 2000);
 
   const handleInputChange = (event) => {
     setSearch(event.target.value);
-    debouncedSearch(event.target.value);
+    if (event.target.value.trim().length === 0) {
+      dispatch(getBatchEnrolledStudents(currentCourse?.batches[0]?.id, page, 20,""))
+    }
   };
+
+  const onClickHandleSearch = (e) => {
+    e.preventDefault();
+    dispatch(getBatchEnrolledStudents(currentCourse?.batches[0]?.id, page, 20, search))
+  }
 
 
   useEffect(() => {
@@ -339,17 +346,17 @@ const Students = () => {
         <div className='h-full'>
           {(studentLoading || loading) && <Spinner />}
           <div className='bg-white p-5 mt-3 h-full'>
-            <div className='flex justify-end items-center'>
+            <form onSubmit={onClickHandleSearch} className='flex justify-end items-center'>
               <input
                 type="text"
                 onChange={handleInputChange}
                 value={search}
                 className='border-2 border-gray-300 rounded-sm px-2 py-1.5 mx-2 font-poppins text-sm w-96'
-                placeholder='Search student using email/phone number'
+                placeholder='Search student using email'
               />
               <button
                 className='bg-[#1890FF] text-white px-4 py-1.5 rounded-sm font-poppins text-sm border-2 mx-2'>Search</button>
-            </div>
+            </form>
           </div>
           <div className='p-6 bg-white mt-3 h-[58vh] overflow-auto'>
             <ConfigProvider
