@@ -127,15 +127,12 @@ const Courses = () => {
 
                     <div className='bg-white p-5'>
                         <form className='flex justify-end items-center' onSubmit={handleSearchSubmit}>
-                            <p className='font-poppins text-sm'>Select Course/Batch</p>
-                            <CircleHelp className='text- mx-1' size={12} />
-                            <p className='mb-1'>:</p>
                             <input
                                 onChange={(e) => { setSearch(e.target.value) }}
                                 value={search}
                                 type="text"
                                 className='border-2 border-gray-300 rounded-sm px-2 py-1.5 mx-2 font-poppins text-sm w-96'
-                                placeholder='Please enter'
+                                placeholder='Search course/batch'
                             />
                             <button type='submit' className='bg-[#1890FF] text-white px-4 py-1.5 rounded-sm font-poppins text-sm border-2 mx-2'>Search</button>
                             <button type='button' className='bg-white text-black px-4 py-1.5 rounded-sm font-poppins text-sm border-2' onClick={handleClear}>Clear</button>

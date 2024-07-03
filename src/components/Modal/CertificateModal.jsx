@@ -76,6 +76,13 @@ const CertificateModal = ({ isVisible, onClose }) => {
             const res = dispatch(createCertificateTemplate(data));
             if (res) {
                 //notification.success({message:'Certificate Template Created',description:'Certificate template has been created successfully'});
+                setFormData(
+                    {
+                        courseId: currentCourse?.id,
+                        name: '',
+                        url: '',
+
+                    })
                 onClose();
             }
 
@@ -85,23 +92,7 @@ const CertificateModal = ({ isVisible, onClose }) => {
             console.log(err);
         }
     }
-    
-    const handleDelete = () => {
-        try {
 
-            const res = dispatch(deleteCertificateTemplate(formData.courseId));
-            if (res) {
-                //notification.success({message:'Certificate Template Created',description:'Certificate template has been created successfully'});
-                onClose();
-            }
-
-            //dispatch(createCertificate(formData));
-            //onClose();
-        } catch (err) {
-            console.log(err);
-        }
-    }
-    
 
     if (!isVisible) return null;
 
