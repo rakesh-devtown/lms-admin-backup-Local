@@ -10,7 +10,7 @@ const courseSlice = createSlice({
         loading: false,
         currentBatchStudents: [],
         currentCourseCertificates: [],
-        allStudents: []
+        allStudents: {}
     },
     name: 'course',
     reducers: {

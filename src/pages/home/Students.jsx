@@ -231,7 +231,7 @@ const Students = () => {
               <div className="flex items-center">
                 <p className="">View Students</p>
                 <div className={`${activeTab === '2' ? 'bg-blue-100' : 'bg-gray-200'} ml-2 rounded-full`}>
-                  <p className={`px-1.5 ${activeTab === '2' ? '' : 'text-slate-400'} text-xs`}>{allStudents[0]?.length || 0}</p>
+                  <p className={`px-1.5 ${activeTab === '2' ? '' : 'text-slate-400'} text-xs`}>{allStudents?.totalStudents}</p>
                 </div>
               </div>
             } key="2">
@@ -385,14 +385,14 @@ const Students = () => {
                 columns={columns}
                 className='rounded-md border'
                 pagination={{
-                  total: allStudents[0] || 0,
+                  total: allStudents?.totalStudents || 0,
                   pageSize: 20,
                   onChange: (page) => setpage(page),
                   showSizeChanger: false,
                   showQuickJumper: false,
                   style: { display: 'flex', justifyContent: 'flex-end', marginRight: 40 },
                 }}
-                dataSource={allStudents[0] || []} />
+                dataSource={allStudents?.students || []} />
             </ConfigProvider>
           </div>
         </div>

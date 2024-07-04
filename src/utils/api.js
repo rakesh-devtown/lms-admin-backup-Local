@@ -18,13 +18,15 @@ if (TEST_MODE) {
 
 export const servicePost = async (path, payload, headers = null) => {
   return new Promise((resolve, reject) => {
+    // console.log("path", path);
+    // console.log(path.split("/").shift())
     axios
       .post(
         `${
           !TEST_MODE
             ? `${SERVICE_URL}/${path}`
             : path.split("/").shift() === "admin"
-            ? `http://localhost:8084${path.slice(7)}`
+            ? `http://localhost:3000${path.slice(7)}`
             : `http://localhost:8080${path.slice(4)}`
         }`,
         payload,
@@ -43,13 +45,16 @@ export const servicePost = async (path, payload, headers = null) => {
 
 export const serviceGet = async (path, headers) => {
   return new Promise((resolve, reject) => {
+    // console.log("path", path);
+    // console.log(path.split("/").shift())
+    // console.log("SERVICE_URL", `http://localhost:3000${String(path).substring(7)}`)
     axios
       .get(
         `${
           !TEST_MODE
             ? `${SERVICE_URL}/${path}`
             : path.split("/").shift() === "admin"
-            ? `http://localhost:8084${path.slice(7)}`
+            ? `http://localhost:3000${String(path).substring(5)}`
             : `http://localhost:8080${path.slice(4)}`
         }`,
         {
@@ -79,7 +84,7 @@ export const servicePut = async (path, payload, headers = null) => {
           !TEST_MODE
             ? `${SERVICE_URL}/${path}`
             : path.split("/").shift() === "admin"
-            ? `http://localhost:8084${path.slice(7)}`
+            ? `http://localhost:3000${path.slice(7)}`
             : `http://localhost:8080${path.slice(4)}`
         }`,
         payload,
@@ -104,7 +109,7 @@ export const serviceDelete = async (path, headers) => {
           !TEST_MODE
             ? `${SERVICE_URL}/${path}`
             : path.split("/").shift() === "admin"
-            ? `http://localhost:8084${path.slice(7)}`
+            ? `http://localhost:3000${path.slice(7)}`
             : `http://localhost:8080${path.slice(4)}`
         }`,
         {
@@ -131,7 +136,7 @@ export const serviceGetWithCustomResponse = async (
           !TEST_MODE
             ? `${SERVICE_URL}/${path}`
             : path.split("/").shift() === "admin"
-            ? `http://localhost:8084${path.slice(7)}`
+            ? `http://localhost:3000${path.slice(7)}`
             : `http://localhost:8080${path.slice(4)}`
         }`,
         {
