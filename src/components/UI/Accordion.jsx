@@ -35,53 +35,53 @@ const Accordion = ({ accordionData }) => {
 
     const handleMenuVisibilityChange = (flag, moduleIndex, dayIndex, lectureId) => {
         if (flag) {
-            setActiveDropdown({ moduleIndex, dayIndex,lectureId });
+            setActiveDropdown({ moduleIndex, dayIndex, lectureId });
         } else if (activeDropdown && activeDropdown.moduleIndex === moduleIndex && activeDropdown.dayIndex === dayIndex) {
             setActiveDropdown(null);
         }
     };
 
 
-    const makeSectionItem = async(sectionItemId) => {
-        try{
-            if(!uuid || !sectionItemId) return notification.error({message:'Error',description:'please refresh the page and try again'})
+    const makeSectionItem = async (sectionItemId) => {
+        try {
+            if (!uuid || !sectionItemId) return notification.error({ message: 'Error', description: 'please refresh the page and try again' })
             const sectionItem = {
-                title:'',
-                sectionItemType:"LECTURE",
-                sectionId:sectionItemId,
-                courseId:uuid,
-                isLast:true
+                title: '',
+                sectionItemType: "LECTURE",
+                sectionId: sectionItemId,
+                courseId: uuid,
+                isLast: true
             }
             await dispatch(addSectionItem(sectionItem))
-        }catch(err){
+        } catch (err) {
             console.log(err)
         }
     }
 
-    const deleteSectionHandler = async(sectionId) => {
-        try{
-            if(!sectionId || !currentCourse?.id) return notification.error({message:'Error',description:'please refresh the page and try again'})
-            await dispatch(deleteSection(sectionId,currentCourse?.id))
-        }catch(err){
+    const deleteSectionHandler = async (sectionId) => {
+        try {
+            if (!sectionId || !currentCourse?.id) return notification.error({ message: 'Error', description: 'please refresh the page and try again' })
+            await dispatch(deleteSection(sectionId, currentCourse?.id))
+        } catch (err) {
             console.log(err)
         }
     }
 
-    const deleteLectureHandler = async(sectionItemId) => {
-        try{
+    const deleteLectureHandler = async (sectionItemId) => {
+        try {
             await dispatch(deleteSectionItems(sectionItemId))
             setActiveDropdown(null)
-        }catch(err){
+        } catch (err) {
             console.log(err)
         }
     }
 
-    const getLectureData = async(lectureId) => {
-        try{
+    const getLectureData = async (lectureId) => {
+        try {
             await dispatch(getSectionItemById(lectureId));
             setIsModalVisible(true);
             setActiveDropdown(null);
-        }catch(err){
+        } catch (err) {
             console.log(err)
         }
     }
@@ -90,7 +90,7 @@ const Accordion = ({ accordionData }) => {
     const items = [
         {
             label:
-                <div className='flex items-center py-1 cursor-pointer' onClick={getLectureData.bind(this,activeDropdown?.lectureId)}>
+                <div className='flex items-center py-1 cursor-pointer' onClick={getLectureData.bind(this, activeDropdown?.lectureId)}>
                     <Plus size={15} className='text-[#0859DE] cursor-pointer mr-2' />
                     <span className='font-poppins text-sm text-[#0859DE]'>Edit Lecture</span>
                 </div>,
@@ -122,7 +122,7 @@ const Accordion = ({ accordionData }) => {
         // },
         {
             label:
-                <div className='flex items-center py-1' onClick={deleteLectureHandler.bind(this,activeDropdown?.lectureId)}>
+                <div className='flex items-center py-1' onClick={deleteLectureHandler.bind(this, activeDropdown?.lectureId)}>
                     <Trash2 size={15} className='text-[#CD2222] cursor-pointer mr-2' />
                     <span className='font-poppins text-sm text-[#CD2222]'>Delete Lecture</span>
                 </div>,
@@ -150,7 +150,7 @@ const Accordion = ({ accordionData }) => {
                             </span>
                         </div>
                         <div>
-                            <ModuleDropdown data={module} onClickDelete={deleteSectionHandler.bind(this,module?.id)}/>
+                            <ModuleDropdown data={module} onClickDelete={deleteSectionHandler.bind(this, module?.id)} />
                         </div>
                     </div>
                     <Transition
@@ -176,10 +176,10 @@ const Accordion = ({ accordionData }) => {
                                             items,
                                         }}
                                         trigger={['click']}
-                                        onVisibleChange={(flag) => handleMenuVisibilityChange(flag, i, index+i, item?.id)}
+                                        onVisibleChange={(flag) => handleMenuVisibilityChange(flag, i, index + i, item?.id)}
                                     >
                                         <a onClick={(e) => e.preventDefault()}>
-                                            {activeDropdown && activeDropdown.moduleIndex === i && activeDropdown.dayIndex === (index+i) ?
+                                            {activeDropdown && activeDropdown.moduleIndex === i && activeDropdown.dayIndex === (index + i) ?
                                                 <X size={20} className='text-blue-600 cursor-pointer' /> :
                                                 <Plus size={20} className='text-blue-600 cursor-pointer' />
                                             }
@@ -188,8 +188,8 @@ const Accordion = ({ accordionData }) => {
                                 </div>
                             ))}
 
-                            <button onClick={makeSectionItem.bind(this,module?.id)} className=" bg-blue-600 text-white w-6 h-6 rounded-full flex justify-center items-center shadow-sm">
-                                <Plus size={15}/>
+                            <button onClick={makeSectionItem.bind(this, module?.id)} className=" bg-blue-600 text-white w-6 h-6 rounded-full flex justify-center items-center shadow-sm">
+                                <Plus size={15} />
                             </button>
 
                         </div>

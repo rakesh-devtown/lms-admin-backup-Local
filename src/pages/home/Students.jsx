@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ConfigProvider, Tabs, Table, notification, Switch } from 'antd';
 import { ArrowDownToLine } from 'lucide-react';
 import DeleteStudentModal from '../../components/Modal/DeleteStudentModal';
+import StudentsDetailsModal from '../../components/Modal/StudentsDetailsModal';
 import Papa from 'papaparse';
 import Spinner from '../../components/Loader/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,6 +15,7 @@ const Students = () => {
   const [uploadedFile, setUploadedFile] = useState(null);
   const [studentLoading, setStudentLoading] = useState(false)
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isDetailsModalVisible, setIsDetailsModalVisible] = useState(false);
   const [students, setStudents] = useState([])
   const [archived, setArchived] = useState(false)
   const [page, setpage] = useState(1)
@@ -35,6 +37,14 @@ const Students = () => {
 
   const handleCloseModal = () => {
     setIsModalVisible(false);
+  }
+
+  const handleViewMoreClick = () => {
+    setIsDetailsModalVisible(true);
+  }
+
+  const handleCloseDetailsModal = () => {
+    setIsDetailsModalVisible(false);
   }
 
   const handleDeleteStudent = () => {
@@ -170,7 +180,7 @@ const Students = () => {
       )
     },
     {
-      title: 'Archive',
+      title: 'Is Active',
       render: (_, record) => {
         return (
           <Switch checked={!archived ? true : false} onChange={handleClick} />
@@ -178,22 +188,31 @@ const Students = () => {
       }
 
     },
+    {
+      title: 'Is Active',
+      render: (_, record) => {
+        return (
+          <span onClick={handleViewMoreClick} className='text-[#1890FF] cursor-pointer'>View More</span>
+        )
+      }
+
+    },
   ];
 
 
+  const onClickHandleSearch = (e) => {
+    e.preventDefault();
+    dispatch(getAllEnrolledStudents(page, 20, search))
+  }
 
   const handleInputChange = (event) => {
     setSearch(event.target.value);
-    // if(event.target.value.l){
-    //   dispatch(getAllEnrolledStudents(1, 20))
-    // }
+    if(event.target.value.trim().length === 0){
+      dispatch(getAllEnrolledStudents(page, 20,''))
+    }
   };
 
-  const onClickSearch = async()=>{
-    await dispatch(getAllEnrolledStudents(1, 20, search))
-  }
-
-//console.log(allStudents[0])
+  //console.log(allStudents[0])
   useEffect(() => {
     dispatch(getAllEnrolledStudents(page, 20))
   }, [page])
@@ -263,14 +282,14 @@ const Students = () => {
                   onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                   className="border-2 rounded-md p-2.5 mt-1 mr-5 text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:font-poppins text-sm"
                 />
-                  <span className='font-poppins text-sm mt-4'>Batch ID</span>
-                  <input
-                    type="text"
-                    placeholder="Batch Id"
-                    value={formData.batchId}
-                    onChange={(e) => setFormData({ ...formData, batchId: e.target.value })}
-                    className="border-2 rounded-md p-2.5 mt-1 mr-5 text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:font-poppins text-sm"
-                  />
+                <span className='font-poppins text-sm mt-4'>Batch ID</span>
+                <input
+                  type="text"
+                  placeholder="Batch Id"
+                  value={formData.batchId}
+                  onChange={(e) => setFormData({ ...formData, batchId: e.target.value })}
+                  className="border-2 rounded-md p-2.5 mt-1 mr-5 text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:font-poppins text-sm"
+                />
               </div>
               <div className='flex flex-col w-1/2'>
                 <span className='font-poppins text-sm'>Student Email Address<span className='text-blue-500'>*</span></span>
@@ -361,17 +380,17 @@ const Students = () => {
         <div className=''>
           {(studentLoading || loading) && <Spinner />}
           <div className='bg-white p-5 mt-3 h-full'>
-            <div className='flex justify-end items-center'>
-              <input
-                type="text"
-                onChange={handleInputChange}
-                value={search}
-                className='border-2 border-gray-300 rounded-sm px-2 py-1.5 mx-2 font-poppins text-sm w-96'
-                placeholder='Search student using email/phone number'
-              />
-              <button
-                className='bg-[#1890FF] text-white px-4 py-1.5 rounded-sm font-poppins text-sm border-2 mx-2' onClick={onClickSearch}>Search</button>
-            </div>
+              <form onSubmit={onClickHandleSearch} className='flex justify-end items-center'>
+                <input
+                  type="text"
+                  onChange={handleInputChange}
+                  value={search}
+                  className='border-2 border-gray-300 rounded-sm px-2 py-1.5 mx-2 font-poppins text-sm w-96'
+                  placeholder='Search student using email'
+                />
+                <button
+                  className='bg-[#1890FF] text-white px-4 py-1.5 rounded-sm font-poppins text-sm border-2 mx-2'>Search</button>
+              </form>
           </div>
           <div className='p-6 bg-white mt-3 h-[58vh] overflow-auto'>
             <ConfigProvider
@@ -398,6 +417,7 @@ const Students = () => {
         </div>
       }
       <DeleteStudentModal isVisible={isModalVisible} onClose={handleCloseModal} handleDeleteStudent={handleDeleteStudent} />
+      <StudentsDetailsModal isVisible={isDetailsModalVisible} onClose={handleCloseDetailsModal} />
     </div>
   )
 }

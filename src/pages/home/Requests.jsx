@@ -1,39 +1,23 @@
 import { useState, useEffect } from 'react';
-import { ConfigProvider, Tabs, Table, notification, Switch } from 'antd';
-import { ArrowDownToLine } from 'lucide-react';
-import DeleteStudentModal from '../../components/Modal/DeleteStudentModal';
-import Papa from 'papaparse';
-import Spinner from '../../components/Loader/Spinner';
+import { ConfigProvider, Tabs, Table } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
+import Spinner from '../../components/Loader/Spinner';
 import { debounce } from 'lodash';
-import { addStudentToBatch, getAllEnrolledStudents } from '../../store/slice/courseReducer';
 import ApproveRejectButton from '../../components/UI/ApproveRejectButton';
+import { getRequests ,requestStatus} from '../../store/slice/requestReducer';
+import { X, Check } from 'lucide-react';
+
 
 const Requests = () => {
   const [activeTab, setActiveTab] = useState("1")
   const [search, setSearch] = useState('')
-  const [uploadedFile, setUploadedFile] = useState(null);
   const [studentLoading, setStudentLoading] = useState(false)
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [students, setStudents] = useState([])
-  const [archived, setArchived] = useState(false)
   const [page, setpage] = useState(1)
-  const [status, setStatus] = useState(null);
   const [hover, setHover] = useState(false);
-  const { loading, allStudents } = useSelector(state => state.course);
-
+  const { shrunk, setShrunk } = useState(false);
   const dispatch = useDispatch();
 
-  const handleClick = () => {
-    setIsModalVisible(true);
-  }
-
-  const handleCloseModal = () => {
-    setIsModalVisible(false);
-  }
-
-
-
+  const { loading, requests } = useSelector(state => state.request);
 
   const columns = [
     {
@@ -45,53 +29,78 @@ const Requests = () => {
       )
     },
     {
-      title: 'Student Name',
+      title: 'Previous Name',
       key: 'userId',
       render: (_, record) => (
-        <span>{record?.name}</span>
+        <span>{record?.previousName}</span>
       )
     },
-
-    // {
-    //   title: 'Courses Enrolled',
-    //   dataIndex: 'address',
-    //   key: 'email',
-    //   render: (_, record) => (
-    //     <span className='font-poppins text-[#1890FF]'>{record?.email}</span>
-    //   )
-    // },
     {
-      title: 'Joined at',
-      key: 'createdAt',
+      title: 'Requested Name Change',
+      key: 'userId',
       render: (_, record) => (
-        <span>{new Date(record?.createdAt).toLocaleDateString()}</span>
+        <span>{record?.updatedName}</span>
       )
     },
     {
       title: 'Action',
       render: (_, record) => {
-        return (
-          <ApproveRejectButton />
-        );
+        if (record?.status==='pending'){
+          return (
+            <div className="flex space-x-2">
+                <button
+                    className="text-green-600 flex items-center border border-[#328801] rounded px-2 py-1 hover:bg-[#328801] hover:text-white"
+                    onClick={()=>{
+                        dispatch(requestStatus(record?.id, {
+                            status: 'approved',
+                            adminRemark: 'okay'
+                        }))
+                    }}
+                >
+                    <Check size={16} className='' /> {hover ? '' : 'Approve'}
+                </button>
+                {hover ? (
+                    <button
+                        className="text-white bg-red-600 border flex items-center border-red-600 rounded px-3 py-1"
+                        onClick={() => {
+                            dispatch(requestStatus(record?.id, {
+                                status: 'rejected',
+                                adminRemark: 'okay'
+                            }))
+                        }} onMouseLeave={() => {
+                            setHover(false)
+                            setShrunk(false)
+                        }
+                        }
+                    >
+                        <X size={16} className='mr-1 text-white' /> Reject
+                    </button>
+                ) : (
+                    <div
+                        className="border items-center flex bg-red-600 border-red-600 rounded px-1 py-1 text-red-600"
+                        onMouseEnter={() => {
+                            setHover(true)
+                            setShrunk(true)
+                        }}
+                    >
+                        <X size={17} className='text-white' />
+                    </div>
+                )}
+            </div>)
+        }
+        else if(record?.status==='approved'){
+          return(
+          <span className="text-green-600 font-semibold">Approved</span>
+          )
+        }
+        else{
+          return <span className="text-red-600 font-semibold">Rejected</span>;
+        }
       }
 
     },
   ];
 
-  const data = [
-    {
-      key: '1',
-      name: 'Mike',
-      age: 32,
-      address: '10 Downing Street',
-    },
-    {
-      key: '2',
-      name: 'John',
-      age: 42,
-      address: '10 Downing Street',
-    },
-  ];
 
   const handleInputChange = (event) => {
     setSearch(event.target.value);
@@ -101,12 +110,12 @@ const Requests = () => {
   };
 
   const onClickSearch = async () => {
-    await dispatch(getAllEnrolledStudents(1, 20, search))
+    await dispatch(getRequests(page, 20))
   }
 
-  //console.log(allStudents[0])
+
   useEffect(() => {
-    dispatch(getAllEnrolledStudents(page, 20))
+    dispatch(getRequests(page, 20))
   }, [page])
 
 
@@ -136,20 +145,20 @@ const Requests = () => {
               <div className="flex items-center">
                 <p className="">Name</p>
                 <div className={`${activeTab === '1' ? 'bg-blue-100' : 'bg-gray-200'} ml-2 rounded-full`}>
-                  <p className={`px-1.5 my-1 ${activeTab === '1' ? '' : 'text-slate-400'} text-xs`}>{allStudents[0]?.length || 0} New</p>
+                  <p className={`px-1.5 my-1 ${activeTab === '1' ? '' : 'text-slate-400'} text-xs`}>{requests?.total || 0} New</p>
                 </div>
               </div>
             } key="1">
             </Tabs.TabPane>
-            <Tabs.TabPane tab={
+            {/* <Tabs.TabPane tab={
               <div className="flex items-center">
                 <p className="">Email</p>
                 <div className={`${activeTab === '2' ? 'bg-blue-100' : 'bg-gray-200'} ml-2 rounded-full`}>
-                  <p className={`px-1.5 my-1 ${activeTab === '2' ? '' : 'text-slate-400'} text-xs`}>{allStudents[0]?.length || 0} New</p>
+                  <p className={`px-1.5 my-1 ${activeTab === '2' ? '' : 'text-slate-400'} text-xs`}>{requests?.total || 0} New</p>
                 </div>
               </div>
             } key="2">
-            </Tabs.TabPane>
+            </Tabs.TabPane> */}
           </Tabs>
         </ConfigProvider>
       </div>
@@ -182,20 +191,20 @@ const Requests = () => {
                 columns={columns}
                 className='rounded-md border'
                 pagination={{
-                  total: allStudents[0] || 0,
+                  total: requests?.response || 0,
                   pageSize: 20,
                   onChange: (page) => setpage(page),
                   showSizeChanger: false,
                   showQuickJumper: false,
                   style: { display: 'flex', justifyContent: 'flex-end', marginRight: 40 },
                 }}
-                dataSource={allStudents[0] || []} />
+                dataSource={requests?.response || []} />
             </ConfigProvider>
           </div>
         </div>
       }
 
-      {activeTab === '2' &&
+      {/* {activeTab === '2' &&
         <div className=''>
           {(studentLoading || loading) && <Spinner />}
           <div className='bg-white p-5 mt-3 h-full'>
@@ -223,19 +232,19 @@ const Requests = () => {
                 columns={columns}
                 className='rounded-md border'
                 pagination={{
-                  total: allStudents[0] || 0,
+                  total: requests?.response || 0,
                   pageSize: 20,
                   onChange: (page) => setpage(page),
                   showSizeChanger: false,
                   showQuickJumper: false,
                   style: { display: 'flex', justifyContent: 'flex-end', marginRight: 40 },
                 }}
-                dataSource={allStudents[0] || []} />
+                dataSource={requests?.response || []} />
             </ConfigProvider>
           </div>
         </div>
 
-      }
+      } */}
       {/* <DeleteStudentModal isVisible={isModalVisible} onClose={handleCloseModal} handleDeleteStudent={handleDeleteStudent} /> */}
     </div>
   )

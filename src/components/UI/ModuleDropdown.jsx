@@ -6,7 +6,7 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
-export default function ModuleDropdown({onClickDelete,data}) {
+export default function ModuleDropdown({ onClickDelete, data }) {
     const [isModalVisible, setIsModalVisible] = useState(false);
 
 
@@ -58,7 +58,7 @@ export default function ModuleDropdown({onClickDelete,data}) {
                                     )}
                                 >
                                     Delete Module
-                                    </button>
+                                </button>
                             )}
                         </MenuItem>
                         {/* <MenuItem>
@@ -80,7 +80,7 @@ export default function ModuleDropdown({onClickDelete,data}) {
                     </div>
                 </MenuItems>
             </Transition>
-            { isModalVisible && <EditModuleModal data={data} isVisible={isModalVisible} onClose={handleCloseModal} />}
+            {isModalVisible && <EditModuleModal data={data} isVisible={isModalVisible} onClose={handleCloseModal} />}
         </Menu>
     )
 }

@@ -179,7 +179,7 @@ const Students = () => {
   const handleInputChange = (event) => {
     setSearch(event.target.value);
     if (event.target.value.trim().length === 0) {
-      dispatch(getBatchEnrolledStudents(currentCourse?.batches[0]?.id, page, 20,""))
+      dispatch(getBatchEnrolledStudents(currentCourse?.batches[0]?.id, page, 20, ""))
     }
   };
 
