@@ -53,7 +53,7 @@ const Requests = () => {
                     onClick={()=>{
                         dispatch(requestStatus(record?.id, {
                             status: 'approved',
-                            adminRemark: 'okay'
+                            adminRemark: 'request approved'
                         }))
                     }}
                 >
@@ -65,7 +65,7 @@ const Requests = () => {
                         onClick={() => {
                             dispatch(requestStatus(record?.id, {
                                 status: 'rejected',
-                                adminRemark: 'okay'
+                                adminRemark: 'request approved'
                             }))
                         }} onMouseLeave={() => {
                             setHover(false)
