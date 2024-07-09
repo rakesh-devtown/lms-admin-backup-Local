@@ -97,7 +97,7 @@ const courseSlice = createSlice({
                 section?.subsections.forEach(subSection => {
                     const findIndexOfSectionItem = subSection?.sectionItems.findIndex(item => item.id === sectionItemId);
                     if (findIndexOfSectionItem !== -1) {
-                        subSection.sectionItems.filter(item => item.id !== sectionItemId);
+                        subSection.sectionItems.splice(findIndexOfSectionItem, 1);
                         return;
                     }
                 });
@@ -340,8 +340,8 @@ export const deleteSectionItems = (sectionItemId) => async (dispatch, getState) 
         const { message, success } = res;
         if (success) {
             notification.success({ message: 'Section Item Deleted', description: message });
-            //await dispatch(deleteSectionItemFromSection(sectionItemId));
-            await dispatch(getCurriculumOfCourse(currentCourse?.id));
+            await dispatch(deleteSectionItemFromSection(sectionItemId));
+            // await dispatch(getCurriculumOfCourse(currentCourse?.id));
             return true;
         } else {
             notification.error({ message: 'Section Item Deletion Failed', description: message });
@@ -431,14 +431,14 @@ export const addStudentToBatch = (students) => async (dispatch) => {
         } else {
             notification.error({ message: 'Student Addition Failed', description: message });
         }
-    }catch (error) {
+    } catch (error) {
         console.log(error);
-        const {response} = error;
-        const {data} = response;
+        const { response } = error;
+        const { data } = response;
         // console.log(data);
         // console.log(response);
         notification.error({ message: 'Student Addition Failed', description: data?.data?.message || error.message });
-    }finally{
+    } finally {
         dispatch(setLoading(false));
     }
 }

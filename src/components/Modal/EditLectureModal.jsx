@@ -153,7 +153,7 @@ const EditLectureModal = ({ isVisible, onClose }) => {
                         <X className='text-white' />
                     </button>
                 </div>
-                <div className="flex-1 bg-white mt-12 rounded-lg w-[100vh] h-[60vh] overflow-auto">
+                <div className="flex-1 bg-white mt-12 rounded-lg w-[120vh] h-[80vh] overflow-auto">
                     <div className='border-b-2 p-4 pb-3 text-slate-700 font-poppins'>
                         <span>Add Class Details</span>
                     </div>
