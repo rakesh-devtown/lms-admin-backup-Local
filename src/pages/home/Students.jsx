@@ -142,8 +142,9 @@ const Students = () => {
           studentArray.push(data)
         }
       }
-      //console.log(studentArray)
-     await dispatch(addStudentToBatch([data]))
+     console.log(studentArray)
+     if(studentArray.length === 0) return notification.error({ message: 'Error', description: 'Invalid Batch Id' })
+     await dispatch(addStudentToBatch(studentArray))
      notification.success({ message: 'Success', description: `${studentArray.length} Enrollments Added Successfully`})
     
      setFormData({
