@@ -6,7 +6,7 @@ import StudentsDetailsModal from '../../components/Modal/StudentsDetailsModal';
 import Papa from 'papaparse';
 import Spinner from '../../components/Loader/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
-import { debounce } from 'lodash';
+import { debounce, set } from 'lodash';
 import { addStudentToBatch, getAllEnrolledStudents } from '../../store/slice/courseReducer';
 
 const Students = () => {
@@ -65,27 +65,34 @@ const Students = () => {
         setUploadedFile(file);
       }
 
-      const batchId = formData.batchId
-      if (!batchId) {
-        return notification.error({ message: 'Error', description: 'No batch to add student to' })
-      }
-
       Papa.parse(file, {
         skipEmptyLines: true,
         complete: function ({ data }) {
           const st = []
           data.forEach(s => {
-            const [firstName, lastName, email, phone] = s
+            const [firstName, lastName, email, phone, batchId] = s
             if (email.toLowerCase().trim().match(
               /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) {
 
-              let data = {
-                name: `${firstName.trim()} ${lastName.trim()}`,
-                email: email.toLowerCase().trim(),
-                phone: phone,
-                batchId: batchId
+              const batchIds = batchId.split(',');
+              const batchIdMap = batchIds.map(b => b.trim())
+
+              const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+              for (let i = 0; i < batchIdMap.length; i++) {
+
+                const validIds = uuidRegex.test(batchIdMap[i])
+                if (validIds) {
+                  let data = {
+                    name: `${firstName.trim()} ${lastName.trim()}`,
+                    email: email.toLowerCase().trim(),
+                    phone: phone,
+                    batchId: batchIdMap[i]
+                  }
+                  st.push(data)
+                }
               }
-              st.push(data)
+
             } else {
               console.log('email doesnt match', email)
             }
@@ -116,18 +123,36 @@ const Students = () => {
       if (!batchId) {
         return notification.error({ message: 'Error', description: 'No batch to add student to' })
       }
-      const data = {
-        name: `${formData.firstName.trim()} ${formData.lastName.trim()}`,
-        email: formData.email,
-        phone: formData.phone,
-        batchId: batchId
-      }
 
-      if (data.name.trim().length <= 3) {
-        return notification.error({ message: 'Error', description: 'Invalid name' })
-      }
+      const batchIds = batchId.split(',');
+      const batchIdMap = batchIds.map(b => b.trim())
+      const studentArray = []
+      // Regular expression to validate a UUID
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-      await dispatch(addStudentToBatch([data]))
+      for (let i = 0; i < batchIdMap.length; i++) {
+        const validIds = uuidRegex.test(batchIdMap[i])
+        if (validIds) {
+          const data = {
+            name: `${formData.firstName.trim()} ${formData.lastName.trim()}`,
+            email: formData.email,
+            phone: formData.phone,
+            batchId: batchIdMap[i]
+          }
+          studentArray.push(data)
+        }
+      }
+      //console.log(studentArray)
+     await dispatch(addStudentToBatch([data]))
+     notification.success({ message: 'Success', description: `${studentArray.length} Enrollments Added Successfully`})
+    
+     setFormData({
+      firstName: '',
+      lastName: '',
+      email: "",
+      phone: "",
+      batchId: ""
+     })
 
     } catch (err) {
       console.log(err)
@@ -139,6 +164,7 @@ const Students = () => {
       if (students.length === 0) return notification.error({ message: 'Error', description: 'No student to add' })
 
       const res = await dispatch(addStudentToBatch(students))
+      // console.log(students)
       if (res) {
         setStudents([])
         setUploadedFile(null)
@@ -327,7 +353,7 @@ const Students = () => {
                   {uploadedFile ?
                     <div>
                       <p className="text-base text-blue-500 font-poppins">{uploadedFile.name}</p>
-                      {<p className=' text-blue-700'>Correct Student Details : {students.length}</p>}
+                      {<p className=' text-blue-700'>Correct Enrollment Details : {students.length}</p>}
                     </div>
                     :
                     <>
@@ -357,10 +383,17 @@ const Students = () => {
                   </tr>
                 </thead>
                 <tbody>
+                  {/* <tr className='divide-x border-b'>
+                    <td className="px-3 py-3 text-left text-xs font-medium text-black tracking-wider">firstName</td>
+                    <td className="px-3 py-3 text-left text-xs font-medium text-black tracking-wider">lastName</td>
+                    <td className="px-3 py-3 text-left text-xs font-medium text-black tracking-wider">email</td>
+                    <td className="px-3 py-3 text-left text-xs font-medium text-black tracking-wider">phone</td>
+                    <td className="px-3 py-3 text-left text-xs font-medium text-black tracking-wider">batchId</td>
+                  </tr> */}
                 </tbody>
               </table>
               <div className="mt-12 px-48 text-center">
-                <a target='_blank' href={'https://student-platform-assets.s3.ap-south-1.amazonaws.com/course/e13acf65-862b-4890-8790-c31ac9f602c0/studyMaterial/25248056846550fa72cd20987cb11304.csv'}>
+                <a target='_blank' href={'https://student-platform-assets.s3.ap-south-1.amazonaws.com/course/39d202c1-333b-4f8a-8818-65ea257f0c9e/studyMaterial/f17276878cf26b86be92f98fab2a2bce.csv'}>
                   <button className="bg-white border-[#0859DE] border-2 flex font-poppins items-center text-sm text-[#0859DE] py-2 px-4 rounded-lg">
                     <ArrowDownToLine size={16} className="mr-2" />
                     Download CSV Format
