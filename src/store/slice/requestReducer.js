@@ -55,10 +55,8 @@ export const requestStatus = (id, request) => async (dispatch) => {
     try {
         dispatch(setLoading(true));
         if (!id) return false;
-        console.log(10)
         const res = await servicePost(`admin/admin/v1/certificate/approve?id=${id}`, request);
         const { message, success, data } = res;
-        console.log(data)
         if (success) {
             notification.success({ message: 'Request Action successful', description: message });
             await dispatch(requestAction({ id: id, status: request.status }));

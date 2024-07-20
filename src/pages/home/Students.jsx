@@ -6,8 +6,10 @@ import StudentsDetailsModal from '../../components/Modal/StudentsDetailsModal';
 import Papa from 'papaparse';
 import Spinner from '../../components/Loader/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
-import { debounce, set } from 'lodash';
-import { addStudentToBatch, getAllEnrolledStudents } from '../../store/slice/courseReducer';
+// import { debounce, set } from 'lodash';
+// import { addStudentToBatch, getAllEnrolledStudents } from '../../store/slice/courseReducer';
+import { debounce } from 'lodash';
+import { addStudentToBatch, getAllEnrolledStudents, getStudentById } from '../../store/slice/courseReducer';
 
 const Students = () => {
   const [activeTab, setActiveTab] = useState("1")
@@ -17,10 +19,11 @@ const Students = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isDetailsModalVisible, setIsDetailsModalVisible] = useState(false);
   const [students, setStudents] = useState([])
+  const [id, setId] = useState('')
   const [archived, setArchived] = useState(false)
   const [page, setpage] = useState(1)
 
-  const { loading, allStudents } = useSelector(state => state.course);
+  const { loading, allStudents, currentStudent } = useSelector(state => state.course);
 
   const dispatch = useDispatch();
 
@@ -36,10 +39,12 @@ const Students = () => {
   }
 
   const handleCloseModal = () => {
+    setId('')
     setIsModalVisible(false);
   }
 
-  const handleViewMoreClick = () => {
+  const handleViewMoreClick = (id) => {
+    setId(id)
     setIsDetailsModalVisible(true);
   }
 
@@ -51,6 +56,11 @@ const Students = () => {
     setArchived(true)
     setIsModalVisible(false);
   }
+
+  useEffect(() => {
+    dispatch(getStudentById(id));
+    console.log(currentStudent)
+  }, [id]);
 
   const handleFileUpload = async (event) => {
     try {
@@ -112,7 +122,6 @@ const Students = () => {
       setStudentLoading(false)
     }
   };
-
 
   const handleAddBatchStudent = async () => {
     try {
@@ -191,14 +200,6 @@ const Students = () => {
         <span className='font-poppins text-[#1890FF]'>{record?.email}</span>
       )
     },
-    // {
-    //   title: 'Courses Enrolled',
-    //   dataIndex: 'address',
-    //   key: 'email',
-    //   render: (_, record) => (
-    //     <span className='font-poppins text-[#1890FF]'>{record?.email}</span>
-    //   )
-    // },
     {
       title: 'Joined at',
       key: 'createdAt',
@@ -216,13 +217,12 @@ const Students = () => {
 
     },
     {
-      title: 'Is Active',
+      title: 'View More',
       render: (_, record) => {
         return (
-          <span onClick={handleViewMoreClick} className='text-[#1890FF] cursor-pointer'>View More</span>
+          <span onClick={() => handleViewMoreClick(record?.id)} className='text-[#1890FF] cursor-pointer'>View More</span>
         )
       }
-
     },
   ];
 
@@ -234,12 +234,13 @@ const Students = () => {
 
   const handleInputChange = (event) => {
     setSearch(event.target.value);
-    if(event.target.value.trim().length === 0){
-      dispatch(getAllEnrolledStudents(page, 20,''))
+    if (event.target.value.trim().length === 0) {
+      dispatch(getAllEnrolledStudents(page, 20, ''))
     }
   };
 
-  //console.log(allStudents[0])
+  console.log(id)
+
   useEffect(() => {
     dispatch(getAllEnrolledStudents(page, 20))
   }, [page])
@@ -414,17 +415,17 @@ const Students = () => {
         <div className=''>
           {(studentLoading || loading) && <Spinner />}
           <div className='bg-white p-5 mt-3 h-full'>
-              <form onSubmit={onClickHandleSearch} className='flex justify-end items-center'>
-                <input
-                  type="text"
-                  onChange={handleInputChange}
-                  value={search}
-                  className='border-2 border-gray-300 rounded-sm px-2 py-1.5 mx-2 font-poppins text-sm w-96'
-                  placeholder='Search student using email'
-                />
-                <button
-                  className='bg-[#1890FF] text-white px-4 py-1.5 rounded-sm font-poppins text-sm border-2 mx-2'>Search</button>
-              </form>
+            <form onSubmit={onClickHandleSearch} className='flex justify-end items-center'>
+              <input
+                type="text"
+                onChange={handleInputChange}
+                value={search}
+                className='border-2 border-gray-300 rounded-sm px-2 py-1.5 mx-2 font-poppins text-sm w-96'
+                placeholder='Search student using email'
+              />
+              <button
+                className='bg-[#1890FF] text-white px-4 py-1.5 rounded-sm font-poppins text-sm border-2 mx-2'>Search</button>
+            </form>
           </div>
           <div className='p-6 bg-white mt-3 h-[58vh] overflow-auto'>
             <ConfigProvider
@@ -451,7 +452,7 @@ const Students = () => {
         </div>
       }
       <DeleteStudentModal isVisible={isModalVisible} onClose={handleCloseModal} handleDeleteStudent={handleDeleteStudent} />
-      <StudentsDetailsModal isVisible={isDetailsModalVisible} onClose={handleCloseDetailsModal} />
+      <StudentsDetailsModal isVisible={isDetailsModalVisible} onClose={handleCloseDetailsModal} id={id} />
     </div>
   )
 }

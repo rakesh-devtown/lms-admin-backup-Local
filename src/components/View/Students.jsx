@@ -187,8 +187,7 @@ const Students = () => {
     e.preventDefault();
     dispatch(getBatchEnrolledStudents(currentCourse?.batches[0]?.id, page, 20, search))
   }
-
-
+  
   useEffect(() => {
     dispatch(getBatchEnrolledStudents(currentCourse?.batches[0]?.id, page, 20))
   }, [page])
@@ -231,8 +230,6 @@ const Students = () => {
           </Tabs>
         </ConfigProvider>
       </div>
-      {/* <div className='bg-gray-200 mb-1'>
-      </div> */}
 
       {activeTab === '1' &&
         <div className='bg-white mt-3 h-[72vh] overflow-auto'>

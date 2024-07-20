@@ -10,7 +10,8 @@ const courseSlice = createSlice({
         loading: false,
         currentBatchStudents: [],
         currentCourseCertificates: [],
-        allStudents: {}
+        allStudents: {},
+        currentStudent:null
     },
     name: 'course',
     reducers: {
@@ -55,6 +56,9 @@ const courseSlice = createSlice({
         },
         setAllStudents: (state, action) => {
             state.allStudents = action.payload;
+        },
+        setCurrentStudent: (state, action) => {
+            state.currentStudent = action.payload;
         },
         setCurrentCourseCertificates: (state, action) => {
             state.currentCourseCertificates = action.payload;
@@ -161,7 +165,7 @@ const courseSlice = createSlice({
     }
 });
 
-export const { setViewCourseNull, setSectionItemData, deleteSectionItemFromSection, setLoading, setCourses, pushSectionItemInSection, addCourse, setViewCourse, updateCourseState, setCurrentSectionItem, setCurrentBatchStudents, setAllStudents, setCurrentCourseCertificates } = courseSlice.actions;
+export const { setViewCourseNull, setSectionItemData, deleteSectionItemFromSection, setLoading, setCourses, pushSectionItemInSection, addCourse, setViewCourse, updateCourseState, setCurrentSectionItem, setCurrentStudent,setCurrentBatchStudents, setAllStudents, setCurrentCourseCertificates } = courseSlice.actions;
 export default courseSlice.reducer;
 
 export const createCourse = (course) => async (dispatch) => {
@@ -476,6 +480,24 @@ export const getAllEnrolledStudents = (page, limit, search) => async (dispatch) 
     }
 }
 
+export const getStudentById = (id) => async (dispatch) => {
+    try {
+        dispatch(setLoading(true));
+        const res = await serviceGet(`admin/admin/v1/student/student/${id}`);
+        const { message, success, data } = res;
+        console.log(res);
+        if (success) {
+            dispatch(setCurrentStudent(data));
+        } else {
+            notification.error({ message: 'Student Fetch Failed', description: message });
+        }
+    } catch (error) {
+        notification.error({ message: 'Student Fetch Failed', description: error.message });
+    } finally {
+        dispatch(setLoading(false));
+    }
+}
+
 export const getAllCertificatesOfCourse = (courseId) => async (dispatch) => {
     try {
         dispatch(setLoading(true));
@@ -483,6 +505,7 @@ export const getAllCertificatesOfCourse = (courseId) => async (dispatch) => {
         const { message, success, data } = res;
         if (success) {
             dispatch(setCurrentCourseCertificates(data));
+            
         } else {
             notification.error({ message: 'Certificate Fetch Failed', description: message });
         }

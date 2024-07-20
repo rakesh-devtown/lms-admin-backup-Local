@@ -21,6 +21,9 @@ const Requests = () => {
 
   const columns = [
     {
+      title: 'Timestamp'
+    },
+    {
       title: 'Student Email Address',
       dataIndex: 'address',
       key: 'email',
@@ -101,7 +104,6 @@ const Requests = () => {
     },
   ];
 
-
   const handleInputChange = (event) => {
     setSearch(event.target.value);
     // if(event.target.value.l){
@@ -112,7 +114,6 @@ const Requests = () => {
   const onClickSearch = async () => {
     await dispatch(getRequests(page, 20))
   }
-
 
   useEffect(() => {
     dispatch(getRequests(page, 20))
