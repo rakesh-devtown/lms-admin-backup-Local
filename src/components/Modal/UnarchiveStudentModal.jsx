@@ -1,28 +1,6 @@
-import { useState, useRef } from 'react';
-import { X, Trash2 } from 'lucide-react';
-import { Tabs, ConfigProvider } from 'antd';
 
-const DeleteStudentModal = ({ isVisible, onClose, handleDeleteStudent }) => {
-    const [activeTab, setActiveTab] = useState("1")
-    const fileInputRef = useRef(null);
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [moduleDescription, setModuleDescription] = useState("");
-    const [numberOfLectures, setNumberOfLectures] = useState(1);
+const UnarchiveStudentModal = ({ isVisible, onClose, handleUnarchiveStudent }) => {
 
-    const handleButtonClick = () => {
-        fileInputRef.current.click();
-    };
-
-    const handleFileChange = (event) => {
-        setSelectedFile(event.target.files[0]);
-    }
-
-    const handleDescriptionChange = (event) => {
-        const text = event.target.value;
-        if (text.length <= 100) {
-            setModuleDescription(text);
-        }
-    };
 
     if (!isVisible) return null;
 
@@ -42,11 +20,11 @@ const DeleteStudentModal = ({ isVisible, onClose, handleDeleteStudent }) => {
                                     </clipPath>
                                 </defs>
                             </svg>
-                            Are you sure you want to archive this course from student?
+                            Are you sure you want to unarchive this course from the student?
                         </span>
                         <div className='px-5 pt-4 flex justify-between items-center'>
                             <button className='bg-[#F9FAFB] text-black px-16 py-1 rounded-md font-poppins text-sm border-2' onClick={onClose}>No</button>
-                            <button className='bg-[#1890FF] text-white px-16 py-1 rounded-md font-poppins text-sm border-2' onClick={handleDeleteStudent}>Yes</button>
+                            <button className='bg-[#1890FF] text-white px-16 py-1 rounded-md font-poppins text-sm border-2' onClick={handleUnarchiveStudent}>Yes</button>
                         </div>
                     </div>
                 </div>
@@ -55,4 +33,4 @@ const DeleteStudentModal = ({ isVisible, onClose, handleDeleteStudent }) => {
     );
 };
 
-export default DeleteStudentModal;
+export default UnarchiveStudentModal;
