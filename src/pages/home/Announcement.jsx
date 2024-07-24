@@ -76,17 +76,9 @@ const Announcement = () => {
         complete: function ({ data }) {
           const st = []
           data.forEach(s => {
-            const [firstName, lastName, email, phone] = s
+            const [email] = s
             if (email.toLowerCase().trim().match(
               /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) {
-
-              // let data = {
-              //   name: `${firstName.trim()} ${lastName.trim()}`,
-              //   email: email.toLowerCase().trim(),
-              //   phone: phone,
-              //   batchId: batchId
-              // }
-              console.log(email)
               st.push(email.toLowerCase().trim())
             } else {
               console.log('email doesnt match', email)
@@ -110,13 +102,10 @@ const Announcement = () => {
 
   const handleBulkEmailSend = async () => {
     try {
-      // const batchId = formData.batchId
-      if (!formData.source || !formData.poster || !formData.subject || !formData.description || !formData.text || !formData.url || emails.length === 0) {
+      if (!formData.source || !formData.subject || emails.length === 0) {
         return notification.error({ message: 'Error', description: 'All fields are required' })
       }
-      // if (!batchId) {
-      //   return notification.error({ message: 'Error', description: 'No batch to add student to' })
-      // }
+
       const data = {
         emails: emails,
         source: formData.source,
@@ -202,7 +191,7 @@ const Announcement = () => {
                 {uploadedFile ?
                   <div>
                     <p className="text-base text-blue-500 font-poppins">{uploadedFile.name}</p>
-                    {<p className=' text-blue-700'>Correct Student Details : {students.length}</p>}
+                    {<p className=' text-blue-700'>Correct Student Details : {emails.length}</p>}
                   </div>
                   :
                   <>
