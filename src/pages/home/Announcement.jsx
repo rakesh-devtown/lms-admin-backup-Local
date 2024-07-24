@@ -102,8 +102,7 @@ const Announcement = () => {
 
   const handleBulkEmailSend = async () => {
     try {
-      // const batchId = formData.batchId
-      if (!formData.source || !formData.poster || !formData.subject || !formData.description || !formData.text || !formData.url || emails.length === 0) {
+      if (!formData.source || !formData.subject || emails.length === 0) {
         return notification.error({ message: 'Error', description: 'All fields are required' })
       }
 
