@@ -1,32 +1,57 @@
-import { useState, useEffect } from 'react';
-import { ConfigProvider, Tabs, Table, notification, Switch } from 'antd';
-import { ArrowDownToLine } from 'lucide-react';
-import DeleteStudentModal from '../../components/Modal/DeleteStudentModal';
-import StudentsDetailsModal from '../../components/Modal/StudentsDetailsModal';
+import { useState, useEffect, useRef } from 'react';
+import { ConfigProvider, notification } from 'antd';
 import Papa from 'papaparse';
 import Spinner from '../../components/Loader/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
-import { addStudentToBatch, getAllEnrolledStudents, getStudentById } from '../../store/slice/courseReducer';
+import { addStudentToBatch } from '../../store/slice/courseReducer';
 import RichTextEditor from '../../components/UI/RichTextEditor';
+import { uploadFile } from '../../store/slice/uploadReducer';
+import { sendBulkEmail } from '../../store/slice/announcementReducer';
+
 
 const Announcement = () => {
   const [activeTab, setActiveTab] = useState("1")
   const [uploadedFile, setUploadedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const fileInputRef = useRef(null);
   const [studentLoading, setStudentLoading] = useState(false)
   const [students, setStudents] = useState([])
+  const [emails, setEmails] = useState([])
 
-  const { loading, allStudents, currentStudent } = useSelector(state => state.course);
+  const { loading } = useSelector(state => state.course);
 
   const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
-    mailTitle: '',
+    emails: [],
+    source: '',
+    poster: '',
+    subject: '',
     description: '',
-    url: "",
-    urlButtonName: "",
-    image: ""
+    url: '',
+    text: ''
   })
 
+  const handleButtonClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = async (event) => {
+    try {
+      const file = event.target.files[0];
+      if (file.type !== 'image/png' && file.type !== 'image/jpeg' && file.type !== 'image/svg+xml') {
+        return notification.error({ message: 'Error', description: 'Invalid file format. Please upload a valid image file' });
+      }
+      const url = await dispatch(uploadFile(file, 'image', '/course/thumbnail'));
+      if (url) {
+        setSelectedFile(file);
+        setFormData({ ...formData, poster: url });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+  }
 
   const handleFileUpload = async (event) => {
     try {
@@ -41,10 +66,10 @@ const Announcement = () => {
         setUploadedFile(file);
       }
 
-      const batchId = formData.batchId
-      if (!batchId) {
-        return notification.error({ message: 'Error', description: 'No batch to add student to' })
-      }
+      // const batchId = formData.batchId
+      // if (!batchId) {
+      //   return notification.error({ message: 'Error', description: 'No batch to add student to' })
+      // }
 
       Papa.parse(file, {
         skipEmptyLines: true,
@@ -55,18 +80,19 @@ const Announcement = () => {
             if (email.toLowerCase().trim().match(
               /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) {
 
-              let data = {
-                name: `${firstName.trim()} ${lastName.trim()}`,
-                email: email.toLowerCase().trim(),
-                phone: phone,
-                batchId: batchId
-              }
-              st.push(data)
+              // let data = {
+              //   name: `${firstName.trim()} ${lastName.trim()}`,
+              //   email: email.toLowerCase().trim(),
+              //   phone: phone,
+              //   batchId: batchId
+              // }
+              console.log(email)
+              st.push(email.toLowerCase().trim())
             } else {
               console.log('email doesnt match', email)
             }
           })
-          setStudents(prev => [...st])
+          setEmails(st)
         },
         error: error => {
           console.log(error)
@@ -82,28 +108,45 @@ const Announcement = () => {
     }
   };
 
-  const handleAddBatchStudent = async () => {
+  const handleBulkEmailSend = async () => {
     try {
-      const batchId = formData.batchId
-      if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone) {
+      // const batchId = formData.batchId
+      if (!formData.source || !formData.poster || !formData.subject || !formData.description || !formData.text || !formData.url || emails.length === 0) {
         return notification.error({ message: 'Error', description: 'All fields are required' })
       }
-      if (!batchId) {
-        return notification.error({ message: 'Error', description: 'No batch to add student to' })
-      }
+      // if (!batchId) {
+      //   return notification.error({ message: 'Error', description: 'No batch to add student to' })
+      // }
       const data = {
-        name: `${formData.firstName.trim()} ${formData.lastName.trim()}`,
-        email: formData.email,
-        phone: formData.phone,
-        batchId: batchId
+        emails: emails,
+        source: formData.source,
+        poster: formData.poster,
+        subject: formData.subject,
+        description: formData.description,
+        url: [{
+          'url' : formData.url,
+          'text' : formData.text
+        }]
       }
 
-      if (data.name.trim().length <= 3) {
-        return notification.error({ message: 'Error', description: 'Invalid name' })
+      if (data.emails.length === 0) {
+        return notification.error({ message: 'Error', description: 'Invalid email data' })
       }
 
-      await dispatch(addStudentToBatch([data]))
+      const res= await dispatch(sendBulkEmail(data))
 
+      if (res){
+        setFormData({
+          emails: [],
+          source: '',
+          poster: '',
+          subject: '',
+          description: '',
+          url: '',
+          text: ''
+        })
+        setEmails([])
+      }
     } catch (err) {
       console.log(err)
     }
@@ -175,10 +218,23 @@ const Announcement = () => {
           </div>
           <div className='pt-5'>
             <div className='flex flex-col mx-12'>
+              <label className='font-poppins text-sm'><span className='text-red-500'>*</span>Source:</label>
+              <select
+                value={formData.source}
+                onChange={(e) => setFormData({ ...formData, source: e.target.value })}
+                className="border-2 rounded-md p-2 mt-1 text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:font-poppins text-sm"
+              >
+                <option value="" disabled>Select source email</option>
+                <option value="support@devtown.in">support@devtown.in</option>
+                <option value="hr@devtown.in">hr@devtown.in</option>
+                <option value="certificate@devtown.in">certificate@devtown.in</option>
+              </select> 
+            </div>
+            <div className='flex flex-col mx-12 mt-6'>
               <label className='font-poppins text-sm'><span className='text-red-500'>*</span>Mail Title:</label>
               <input
-                value={formData.mailTitle}
-                onChange={(e) => setFormData({ ...formData, mailTitle: e.target.value })}
+                value={formData.subject}
+                onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                 type="text"
                 placeholder="Enter title for the mail"
                 className="border-2 rounded-md p-2.5 mt-1 mr- text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:font-poppins text-sm"
@@ -206,8 +262,8 @@ const Announcement = () => {
             <div className='flex flex-col mx-12 mt-5'>
               <label className='font-poppins text-sm'><span className='text-red-500'></span>URL Button Name:</label>
               <input
-                value={formData.urlButtonName}
-                onChange={(e) => setFormData({ ...formData, urlButtonName: e.target.value })}
+                value={formData.text}
+                onChange={(e) => setFormData({ ...formData, text: e.target.value })}
                 type="text"
                 placeholder="Enter URL Button Name"
                 className="border-2 rounded-md p-2.5 mt-1 text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:font-poppins text-sm"
@@ -215,15 +271,50 @@ const Announcement = () => {
             </div>
             <div className='flex flex-col mx-12'>
               <label className='font-poppins text-sm mx- mt-5'><span className='text-red-500'></span>Image:</label>
-              <input type="file"
-                value={formData.image}
-                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                className="border-2 rounded-md p-2.5 mt-1 w-full text-gray-700 font-poppins focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:font-poppins text-sm"
-              />
+              <div className="mt-2 h-28 flex items-center justify-center bg-gray-50 border border-dashed border-blue-500 rounded-lg">
+                <div className="text-center">
+                  {selectedFile ?
+                    <div className='font-poppins text-sm text-gray-700'>
+                      <div>
+                        <img src={formData.poster} alt="thumbnail" className="h-20 w-20 object-contain" />
+                      </div>
+                      {selectedFile.name}
+                      <button
+                        className="font-poppins text-blue-500 rounded-md transition border-0 px-5"
+                        onClick={handleButtonClick}
+                      >
+                        Edit
+                      </button>
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        className="hidden"
+                        onChange={handleFileChange}
+                      />
+                    </div> :
+                    <>
+                      <p className="text-sm text-gray-500 font-poppins">Drag Your File(s) Here</p>
+                      <button
+                        className="mt-4 px-4 py-2 border font-poppins border-dashed border-blue-500 text-blue-500 rounded-md hover:bg-blue-500 hover:text-white transition"
+                        onClick={handleButtonClick}
+                      >
+                        Upload
+                      </button>
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        className="hidden"
+                        onChange={handleFileChange}
+                      />
+                    </>
+                  }
+                </div>
+              </div>
+              <p className="text-xs text-gray-500 mt-2 mx- font-poppins">Supported File: JPG, PNG, SVG</p>
             </div>
 
             <div className='flex justify-end mx-14 mt-6'>
-              <button onClick={handleAddBatchStudent} className='bg-[#0859DE] text-white px-14 py-1.5 rounded-md font-poppins text-sm border-2'>Send</button>
+              <button onClick={handleBulkEmailSend} className='bg-[#0859DE] text-white px-14 py-1.5 rounded-md font-poppins text-sm border-2'>Send</button>
             </div>
           </div>
           <div className="flex flex-col md:flex-row justify-between items-center p-8">
@@ -234,8 +325,6 @@ const Announcement = () => {
           </div> */}
         </div>
       }
-
-
     </div>
   )
 }

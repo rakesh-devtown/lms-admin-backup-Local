@@ -34,6 +34,7 @@ const Students = () => {
     phone: "",
     batchId: ""
   })
+
   const handleClick = () => {
     setIsModalVisible(true);
   }
@@ -59,7 +60,7 @@ const Students = () => {
 
   useEffect(() => {
     dispatch(getStudentById(id));
-    console.log(currentStudent)
+    // console.log(currentStudent)
   }, [id]);
 
   const handleFileUpload = async (event) => {
@@ -151,18 +152,18 @@ const Students = () => {
           studentArray.push(data)
         }
       }
-     console.log(studentArray)
-     if(studentArray.length === 0) return notification.error({ message: 'Error', description: 'Invalid Batch Id' })
-     await dispatch(addStudentToBatch(studentArray))
-     notification.success({ message: 'Success', description: `${studentArray.length} Enrollments Added Successfully`})
-    
-     setFormData({
-      firstName: '',
-      lastName: '',
-      email: "",
-      phone: "",
-      batchId: ""
-     })
+      console.log(studentArray)
+      if (studentArray.length === 0) return notification.error({ message: 'Error', description: 'Invalid Batch Id' })
+      await dispatch(addStudentToBatch(studentArray))
+      notification.success({ message: 'Success', description: `${studentArray.length} Enrollments Added Successfully` })
+
+      setFormData({
+        firstName: '',
+        lastName: '',
+        email: "",
+        phone: "",
+        batchId: ""
+      })
 
     } catch (err) {
       console.log(err)
@@ -239,7 +240,7 @@ const Students = () => {
     }
   };
 
-  console.log(id)
+  // console.log(id)
 
   useEffect(() => {
     dispatch(getAllEnrolledStudents(page, 20))

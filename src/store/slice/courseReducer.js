@@ -508,14 +508,11 @@ export const setBatchId = (id) =>  (dispatch) => {
 }
 
 
-export const archiveStudent = (id,archived) => async (dispatch) => {
+export const archiveStudent = (id, archived) => async (dispatch) => {
     try {
         dispatch(setLoading(true));
         const res = await servicePut(`admin/admin/v1/batch/archive/${id}`, archived);
-        const { message, success,data } = res;
-        console.log(message)
-        console.log(id)
-        console.log(data)
+        const { message, success, data } = res;
         if (success) {
             notification.success({ message: 'Student Archived', description: message });
             return true;

@@ -3,36 +3,38 @@ import { X } from 'lucide-react';
 import { Tabs, ConfigProvider, Switch, Table } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import PieChart from '../UI/PieChart';
-import { archiveStudent, setBatchId } from '../../store/slice/courseReducer';
+import { archiveStudent, setBatchId,getStudentById } from '../../store/slice/courseReducer';
 import ArchiveStudentModal from './ArchiveStudentModal';
 import UnarchiveStudentModal from './UnarchiveStudentModal';
 
-const StudentsDetailsModal = ({ isVisible, onClose }) => { 
+const StudentsDetailsModal = ({ isVisible, onClose,id }) => { 
     const [activeTab, setActiveTab] = useState("1")
     const [isArchiveModalVisible, setIsArchiveModalVisible] = useState(false);
     const [isUnarchiveModalVisible, setIsUnarchiveModalVisible] = useState(false);
     const [page, setpage] = useState(1)
-
+    const [checked,setChecked]=useState(false)
     const { loading, currentStudent, currentBatchId } = useSelector(state => state.course);
 
     const dispatch = useDispatch();
 
     if (!isVisible) return null;
 
-    const handleArchiveStudent = () => {
-        dispatch(archiveStudent(currentBatchId, {
+    const handleArchiveStudent =async () => {
+        const res=await dispatch(archiveStudent(currentBatchId, {
             'archived': true
         }))
+        if (res){setChecked(!checked)}
         setIsArchiveModalVisible(false)
     }
-
-    const handleUnarchiveStudent = () => {
-        dispatch(archiveStudent(currentBatchId, {
+    
+    const handleUnarchiveStudent = async () => {
+        const res= await dispatch(archiveStudent(currentBatchId, {
             'archived': false
         }))
+        if (res){setChecked(!checked)}
         setIsUnarchiveModalVisible(false)
     }
-    
+
     const handleClick = (id,flag) => {
         if (flag) {
             setIsUnarchiveModalVisible(true)
@@ -47,7 +49,6 @@ const StudentsDetailsModal = ({ isVisible, onClose }) => {
         setIsArchiveModalVisible(false);
         dispatch(setBatchId(''))
     }
-
 
     const columns = [
         {
@@ -72,13 +73,12 @@ const StudentsDetailsModal = ({ isVisible, onClose }) => {
             title: 'Status',
             render: (_, record) => {
                 return (
-                    <Switch checked={!record?.isArchived ? true : false} onClick={() => handleClick(record?.id, record?.isArchived)} />
+                    <Switch checked={!record?.isArchived} onChange={() => handleClick(record?.id, record?.isArchived)}/>
                 )
             }
 
         },
     ];
-
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
@@ -162,7 +162,7 @@ const StudentsDetailsModal = ({ isVisible, onClose }) => {
                                     style: { display: 'flex', justifyContent: 'flex-end', marginRight: 40 },
                                 }}
                                 dataSource={currentStudent?.enrollments} 
-                                shouldCellUpdate={(record, prevRecord) => record !== prevRecord}
+                                // shouldCellUpdate={(record, prevRecord) => record !== prevRecord}
                                 />
                         </ConfigProvider>
                     </div>
