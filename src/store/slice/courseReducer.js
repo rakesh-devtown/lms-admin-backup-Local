@@ -1,6 +1,6 @@
 import { createSlice, current } from "@reduxjs/toolkit";
 import { notification } from "antd";
-import { serviceDelete, serviceGet, servicePost } from "../../utils/api";
+import { serviceDelete, serviceGet, servicePost, servicePut } from "../../utils/api";
 
 const courseSlice = createSlice({
     initialState: {
@@ -11,13 +11,15 @@ const courseSlice = createSlice({
         currentBatchStudents: [],
         currentCourseCertificates: [],
         allStudents: {},
-        currentStudent:null
+        currentStudent:null,
+        currentBatchId:''
     },
     name: 'course',
     reducers: {
         setLoading: (state, action) => {
             state.loading = action.payload;
         },
+        
         setCourses: (state, action) => {
             state.courses = action.payload;
         },
@@ -56,6 +58,9 @@ const courseSlice = createSlice({
         },
         setAllStudents: (state, action) => {
             state.allStudents = action.payload;
+        },
+        setCurrentBatchId: (state, action) => {
+            state.currentBatchId = action.payload;
         },
         setCurrentStudent: (state, action) => {
             state.currentStudent = action.payload;
@@ -165,7 +170,7 @@ const courseSlice = createSlice({
     }
 });
 
-export const { setViewCourseNull, setSectionItemData, deleteSectionItemFromSection, setLoading, setCourses, pushSectionItemInSection, addCourse, setViewCourse, updateCourseState, setCurrentSectionItem, setCurrentStudent,setCurrentBatchStudents, setAllStudents, setCurrentCourseCertificates } = courseSlice.actions;
+export const { setViewCourseNull, setSectionItemData, deleteSectionItemFromSection, setLoading, setCourses, pushSectionItemInSection, addCourse, setViewCourse, updateCourseState, setCurrentSectionItem, setCurrentStudent,setCurrentBatchId,setCurrentBatchStudents, setAllStudents, setCurrentCourseCertificates } = courseSlice.actions;
 export default courseSlice.reducer;
 
 export const createCourse = (course) => async (dispatch) => {
@@ -497,6 +502,31 @@ export const getStudentById = (id) => async (dispatch) => {
         dispatch(setLoading(false));
     }
 }
+
+export const setBatchId = (id) =>  (dispatch) => {
+    dispatch(setCurrentBatchId(id))
+}
+
+
+export const archiveStudent = (id, archived) => async (dispatch) => {
+    try {
+        dispatch(setLoading(true));
+        const res = await servicePut(`admin/admin/v1/batch/archive/${id}`, archived);
+        const { message, success, data } = res;
+        if (success) {
+            notification.success({ message: 'Student Archived', description: message });
+            return true;
+        } else {
+            notification.error({ message: 'Student Archive Failed', description: message });
+        }
+    } catch (error) {
+        notification.error({ message: 'Student Archive Failed', description: error.message });
+    } finally {
+        dispatch(setLoading(false));
+    }
+
+}
+
 
 export const getAllCertificatesOfCourse = (courseId) => async (dispatch) => {
     try {

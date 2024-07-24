@@ -1,34 +1,55 @@
-import { useState, useRef, useEffect } from 'react';
-import { X, Trash2, EllipsisVertical } from 'lucide-react';
-import { Tabs, ConfigProvider, notification, Switch, Table } from 'antd';
-import { useDispatch,useSelector } from 'react-redux';
-import DeleteStudentModal from './DeleteStudentModal';
-import { getStudentById } from '../../store/slice/courseReducer';
+import { useEffect, useState } from 'react';
+import { X } from 'lucide-react';
+import { Tabs, ConfigProvider, Switch, Table } from 'antd';
+import { useDispatch, useSelector } from 'react-redux';
 import PieChart from '../UI/PieChart';
+import { archiveStudent, setBatchId,getStudentById } from '../../store/slice/courseReducer';
+import ArchiveStudentModal from './ArchiveStudentModal';
+import UnarchiveStudentModal from './UnarchiveStudentModal';
 
-const StudentsDetailsModal = ({ isVisible, onClose, id }) => {
+const StudentsDetailsModal = ({ isVisible, onClose,id }) => { 
     const [activeTab, setActiveTab] = useState("1")
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const [archived, setArchived] = useState(false)
+    const [isArchiveModalVisible, setIsArchiveModalVisible] = useState(false);
+    const [isUnarchiveModalVisible, setIsUnarchiveModalVisible] = useState(false);
     const [page, setpage] = useState(1)
-
-    const { loading, currentStudent } = useSelector(state => state.course);
+    const [checked,setChecked]=useState(false)
+    const { loading, currentStudent, currentBatchId } = useSelector(state => state.course);
 
     const dispatch = useDispatch();
 
-    const handleDeleteStudent = () => {
-        setArchived(true)
-        setIsModalVisible(false);
-    }
-
     if (!isVisible) return null;
 
-    const handleClick = () => {
-        setIsModalVisible(true);
+    const handleArchiveStudent =async () => {
+        const res=await dispatch(archiveStudent(currentBatchId, {
+            'archived': true
+        }))
+        if (res){setChecked(!checked)}
+        setIsArchiveModalVisible(false)
     }
+    
+    const handleUnarchiveStudent = async () => {
+        const res= await dispatch(archiveStudent(currentBatchId, {
+            'archived': false
+        }))
+        if (res){setChecked(!checked)}
+        setIsUnarchiveModalVisible(false)
+    }
+
+    const handleClick = (id,flag) => {
+        if (flag) {
+            setIsUnarchiveModalVisible(true)
+        } else {
+            setIsArchiveModalVisible(true)
+        }
+        dispatch(setBatchId(id))
+    }
+
     const handleCloseModal = () => {
-        setIsModalVisible(false);
+        setIsUnarchiveModalVisible(false);
+        setIsArchiveModalVisible(false);
+        dispatch(setBatchId(''))
     }
+
     const columns = [
         {
             title: 'Course Name',
@@ -43,7 +64,7 @@ const StudentsDetailsModal = ({ isVisible, onClose, id }) => {
             key: 'email',
             render: (_, record) => (
                 <div className=''>
-                        <PieChart progress={Math.round(record?.batch?.course?.totalLectureCompleted / record?.batch?.course?.totalLecture * 100)} />
+                    <PieChart progress={Math.round(record?.batch?.course?.totalLectureCompleted / record?.batch?.course?.totalLecture * 100)} />
                 </div>
             )
         },
@@ -52,24 +73,12 @@ const StudentsDetailsModal = ({ isVisible, onClose, id }) => {
             title: 'Status',
             render: (_, record) => {
                 return (
-                    <Switch checked={!record?.batch?.course?.isArchived ? true : false} onChange={handleClick} />
+                    <Switch checked={!record?.isArchived} onChange={() => handleClick(record?.id, record?.isArchived)}/>
                 )
             }
 
         },
-        {
-            title: 'Action',
-            render : (_, record) => {
-                return (
-                    <button onClick={handleClick}>
-                        <EllipsisVertical className='text-gray-400' />
-                    </button>
-                )
-            
-            }
-        }
     ];
-
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
@@ -99,7 +108,7 @@ const StudentsDetailsModal = ({ isVisible, onClose, id }) => {
                         </div>
                         <div className='flex flex-col items-end'>
                             <span className='text-white text-xs mb-2'>Joined On</span>
-                            <span className='text-white text-lg'>{new Date (currentStudent?.createdAt).toLocaleDateString()}</span>
+                            <span className='text-white text-lg'>{new Date(currentStudent?.createdAt).toLocaleDateString()}</span>
                         </div>
                     </div>
                     <div className='bg-white'>
@@ -128,12 +137,7 @@ const StudentsDetailsModal = ({ isVisible, onClose, id }) => {
                                     </div>
                                 } key="1">
                                 </Tabs.TabPane>
-                                {/* <Tabs.TabPane tab={
-                                    <div className="flex items-center">
-                                        <p className="">View Students</p>
-                                    </div>
-                                } key="2">
-                                </Tabs.TabPane> */}
+
                             </Tabs>
                         </ConfigProvider>
                     </div>
@@ -148,6 +152,7 @@ const StudentsDetailsModal = ({ isVisible, onClose, id }) => {
                             <Table
                                 columns={columns}
                                 className='rounded-md border'
+                                loading={loading}
                                 pagination={{
                                     total: currentStudent?.enrollments?.length || 0,
                                     pageSize: 3,
@@ -156,13 +161,16 @@ const StudentsDetailsModal = ({ isVisible, onClose, id }) => {
                                     showQuickJumper: false,
                                     style: { display: 'flex', justifyContent: 'flex-end', marginRight: 40 },
                                 }}
-                                dataSource={currentStudent?.enrollments} />
+                                dataSource={currentStudent?.enrollments} 
+                                // shouldCellUpdate={(record, prevRecord) => record !== prevRecord}
+                                />
                         </ConfigProvider>
                     </div>
 
                 </div>
             </div>
-            <DeleteStudentModal isVisible={isModalVisible} onClose={handleCloseModal} handleDeleteStudent={handleDeleteStudent} />
+            <ArchiveStudentModal isVisible={isArchiveModalVisible} onClose={handleCloseModal} handleArchiveStudent={handleArchiveStudent} />
+            <UnarchiveStudentModal isVisible={isUnarchiveModalVisible} onClose={handleCloseModal} handleUnarchiveStudent={handleUnarchiveStudent} />
         </div>
     );
 };
