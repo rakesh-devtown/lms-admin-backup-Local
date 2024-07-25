@@ -6,8 +6,6 @@ import StudentsDetailsModal from '../../components/Modal/StudentsDetailsModal';
 import Papa from 'papaparse';
 import Spinner from '../../components/Loader/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
-// import { debounce, set } from 'lodash';
-// import { addStudentToBatch, getAllEnrolledStudents } from '../../store/slice/courseReducer';
 import { debounce } from 'lodash';
 import { addStudentToBatch, getAllEnrolledStudents, getStudentById } from '../../store/slice/courseReducer';
 
@@ -204,6 +202,7 @@ const Students = () => {
     {
       title: 'Joined at',
       key: 'createdAt',
+      // sorter: (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
       render: (_, record) => (
         <span>{new Date(record?.createdAt).toLocaleDateString()}</span>
       )
@@ -445,6 +444,7 @@ const Students = () => {
                   onChange: (page) => setpage(page),
                   showSizeChanger: false,
                   showQuickJumper: false,
+                  sortOrder: 'descend',
                   style: { display: 'flex', justifyContent: 'flex-end', marginRight: 40 },
                 }}
                 dataSource={allStudents?.students || []} />

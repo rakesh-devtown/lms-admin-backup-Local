@@ -149,7 +149,7 @@ const Courses = () => {
                                                 <p className='font-poppins text-xl font-semibold px-2 inline'>{item.name.length > 20 ? item.name.slice(0, 20) + '...' : item.name}</p>
                                             </div>
                                             <div className='flex items-center'>
-                                                <p className='font-poppins text-xs mx-2 mt-1 text-[#599636]'>{item?.batches?.length > 0 ? item?.batches[0]?.id : ''}</p>
+                                                <p className='font-poppins text-sm mx-2 mt-1 text-[#599636]'>{item?.batches?.length > 0 ? 'Batch ID' : ''}</p>
                                                 <Copy onClick={handleCopyClick.bind(this, item?.batches?.length > 0 ? item?.batches[0]?.id : '')} className='text-[#599636] cursor-pointer mt-1' size={12} />
                                             </div>
                                         </div>

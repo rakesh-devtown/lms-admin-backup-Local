@@ -89,7 +89,7 @@ const StudentsDetailsModal = ({ isVisible, onClose,id }) => {
                         <X className='text-white' />
                     </button>
                 </div>
-                <div className="flex-1 bg-white mt-12 rounded-lg w-[140vh] h-[80vh] overflow-auto">
+                <div className="flex-1 bg-white mt-12 rounded-lg w-[140vh] h-[80vh] overflow-">
                     <div className='border-b-2 p-4 pb-6 text-slate-700 bg-[#2F366E] font-poppins flex justify-between items-center px-6'>
                         <div className='flex-1'>
                             <div className='flex mb-1'>
@@ -155,7 +155,7 @@ const StudentsDetailsModal = ({ isVisible, onClose,id }) => {
                                 loading={loading}
                                 pagination={{
                                     total: currentStudent?.enrollments?.length || 0,
-                                    pageSize: 3,
+                                    pageSize: 10,
                                     onChange: (page) => setpage(page),
                                     showSizeChanger: false,
                                     showQuickJumper: false,

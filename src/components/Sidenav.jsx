@@ -28,7 +28,7 @@ const Sidenav = () => {
         <div
             className={`flex-1 text-sm bg-white-800 text-white h-screen relative overflow-hidden ${isShrunk ? "w-16" : "sm:w-60"} pt- transition-width duration-300 shadow-md border-r-2`}>
             <div className="space-y-">
-                <Link
+                {/* <Link
                     to="/admin/home"
                     className={`flex items-center p-3.5 ${location.pathname === "/admin/home" ? "#1890FF bg-[#E6F7FF] text-[#1890FF] border-r-2 border-[#0859DE]" : "text-black"
                         }`}
@@ -44,7 +44,7 @@ const Sidenav = () => {
 
                     }
                     {!isShrunk && <span className="font-poppins font-medium text-base">Dashboard</span>}
-                </Link>
+                </Link> */}
                 <Link
                     to="/admin/home/courses"
 
@@ -80,7 +80,7 @@ const Sidenav = () => {
 
                     }                    {!isShrunk && <span className="font-poppins font-medium text-base">Students</span>}
                 </Link>
-                <Link
+                {/* <Link
                     to="/admin/home/mentors"
                     className={`flex items-center p-3.5   ${location.pathname === "/admin/home/mentors" ? "bg-[#E6F7FF] text-[#1890FF] border-r-2 border-[#0859DE]" : "text-black"
                         }`}
@@ -115,7 +115,7 @@ const Sidenav = () => {
                         </svg>
                     }
                     {!isShrunk && <span className="font-poppins font-medium text-base">Doubts</span>}
-                </Link>
+                </Link> */}
                 <Link
                     to="/admin/home/requests"
                     className={`flex items-center p-3.5   ${location.pathname === "/admin/home/requests" ? "bg-[#E6F7FF] text-[#1890FF] border-r-2 border-[#0859DE]" : "text-black"}`}
@@ -130,7 +130,7 @@ const Sidenav = () => {
                         </svg>}
                     {!isShrunk && <span className="font-poppins font-medium text-base">Requests</span>}
                 </Link>
-                <Link
+                {/* <Link
                     to="/admin/home/discussion"
                     className={`flex items-center p-3.5   ${location.pathname === "/admin/home/discussion" ? "bg-[#E6F7FF] text-[#1890FF] border-r-2 border-[#0859DE]" : "text-black"}`}
                 >
@@ -144,7 +144,7 @@ const Sidenav = () => {
                             <path d="M7.39934 16.9329C7.16636 16.9329 6.97108 16.8541 6.81348 16.6965C6.65588 16.5389 6.57709 16.3436 6.57709 16.1106V14.4661H17.2663V7.06586H18.9108C19.1438 7.06586 19.3391 7.14465 19.4967 7.30225C19.6543 7.45985 19.7331 7.65513 19.7331 7.88811V20.2219L16.4441 16.9329H7.39934ZM3.28809 16.1106V4.59911C3.28809 4.36613 3.36688 4.17085 3.52448 4.01325C3.68208 3.85565 3.87737 3.77686 4.11034 3.77686H14.7996C15.0326 3.77686 15.2278 3.85565 15.3854 4.01325C15.543 4.17085 15.6218 4.36613 15.6218 4.59911V11.9994C15.6218 12.2323 15.543 12.4276 15.3854 12.5852C15.2278 12.7428 15.0326 12.8216 14.7996 12.8216H6.57709L3.28809 16.1106ZM13.9773 11.1771V5.42136H4.93259V11.1771H13.9773Z" fill="#141414" fill-opacity="0.85" />
                         </svg>}
                     {!isShrunk && <span className="font-poppins font-medium text-base">Discussion</span>}
-                </Link>
+                </Link> */}
                 <Link
                     to="/admin/home/announcement"
                     className={`flex items-center p-3.5   ${location.pathname === "/admin/home/announcement" ? "bg-[#E6F7FF] text-[#1890FF] border-r-2 border-[#0859DE]" : "text-black"}`}
