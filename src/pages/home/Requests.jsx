@@ -4,8 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import Spinner from '../../components/Loader/Spinner';
 import { debounce } from 'lodash';
 import ApproveRejectButton from '../../components/UI/ApproveRejectButton';
-import { getRequests ,requestStatus} from '../../store/slice/requestReducer';
+import { getRequests, requestStatus } from '../../store/slice/requestReducer';
 import { X, Check } from 'lucide-react';
+import { render } from 'react-dom';
 
 
 const Requests = () => {
@@ -19,9 +20,15 @@ const Requests = () => {
 
   const { loading, requests } = useSelector(state => state.request);
 
+  console.log(requests)
+
   const columns = [
     {
-      title: 'Timestamp'
+      title: 'Timestamp',
+      // sorter: (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt),
+      render: (_, record) => (
+        <span>{new Date(record?.updatedAt).toLocaleString()}</span>
+      )
     },
     {
       title: 'Student Email Address',
@@ -46,62 +53,88 @@ const Requests = () => {
       )
     },
     {
-      title: 'Action',
+      title: 'Status',
       render: (_, record) => {
-        if (record?.status==='pending'){
+        if (record?.status === 'pending') {
           return (
-            <div className="flex space-x-2">
-                <button
-                    className="text-green-600 flex items-center border border-[#328801] rounded px-2 py-1 hover:bg-[#328801] hover:text-white"
-                    onClick={()=>{
-                        dispatch(requestStatus(record?.id, {
-                            status: 'approved',
-                            adminRemark: 'request approved'
-                        }))
-                    }}
-                >
-                    <Check size={16} className='' /> {hover ? '' : 'Approve'}
-                </button>
-                {hover ? (
-                    <button
-                        className="text-white bg-red-600 border flex items-center border-red-600 rounded px-3 py-1"
-                        onClick={() => {
-                            dispatch(requestStatus(record?.id, {
-                                status: 'rejected',
-                                adminRemark: 'request approved'
-                            }))
-                        }} onMouseLeave={() => {
-                            setHover(false)
-                            setShrunk(false)
-                        }
-                        }
-                    >
-                        <X size={16} className='mr-1 text-white' /> Reject
-                    </button>
-                ) : (
-                    <div
-                        className="border items-center flex bg-red-600 border-red-600 rounded px-1 py-1 text-red-600"
-                        onMouseEnter={() => {
-                            setHover(true)
-                            setShrunk(true)
-                        }}
-                    >
-                        <X size={17} className='text-white' />
-                    </div>
-                )}
-            </div>)
-        }
-        else if(record?.status==='approved'){
-          return(
-          <span className="text-green-600 font-semibold">Approved</span>
+            <div className='bg-yellow-300 text-center rounded-md'>
+              <span className="text-yellow-700 text-xs">pending</span>
+            </div>
           )
         }
-        else{
+        else if (record?.status === 'approved') {
+          return (
+            <div className='bg-green-300 text-center rounded-md'>
+              <span className="text-green-700 text-xs">approved</span>
+            </div>
+          )
+        }
+        else {
+          return (
+            <div className='bg-red-300 text-center rounded-md'>
+              <span className="text-red-700 text-xs">rejected</span>
+            </div>
+          )
+        }
+      }
+    },
+    {
+      title: 'Action',
+      render: (_, record) => {
+        if (record?.status === 'pending') {
+          return (
+            <div className="flex space-x-2">
+              <button
+                className="text-green-600 flex items-center border border-[#328801] rounded px-2 py-1 hover:bg-[#328801] hover:text-white"
+                onClick={() => {
+                  dispatch(requestStatus(record?.id, {
+                    status: 'approved',
+                    adminRemark: 'request approved'
+                  }))
+                }}
+              >
+                <Check size={16} className='' /> {hover ? '' : 'Approve'}
+              </button>
+              {hover ? (
+                <button
+                  className="text-white bg-red-600 border flex items-center border-red-600 rounded px-3 py-1"
+                  onClick={() => {
+                    dispatch(requestStatus(record?.id, {
+                      status: 'rejected',
+                      adminRemark: 'request approved'
+                    }))
+                  }} onMouseLeave={() => {
+                    setHover(false)
+                    setShrunk(false)
+                  }
+                  }
+                >
+                  <X size={16} className='mr-1 text-white' /> Reject
+                </button>
+              ) : (
+                <div
+                  className="border items-center flex bg-red-600 border-red-600 rounded px-1 py-1 text-red-600"
+                  onMouseEnter={() => {
+                    setHover(true)
+                    setShrunk(true)
+                  }}
+                >
+                  <X size={17} className='text-white' />
+                </div>
+              )}
+            </div>)
+        }
+        else if (record?.status === 'approved') {
+          return (
+            <span className="text-green-600 font-semibold">Approved</span>
+          )
+        }
+        else {
           return <span className="text-red-600 font-semibold">Rejected</span>;
         }
       }
-
     },
+
   ];
 
   const handleInputChange = (event) => {

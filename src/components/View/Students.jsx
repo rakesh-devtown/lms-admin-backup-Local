@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { ConfigProvider, Tabs, Table, notification, Switch } from 'antd';
 import { ArrowDownToLine } from 'lucide-react';
 import DeleteStudentModal from '../Modal/DeleteStudentModal';
+import StudentsDetailsModal from '../Modal/StudentsDetailsModal';
 import Papa from 'papaparse';
 import Spinner from '../Loader/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 import { debounce } from 'lodash';
-import { addStudentToBatch, getBatchEnrolledStudents } from '../../store/slice/courseReducer';
+import { addStudentToBatch, getBatchEnrolledStudents, getStudentById } from '../../store/slice/courseReducer';
 
 const Students = () => {
   const [activeTab, setActiveTab] = useState("1")
@@ -18,8 +19,13 @@ const Students = () => {
   const [archived, setArchived] = useState(false)
   const [page, setpage] = useState(1)
 
-  const { currentCourse, loading, currentBatchStudents } = useSelector(state => state.course);
 
+  const [isDetailsModalVisible, setIsDetailsModalVisible] = useState(false);
+  const [id, setId] = useState('')
+
+  const { currentCourse, loading, currentBatchStudents, currentStudent } = useSelector(state => state.course);
+
+  console.log(currentBatchStudents)
   const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
@@ -36,10 +42,6 @@ const Students = () => {
     setIsModalVisible(false);
   }
 
-  const handleDeleteStudent = () => {
-    setArchived(true)
-    setIsModalVisible(false);
-  }
 
   const handleFileUpload = async (event) => {
     try {
@@ -137,13 +139,69 @@ const Students = () => {
     }
   }
 
+  const handleViewMoreClick = (id) => {
+    setId(id)
+    setIsDetailsModalVisible(true);
+  }
+
+  const handleCloseDetailsModal = () => {
+    setIsDetailsModalVisible(false);
+  }
+
+  const handleDeleteStudent = () => {
+    setArchived(true)
+    setIsModalVisible(false);
+  }
+
+  useEffect(() => {
+    dispatch(getStudentById(id));
+  }, [id]);
+
+  // const columns = [
+  //   {
+  //     title: 'Student Name',
+  //     key: 'userId',
+  //     render: (_, record) => (
+  //       <span>{record?.user?.name}</span>
+  //     )
+  //   },
+  //   {
+  //     title: 'Student Email Address',
+  //     dataIndex: 'address',
+  //     key: 'email',
+  //     render: (_, record) => (
+  //       <span className='font-poppins text-[#1890FF]'>{record?.user?.email}</span>
+  //     )
+  //   },
+  //   {
+  //     title: 'Joined at',
+  //     key: 'createdAt',
+  //     render: (_, record) => (
+  //       <span>{new Date(record?.createdAt).toLocaleDateString()}</span>
+  //     )
+  //   },
+  //   {
+  //     title: 'Archive',
+  //     render: (_, record) => {
+  //       return (
+  //         <Switch checked={!archived ? true : false} onChange={handleClick} />
+  //       )
+  //     }
+
+  //   },
+  // ];
+
+  // const debouncedSearch = debounce((search) => {
+  //   dispatch(getBatchEnrolledStudents(currentCourse?.batches[0]?.id, page, 20, search))
+  // }, 2000);
+
 
   const columns = [
     {
       title: 'Student Name',
       key: 'userId',
       render: (_, record) => (
-        <span>{record?.user?.name}</span>
+        <span>{record?.user.name}</span>
       )
     },
     {
@@ -151,18 +209,19 @@ const Students = () => {
       dataIndex: 'address',
       key: 'email',
       render: (_, record) => (
-        <span className='font-poppins text-[#1890FF]'>{record?.user?.email}</span>
+        <span className='font-poppins text-[#1890FF]'>{record?.user.email}</span>
       )
     },
     {
       title: 'Joined at',
       key: 'createdAt',
+      // sorter: (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
       render: (_, record) => (
         <span>{new Date(record?.createdAt).toLocaleDateString()}</span>
       )
     },
     {
-      title: 'Archive',
+      title: 'Is Active',
       render: (_, record) => {
         return (
           <Switch checked={!archived ? true : false} onChange={handleClick} />
@@ -170,11 +229,16 @@ const Students = () => {
       }
 
     },
+    {
+      title: 'View More',
+      render: (_, record) => {
+        return (
+          <span onClick={() => handleViewMoreClick(record?.user?.id)} className='text-[#1890FF] cursor-pointer'>View More</span>
+        )
+      }
+    },
   ];
 
-  // const debouncedSearch = debounce((search) => {
-  //   dispatch(getBatchEnrolledStudents(currentCourse?.batches[0]?.id, page, 20, search))
-  // }, 2000);
 
   const handleInputChange = (event) => {
     setSearch(event.target.value);
@@ -187,7 +251,7 @@ const Students = () => {
     e.preventDefault();
     dispatch(getBatchEnrolledStudents(currentCourse?.batches[0]?.id, page, 20, search))
   }
-  
+
   useEffect(() => {
     dispatch(getBatchEnrolledStudents(currentCourse?.batches[0]?.id, page, 20))
   }, [page])
@@ -372,6 +436,7 @@ const Students = () => {
                   onChange: (page) => setpage(page),
                   showSizeChanger: false,
                   showQuickJumper: false,
+                  sortOrder: 'descend',
                   style: { display: 'flex', justifyContent: 'flex-end', marginRight: 40 },
                 }}
                 dataSource={currentBatchStudents?.enrollments || []} />
@@ -380,6 +445,7 @@ const Students = () => {
         </div>
       }
       <DeleteStudentModal isVisible={isModalVisible} onClose={handleCloseModal} handleDeleteStudent={handleDeleteStudent} />
+      <StudentsDetailsModal isVisible={isDetailsModalVisible} onClose={handleCloseDetailsModal} id={id} />
     </div>
   )
 }
