@@ -7,6 +7,7 @@ import { addStudentToBatch } from '../../store/slice/courseReducer';
 import RichTextEditor from '../../components/UI/RichTextEditor';
 import { uploadFile } from '../../store/slice/uploadReducer';
 import { sendBulkEmail } from '../../store/slice/announcementReducer';
+import { InfoIcon } from 'lucide-react';
 
 
 const Announcement = () => {
@@ -177,7 +178,7 @@ const Announcement = () => {
       </div>
 
       {activeTab === '1' &&
-        <div className='bg-white mt- h-[72vh] overflow-auto'>
+        <div className='bg-white mt- h-full overflow-auto'>
           {(studentLoading || loading) && <Spinner />}
           <div className="mx-12 border-2 border-dashed border-gray-300 rounded-md p-10 text-center mb-6 md:mb-0">
             <div className="flex items-center justify-center h-full w-full">
@@ -207,7 +208,11 @@ const Announcement = () => {
           </div>
           <div className='pt-5'>
             <div className='flex flex-col mx-12'>
-              <label className='font-poppins text-sm'><span className='text-red-500'>*</span>Source:</label>
+              <div className='flex gap-2'>
+                <label className='font-poppins text-sm'><span className='text-red-500'>*</span>Source:</label>
+                <InfoIcon className='text-blue-500 text-lg ml-2 h-4 w-4' />
+                <p className='text-xs text-gray-500 font-poppins'> Use the source email through which you'd want users to receive emails.</p>
+              </div>
               <select
                 value={formData.source}
                 onChange={(e) => setFormData({ ...formData, source: e.target.value })}
@@ -215,9 +220,10 @@ const Announcement = () => {
               >
                 <option value="" disabled>Select source email</option>
                 <option value="support@devtown.in">support@devtown.in</option>
-                <option value="hr@devtown.in">hr@devtown.in</option>
-                <option value="certificate@devtown.in">certificate@devtown.in</option>
+                <option value="info@devtown.in">info@devtown.in</option>
+                {/* <option value="certificate@devtown.in">certificate@devtown.in</option> */}
               </select> 
+              
             </div>
             <div className='flex flex-col mx-12 mt-6'>
               <label className='font-poppins text-sm'><span className='text-red-500'>*</span>Mail Title:</label>

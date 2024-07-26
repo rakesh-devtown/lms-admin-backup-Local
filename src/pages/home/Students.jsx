@@ -453,7 +453,9 @@ const Students = () => {
         </div>
       }
       <DeleteStudentModal isVisible={isModalVisible} onClose={handleCloseModal} handleDeleteStudent={handleDeleteStudent} />
-      <StudentsDetailsModal isVisible={isDetailsModalVisible} onClose={handleCloseDetailsModal} id={id} />
+      {isDetailsModalVisible &&
+        <StudentsDetailsModal isVisible={isDetailsModalVisible} onClose={handleCloseDetailsModal} id={id} />
+       }
     </div>
   )
 }

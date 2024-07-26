@@ -63,7 +63,30 @@ const courseSlice = createSlice({
             state.currentBatchId = action.payload;
         },
         setCurrentStudent: (state, action) => {
-            state.currentStudent = action.payload;
+            state.currentStudent = action.payload.data;
+        },
+        setCurrentStudentEnrollment: (state, action) => {
+            try{
+                console.log(state.currentStudent);
+                const { enrollmentId, archived} = action.payload;
+                let student = current(state.currentStudent);
+                const findIndexOfStudent = student.enrollments.findIndex(student => student.id === enrollmentId);
+                console.log(findIndexOfStudent);
+                if(findIndexOfStudent!==-1){
+                    // console.log(student.enrollments[findIndexOfStudent]);
+                    const newEnrollment = {...student.enrollments[findIndexOfStudent], isArchived: archived};
+                    const enrollmentWithoutIndex = student.enrollments.filter(student => student.id !== enrollmentId);
+                    enrollmentWithoutIndex.push(newEnrollment);
+                    student = {
+                        ...student,
+                        enrollments: enrollmentWithoutIndex
+                    }
+                    console.log(student);
+                }
+                state.currentStudent = student;
+            }catch(err){
+                console.log(err);
+            }
         },
         setCurrentCourseCertificates: (state, action) => {
             state.currentCourseCertificates = action.payload;
@@ -170,7 +193,7 @@ const courseSlice = createSlice({
     }
 });
 
-export const { setViewCourseNull, setSectionItemData, deleteSectionItemFromSection, setLoading, setCourses, pushSectionItemInSection, addCourse, setViewCourse, updateCourseState, setCurrentSectionItem, setCurrentStudent,setCurrentBatchId,setCurrentBatchStudents, setAllStudents, setCurrentCourseCertificates } = courseSlice.actions;
+export const { setCurrentStudentEnrollment, setViewCourseNull, setSectionItemData, deleteSectionItemFromSection, setLoading, setCourses, pushSectionItemInSection, addCourse, setViewCourse, updateCourseState, setCurrentSectionItem, setCurrentStudent,setCurrentBatchId,setCurrentBatchStudents, setAllStudents, setCurrentCourseCertificates } = courseSlice.actions;
 export default courseSlice.reducer;
 
 export const createCourse = (course) => async (dispatch) => {
@@ -492,7 +515,8 @@ export const getStudentById = (id) => async (dispatch) => {
         const { message, success, data } = res;
         console.log(res);
         if (success) {
-            dispatch(setCurrentStudent(data));
+            console.log(data);
+            await dispatch(setCurrentStudent({ data: data }));
         } else {
             notification.error({ message: 'Student Fetch Failed', description: message });
         }
@@ -514,7 +538,13 @@ export const archiveStudent = (id, archived) => async (dispatch) => {
         const res = await servicePut(`admin/admin/v1/batch/archive/${id}`, archived);
         const { message, success, data } = res;
         if (success) {
-            notification.success({ message: 'Student Archived', description: message });
+            if (archived.archived) {
+                notification.success({ message: 'Student Archived', description: message });
+            }
+            else {
+                notification.success({ message: 'Student Unarchive', description: message });
+            }
+            await dispatch(setCurrentStudentEnrollment({ enrollmentId: id, archived: archived.archived }));
             return true;
         } else {
             notification.error({ message: 'Student Archive Failed', description: message });
