@@ -19,6 +19,7 @@ const VideoPlayer = ({ video, open, onClose }) => {
                         className="w-full h-full object-cover"
                         controls
                         autoPlay
+                        controlsList="nodownload"
                     >
                         <source src={video} type={`video/mp4`} />
                     </video>
