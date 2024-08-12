@@ -2,3 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 /* @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap"); */
+
+.custom-height-course {
+  height: calc(100vh - 190px);
+}
+.custom-height-body {
+  height: calc(100vh - 150px);
+}
+
+.custom-height-course-main {
+  height: calc(100vh - 200px);
+}

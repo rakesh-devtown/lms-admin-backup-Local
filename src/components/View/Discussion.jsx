@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
-const Discussion = () => {
-  return (
-    <div>Discussion</div>
-  )
-}
+const DiscussionView = () => {
+  return <div>Discussion</div>;
+};
 
-export default Discussion
+export default DiscussionView;

@@ -31,7 +31,7 @@ const Login = () => {
         try {
             const success = await dispatch(verifyOTPAuth(email.trim(), otp.trim()));
             if (success) {
-                navigate('/admin/home')
+                navigate('/admin')
             }
         } catch (error) {
             console.log(error)
@@ -51,7 +51,7 @@ const Login = () => {
 
     useEffect(() => {
         if (isAuthenticated) {
-            navigate('/admin/home')
+            navigate('/admin')
         }
     }, [isAuthenticated])
 

@@ -31,10 +31,10 @@ const requestSlice = createSlice({
 export const { setLoading, setRequests, requestAction } = requestSlice.actions;
 export default requestSlice.reducer;
 
-export const getRequests = (page, limit) => async (dispatch) => {
+export const getRequests = (page, limit, status="pending") => async (dispatch) => {
     try {
         dispatch(setLoading(true));
-        const res = await serviceGet(`admin/admin/v1/certificate/pending-requests?page=${page}&limit=${limit}`);
+        const res = await serviceGet(`admin/admin/v1/certificate/pending-requests?page=${page}&limit=${limit}&status=${status}`);
         const { message, success, data } = res;
         if (success) {
             dispatch(setRequests(data));
